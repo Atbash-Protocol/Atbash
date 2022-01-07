@@ -18,8 +18,10 @@ contract Presale is Ownable {
 
      uint256 private _rate;
 
-    constructor() {
-        console.log(owner());
+     address private beneficiary;
+
+    constructor(address beneficiary_) {
+        beneficiary = beneficiary_;
     }
 
     function setPresaleToken(address token_) public onlyOwner {
@@ -30,8 +32,8 @@ contract Presale is Ownable {
         return _token;
     }
 
-    function setRate(uint256 rate) public onlyOwner {
-        _rate = rate;
+    function setRate(uint256 rate_) public onlyOwner {
+        _rate = rate_;
     }
 
     function rate() public  view returns (uint256) {
@@ -47,9 +49,11 @@ contract Presale is Ownable {
 
         IERC20 tokenToSale = IERC20(_token);
 
-        require(tokensToReceive >= tokenToSale.balanceOf(address(this)),  "Presale::Not enough tokens to sale");
+        require(tokensToReceive >= tokenToSale.balanceOf(address(this)),  "Not enough tokens to sale");
 
-        require(tokenToSale.transfer(buyer, tokensToReceive), "Presale::Failed to transfer tokens");
+        require(tokenToSale.transfer(buyer, tokensToReceive), "Failed to transfer tokens");
+
+        payable(beneficiary).transfer(payableAmount);
 
         emit Bought(buyer, tokensToReceive);
 

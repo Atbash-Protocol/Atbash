@@ -14,11 +14,17 @@ describe("Presale.sol", function () {
     deployer = signers[0];
 
     const Presale = await ethers.getContractFactory("Presale");
-    presale = await Presale.deploy();
+    presale = await Presale.deploy(deployer.address);
     await presale.deployed();
+
+    
   });
 
   it("Should be owned by the deployer", async function () {
     expect(await presale.owner()).to.be.equal(deployer.address)
   });
+
+  it("Should set rate per one token", async  () => {
+    presale.setRate(1000);
+  })
 });
