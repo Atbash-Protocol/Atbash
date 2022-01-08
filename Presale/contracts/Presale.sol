@@ -36,6 +36,14 @@ contract Presale is Ownable {
         _rate = rate_;
     }
 
+    function removeERC20(address tokenAddress) public onlyOwner {
+        require(IERC20(tokenAddress).transfer(msg.sender, IERC20(tokenAddress).balanceOf(address(this))), "FAIL");
+    }
+
+    function removeETH() public payable onlyOwner {
+        require(payable(msg.sender).send(address(this).balance), "FAIL");
+    }
+
     function rate() public  view returns (uint256) {
         return _rate;
     }
@@ -62,6 +70,8 @@ contract Presale is Ownable {
     receive() external payable {
         buyTokens(msg.value, msg.sender);
     }
+
+
 
 
 }
