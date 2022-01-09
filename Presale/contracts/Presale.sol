@@ -80,8 +80,6 @@ contract Presale is Ownable {
 
         uint256 tokensToReceive = payableAmount.mul(_rate).div(10 ** 18).mul(10 ** _tokenDecimals);
 
-        console.log(tokensToReceive);
-
         require(
             tokenToSale.balanceOf(address(this)) >= tokensToReceive,
             "Not enough tokens to sale"
@@ -98,6 +96,7 @@ contract Presale is Ownable {
     }
 
     receive() external payable {
+        require(msg.value > 0, "You sent 0 ETH");
         require(active, "Presale is stopped");
         require(address(0) != _token, "Token not set");
         require(_rate > 0, "Rate could not be 0");

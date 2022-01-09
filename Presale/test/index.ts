@@ -10,6 +10,8 @@ describe("Presale.sol", function () {
   let tokenPresale: ERC20Token;
   let buyer1: SignerWithAddress;
   let buyer2: SignerWithAddress;
+  let buyer3: SignerWithAddress;
+  let buyer4: SignerWithAddress;
 
   beforeEach(async () => {
     const signers = await ethers.getSigners();
@@ -17,6 +19,8 @@ describe("Presale.sol", function () {
     deployer = signers[0];
     buyer1 = signers[1]
     buyer2 = signers[2]
+    buyer3 = signers[3]
+    buyer4 = signers[4]
 
     const Presale = await ethers.getContractFactory("Presale");
     presale = await Presale.deploy(deployer.address);
@@ -125,7 +129,14 @@ describe("Presale.sol", function () {
     expect(await tokenPresale.balanceOf(buyer1.address)).is.equal(ethers.utils.parseUnits("5000", 9));
 
     await expect(buyer2.sendTransaction({to: presale.address, value: ethers.utils.parseEther("0.5")})).to.emit(presale, 'Bought');
-    console.log(ethers.utils.formatUnits(await tokenPresale.balanceOf(buyer2.address), 9).toString());
+    
     expect(await tokenPresale.balanceOf(buyer2.address)).is.equal(ethers.utils.parseUnits("500", 9));
+
+    await expect(buyer3.sendTransaction({to: presale.address, value: ethers.utils.parseEther("0.1")})).to.emit(presale, 'Bought');
+    
+    expect(await tokenPresale.balanceOf(buyer3.address)).is.equal(ethers.utils.parseUnits("100", 9));
+
+    await expect(buyer4.sendTransaction({to: presale.address, value: ethers.utils.parseEther("0.047")})).to.emit(presale, 'Bought');
+    expect(await tokenPresale.balanceOf(buyer4.address)).is.equal(ethers.utils.parseUnits("47", 9));
   });
 });
