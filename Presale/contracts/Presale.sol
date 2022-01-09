@@ -2,26 +2,43 @@
 pragma solidity ^0.8.0;
 
 import "hardhat/console.sol";
-import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
-import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {SafeMath} from "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
 contract Presale is Ownable {
     using SafeMath for uint256;
 
-    event Bought (
-        address buyer,
-        uint256 amount
-    );
+    event Bought(address buyer, uint256 amount);
 
-     address private _token;
+    address private _token = address(0);
 
-     uint256 private _rate;
+    uint8 private _tokenDecimals = 9;
 
-     address private beneficiary;
+    uint256 private _rate = 0;
+
+    address private beneficiary;
+
+    bool private active = false;
 
     constructor(address beneficiary_) {
         beneficiary = beneficiary_;
+    }
+
+    function getTokenDecimals() public view returns(uint8) {
+        return _tokenDecimals;
+    }
+
+    function setTokenDecimals(uint8 newDecimals) public onlyOwner {
+        _tokenDecimals = newDecimals;
+    }
+
+    function setPresaleActive() public onlyOwner {
+        active = !active;
+    }
+
+    function getPresaleStatus() public view returns (bool) {
+        return active;
     }
 
     function setPresaleToken(address token_) public onlyOwner {
@@ -37,14 +54,20 @@ contract Presale is Ownable {
     }
 
     function removeERC20(address tokenAddress) public onlyOwner {
-        require(IERC20(tokenAddress).transfer(msg.sender, IERC20(tokenAddress).balanceOf(address(this))), "FAIL");
+        require(
+            IERC20(tokenAddress).transfer(
+                msg.sender,
+                IERC20(tokenAddress).balanceOf(address(this))
+            ),
+            "FAIL"
+        );
     }
 
     function removeETH() public payable onlyOwner {
         require(payable(msg.sender).send(address(this).balance), "FAIL");
     }
 
-    function rate() public  view returns (uint256) {
+    function rate() public view returns (uint256) {
         return _rate;
     }
 
@@ -53,25 +76,31 @@ contract Presale is Ownable {
     }
 
     function buyTokens(uint256 payableAmount, address buyer) internal {
-        uint256 tokensToReceive = payableAmount.mul(_rate);
-
         IERC20 tokenToSale = IERC20(_token);
 
-        require(tokensToReceive >= tokenToSale.balanceOf(address(this)),  "Not enough tokens to sale");
+        uint256 tokensToReceive = payableAmount.mul(_rate).div(10 ** 18).mul(10 ** _tokenDecimals);
 
-        require(tokenToSale.transfer(buyer, tokensToReceive), "Failed to transfer tokens");
+        console.log(tokensToReceive);
+
+        require(
+            tokenToSale.balanceOf(address(this)) >= tokensToReceive,
+            "Not enough tokens to sale"
+        );
+
+        require(
+            tokenToSale.transfer(buyer, tokensToReceive),
+            "Failed to transfer tokens"
+        );
 
         payable(beneficiary).transfer(payableAmount);
 
         emit Bought(buyer, tokensToReceive);
-
     }
 
     receive() external payable {
+        require(active, "Presale is stopped");
+        require(address(0) != _token, "Token not set");
+        require(_rate > 0, "Rate could not be 0");
         buyTokens(msg.value, msg.sender);
     }
-
-
-
-
 }

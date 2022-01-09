@@ -10,4 +10,8 @@ contract ERC20Token is ERC20 {
     constructor(uint initialSupply)  ERC20 ("USD", "USD") {
         _mint(msg.sender, initialSupply);
     }
+
+   function decimals() public view virtual override returns (uint8) {
+        return 9;
+    }
 }
