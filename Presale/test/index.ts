@@ -1,5 +1,6 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
+import { BigNumber } from "ethers";
 import { ethers } from "hardhat";
 import { ERC20, ERC20Token, Presale } from "../typechain";
 
@@ -12,6 +13,8 @@ describe("Presale.sol", function () {
   let buyer2: SignerWithAddress;
   let buyer3: SignerWithAddress;
   let buyer4: SignerWithAddress;
+  let teamWallet: SignerWithAddress;
+  let teamWalletBalance : BigNumber;
 
   beforeEach(async () => {
     const signers = await ethers.getSigners();
@@ -21,9 +24,13 @@ describe("Presale.sol", function () {
     buyer2 = signers[2]
     buyer3 = signers[3]
     buyer4 = signers[4]
+    teamWallet = signers[5];
+    teamWalletBalance = await teamWallet.getBalance();
+
+    
 
     const Presale = await ethers.getContractFactory("Presale");
-    presale = await Presale.deploy(deployer.address);
+    presale = await Presale.deploy(teamWallet.address);
     await presale.deployed();
 
     const ERC20 = await ethers.getContractFactory("ERC20Token");
@@ -31,6 +38,10 @@ describe("Presale.sol", function () {
     await tokenPresale.deployed();
 
   });
+
+  it("team wallet balance is 10000 eth", async () => {
+    expect(await teamWallet.getBalance()).is.eq(ethers.utils.parseEther("10000"));
+  })
 
   it("presale mock token decimals is 9", async () => {
     expect(await tokenPresale.decimals()).is.equal(9);
@@ -124,19 +135,33 @@ describe("Presale.sol", function () {
 
     await expect(buyer1.sendTransaction({to: presale.address, value: ethers.utils.parseEther("5")})).to.be.not.reverted;
 
+    expect(await teamWallet.getBalance()).is.eq(ethers.utils.parseEther("10005"));
+    expect(await ethers.provider.getBalance(presale.address)).is.equal(ethers.utils.parseEther("0"));
+
     // if we have rate 1000 tokens per 1 eth , so let's check what we have then
 
     expect(await tokenPresale.balanceOf(buyer1.address)).is.equal(ethers.utils.parseUnits("5000", 9));
 
+    // expect(await deployer.getBalance()).is.equal(ethers.utils.)
+
     await expect(buyer2.sendTransaction({to: presale.address, value: ethers.utils.parseEther("0.5")})).to.emit(presale, 'Bought');
     
+    expect(await teamWallet.getBalance()).is.eq(ethers.utils.parseEther("10005.5"));
+    expect(await ethers.provider.getBalance(presale.address)).is.equal(ethers.utils.parseEther("0"));
+
     expect(await tokenPresale.balanceOf(buyer2.address)).is.equal(ethers.utils.parseUnits("500", 9));
 
     await expect(buyer3.sendTransaction({to: presale.address, value: ethers.utils.parseEther("0.1")})).to.emit(presale, 'Bought');
     
+    expect(await teamWallet.getBalance()).is.eq(ethers.utils.parseEther("10005.6"));
+    expect(await ethers.provider.getBalance(presale.address)).is.equal(ethers.utils.parseEther("0"));
+
     expect(await tokenPresale.balanceOf(buyer3.address)).is.equal(ethers.utils.parseUnits("100", 9));
 
     await expect(buyer4.sendTransaction({to: presale.address, value: ethers.utils.parseEther("0.047")})).to.emit(presale, 'Bought');
     expect(await tokenPresale.balanceOf(buyer4.address)).is.equal(ethers.utils.parseUnits("47", 9));
+
+    expect(await teamWallet.getBalance()).is.eq(ethers.utils.parseEther("10005.647"));
+    expect(await ethers.provider.getBalance(presale.address)).is.equal(ethers.utils.parseEther("0"));
   });
 });
