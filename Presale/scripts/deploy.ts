@@ -25,8 +25,8 @@ async function main() {
   //   ],
     // });
   console.log("Deploying token contract")
-  const ERC20 = await ethers.getContractFactory("BashERC20Token");
-  const tokenPresale = await ERC20.deploy(ethers.utils.parseUnits("100000", 9));
+  const ERC20 = await ethers.getContractFactory("ERC20Token");
+  const tokenPresale = await ERC20.deploy(ethers.utils.parseUnits("100000", 18));
   await tokenPresale.deployed();
 
   // await hre.run("verify:verify", {

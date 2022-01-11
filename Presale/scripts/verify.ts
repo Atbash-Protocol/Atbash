@@ -15,7 +15,7 @@ async function main() {
 
     await hre.run("verify:verify", {
         address: process.env.ERC20_ADDR,
-        constructorArguments: [ethers.utils.parseUnits("100000", 9)],
+        constructorArguments: [ethers.utils.parseUnits("100000", 18)],
     });
 
 }

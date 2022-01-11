@@ -8,7 +8,7 @@ describe("Presale.sol", function () {
 
   let deployer: SignerWithAddress;
   let presale: Presale;
-  let tokenPresale: BashERC20Token;
+  let tokenPresale: ERC20Token;
   let buyer1: SignerWithAddress;
   let buyer2: SignerWithAddress;
   let buyer3: SignerWithAddress;
@@ -33,7 +33,7 @@ describe("Presale.sol", function () {
     presale = await Presale.deploy(teamWallet.address);
     await presale.deployed();
 
-    const ERC20 = await ethers.getContractFactory("BashERC20Token");
+    const ERC20 = await ethers.getContractFactory("ERC20Token");
     tokenPresale = await ERC20.deploy(ethers.utils.parseUnits("100000", 18));
     await tokenPresale.deployed();
 
@@ -43,8 +43,8 @@ describe("Presale.sol", function () {
     expect(await teamWallet.getBalance()).is.eq(ethers.utils.parseEther("10000"));
   })
 
-  it("presale mock token decimals is 9", async () => {
-    expect(await tokenPresale.decimals()).is.equal(9);
+  it("presale mock token decimals is 18", async () => {
+    expect(await tokenPresale.decimals()).is.equal(18);
   });
 
   it("presale is not active after deployment", async () => {
@@ -57,9 +57,9 @@ describe("Presale.sol", function () {
 
   it("set token decimals", async () => {
     await expect(presale.connect(buyer1).setTokenDecimals(15)).is.revertedWith("Ownable: caller is not the owner");
-    expect(await presale.getTokenDecimals()).is.equal(9);
-    await presale.connect(deployer).setTokenDecimals(18);
     expect(await presale.getTokenDecimals()).is.equal(18);
+    await presale.connect(deployer).setTokenDecimals(9);
+    expect(await presale.getTokenDecimals()).is.equal(9);
   })
 
   it("set rate per one token", async () => {
@@ -78,28 +78,28 @@ describe("Presale.sol", function () {
   it("receive presale tokens to the balance from owner", async () => {
     await presale.setPresaleToken(tokenPresale.address);
 
-    await tokenPresale.connect(deployer).transfer(presale.address, ethers.utils.parseUnits("10000", 9));
+    await tokenPresale.connect(deployer).transfer(presale.address, ethers.utils.parseUnits("10000", 18));
 
-    expect(await tokenPresale.balanceOf(presale.address)).is.equal(ethers.utils.parseUnits("10000", 9));
+    expect(await tokenPresale.balanceOf(presale.address)).is.equal(ethers.utils.parseUnits("10000", 18));
   });
 
   it("recover tokens back", async () => {
 
     expect(await tokenPresale.balanceOf(deployer.address)).is.equal(await tokenPresale.totalSupply())
 
-    await tokenPresale.connect(deployer).transfer(presale.address, ethers.utils.parseUnits("500", 9));
+    await tokenPresale.connect(deployer).transfer(presale.address, ethers.utils.parseUnits("500", 18));
 
-    expect(await tokenPresale.balanceOf(presale.address)).is.equal(ethers.utils.parseUnits("500", 9));
+    expect(await tokenPresale.balanceOf(presale.address)).is.equal(ethers.utils.parseUnits("500", 18));
 
     expect(await tokenPresale.balanceOf(deployer.address)).is.equal(
-      (await tokenPresale.totalSupply()).sub(ethers.utils.parseUnits("500", 9))
+      (await tokenPresale.totalSupply()).sub(ethers.utils.parseUnits("500", 18))
     );
 
     await expect(presale.removeERC20(tokenPresale.address)).to.be.not.reverted;
 
     expect(await tokenPresale.balanceOf(deployer.address)).is.equal(await tokenPresale.totalSupply())
 
-    expect(await tokenPresale.balanceOf(presale.address)).is.equal(ethers.utils.parseUnits("0", 9));
+    expect(await tokenPresale.balanceOf(presale.address)).is.equal(ethers.utils.parseUnits("0", 18));
   });
 
 
@@ -124,14 +124,14 @@ describe("Presale.sol", function () {
 
     // fill up balance
 
-    await tokenPresale.connect(deployer).transfer(presale.address, ethers.utils.parseUnits("10000", 9));
+    await tokenPresale.connect(deployer).transfer(presale.address, ethers.utils.parseUnits("10000", 18));
 
-    expect(await tokenPresale.balanceOf(presale.address)).is.equal(ethers.utils.parseUnits("10000", 9));
+    expect(await tokenPresale.balanceOf(presale.address)).is.equal(ethers.utils.parseUnits("10000", 18));
 
     // make sure we don't have tokens
 
-    expect(await tokenPresale.balanceOf(buyer1.address)).is.equal(ethers.utils.parseUnits("0", 9));
-    expect(await tokenPresale.balanceOf(buyer2.address)).is.equal(ethers.utils.parseUnits("0", 9));
+    expect(await tokenPresale.balanceOf(buyer1.address)).is.equal(ethers.utils.parseUnits("0", 18));
+    expect(await tokenPresale.balanceOf(buyer2.address)).is.equal(ethers.utils.parseUnits("0", 18));
 
     await expect(buyer1.sendTransaction({to: presale.address, value: ethers.utils.parseEther("5")})).to.be.not.reverted;
 
@@ -140,7 +140,7 @@ describe("Presale.sol", function () {
 
     // if we have rate 1000 tokens per 1 eth , so let's check what we have then
 
-    expect(await tokenPresale.balanceOf(buyer1.address)).is.equal(ethers.utils.parseUnits("250", 9));
+    expect(await tokenPresale.balanceOf(buyer1.address)).is.equal(ethers.utils.parseUnits("250", 18));
 
     // expect(await deployer.getBalance()).is.equal(ethers.utils.)
 
@@ -149,19 +149,19 @@ describe("Presale.sol", function () {
     expect(await teamWallet.getBalance()).is.eq(ethers.utils.parseEther("10005.5"));
     expect(await ethers.provider.getBalance(presale.address)).is.equal(ethers.utils.parseEther("0"));
 
-    expect(await tokenPresale.balanceOf(buyer2.address)).is.equal(ethers.utils.parseUnits("25", 9));
+    expect(await tokenPresale.balanceOf(buyer2.address)).is.equal(ethers.utils.parseUnits("25", 18));
 
     await expect(buyer3.sendTransaction({to: presale.address, value: ethers.utils.parseEther("0.1")})).to.emit(presale, 'Bought');
     
     expect(await teamWallet.getBalance()).is.eq(ethers.utils.parseEther("10005.6"));
     expect(await ethers.provider.getBalance(presale.address)).is.equal(ethers.utils.parseEther("0"));
 
-    expect(await tokenPresale.balanceOf(buyer3.address)).is.equal(ethers.utils.parseUnits("5", 9));
+    expect(await tokenPresale.balanceOf(buyer3.address)).is.equal(ethers.utils.parseUnits("5", 18));
 
-    await expect(buyer4.sendTransaction({to: presale.address, value: ethers.utils.parseEther("0.05")})).to.emit(presale, 'Bought');
-    expect(await tokenPresale.balanceOf(buyer4.address)).is.equal(ethers.utils.parseUnits("2", 9));
+    await expect(buyer4.sendTransaction({to: presale.address, value: ethers.utils.parseEther("0.05577")})).to.emit(presale, 'Bought');
+    expect(await tokenPresale.balanceOf(buyer4.address)).is.equal(ethers.utils.parseUnits("2.7885", 18));
 
-    expect(await teamWallet.getBalance()).is.eq(ethers.utils.parseEther("10005.65"));
+    expect(await teamWallet.getBalance()).is.eq(ethers.utils.parseEther("10005.65577"));
     expect(await ethers.provider.getBalance(presale.address)).is.equal(ethers.utils.parseEther("0"));
   });
 });

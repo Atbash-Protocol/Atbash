@@ -18,7 +18,7 @@ export const ConnectWallet: FC<{}> = () => {
 
     return (
         <>
-            <ButtonGroup aria-label="Connect wallet">
+            <ButtonGroup aria-label="Connect wallet" className="mt-2">
                 <Button onClick={() => activateBrowserWallet()} variant="secondary">Metamask</Button>
                 {/* <Button onClick={() => activateWalletConnect()} variant="secondary">WalletConnect</Button> */}
             </ButtonGroup>

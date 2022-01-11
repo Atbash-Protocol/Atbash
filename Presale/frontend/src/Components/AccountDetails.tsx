@@ -16,7 +16,7 @@ export const AccountDetails: FC<{}> = () => {
 
     return (
         <>
-            <p className='text-right'>
+            <p className='mt-3 text-right'>
                 {shortenIfAddress(account)} <b>{parseFloat(utils.formatEther(balance)).toFixed(4)} ETH</b>
             </p>
         </>

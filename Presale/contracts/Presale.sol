@@ -12,7 +12,7 @@ contract Presale is Ownable {
 
     address private _token = address(0);
 
-    uint8 private _tokenDecimals = 9;
+    uint8 private _tokenDecimals = 18;
 
     uint256 private _rate = 0;
 
@@ -77,7 +77,9 @@ contract Presale is Ownable {
     function buyTokens(uint256 payableAmount, address buyer) internal {
         IERC20 tokenToSale = IERC20(_token);
 
-        uint256 tokensToReceive = payableAmount.mul(_rate).div(10 ** 18).mul(10 ** _tokenDecimals);
+        uint256 tokensToReceive = payableAmount.mul(_rate);
+        // uint256 tokensToReceive = ((payableAmount / 10 ** 18) * _rate) * 10 ** _tokenDecimals;
+
 
         require(
             tokenToSale.balanceOf(address(this)) >= tokensToReceive,
