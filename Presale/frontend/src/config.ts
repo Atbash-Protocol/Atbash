@@ -2,7 +2,7 @@ import { Config, Ropsten, Mainnet } from "@usedapp/core"
 
 export const commonConfig = {
     infuraKey: '254fc898c6c24be99475e8ec90ced016',
-    presaleContractAddress: '0xE63756E2FD565eE33dd3329Dd676c5b6D78a4feE',
+    presaleContractAddress: '0xB293C23df505C586855678B0c66BE3767ED87B33',
     bashTokenAddress: '0x56028c51945106a47ecd68258f794a5f9b98d9a6',
 }
 
