@@ -6,6 +6,7 @@
 import hre, { ethers } from "hardhat";
 
 async function main() {
+
   // Hardhat always runs the compile task when running scripts with its command
   // line interface.
   //
@@ -17,26 +18,27 @@ async function main() {
   const presale = await Presale.deploy('0x31940eE01803476a970ec6DF1094a53F80e6827b');
   await presale.deployed();
 
+  // await hre.run("verify:verify", {
+  //   address: presale.address,
+  //   constructorArguments: [
+  //     '0x31940eE01803476a970ec6DF1094a53F80e6827b'
+  //   ],
+  // });
+
   const ERC20 = await ethers.getContractFactory("ERC20Token");
-  const tokenPresale = await ERC20.deploy(ethers.utils.parseUnits("10000", 9));
+  const tokenPresale = await ERC20.deploy(ethers.utils.parseUnits("100000", 9));
   await tokenPresale.deployed();
 
+  // await hre.run("verify:verify", {
+  //   address: tokenPresale.address,
+  //   constructorArguments: [ethers.utils.parseUnits("100000", 9)],
+  // });
+
   console.log(`Presale contract was deployed to ${presale.address}`);
+
   console.log(`ERC20 token contract was deployed to ${tokenPresale.address}`)
 
-  console.log('Verify start...');
-
-  await hre.run("verify:verify", {
-    address: presale.address,
-    constructorArguments: [
-      '0x31940eE01803476a970ec6DF1094a53F80e6827b'
-    ],
-  });
-
-  await hre.run("verify:verify", {
-    address: tokenPresale.address,
-    constructorArguments: [ethers.utils.parseUnits("10000", 9)],
-  });
+  console.log('Update deployed contract addresses in .env and run verify script.')
   
 }
 

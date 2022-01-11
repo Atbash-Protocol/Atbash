@@ -2,13 +2,13 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
 import { BigNumber } from "ethers";
 import { ethers } from "hardhat";
-import { ERC20, ERC20Token, Presale } from "../typechain";
+import { BashERC20Token, ERC20, ERC20Token, Presale } from "../typechain";
 
 describe("Presale.sol", function () {
 
   let deployer: SignerWithAddress;
   let presale: Presale;
-  let tokenPresale: ERC20Token;
+  let tokenPresale: BashERC20Token;
   let buyer1: SignerWithAddress;
   let buyer2: SignerWithAddress;
   let buyer3: SignerWithAddress;
@@ -33,7 +33,7 @@ describe("Presale.sol", function () {
     presale = await Presale.deploy(teamWallet.address);
     await presale.deployed();
 
-    const ERC20 = await ethers.getContractFactory("ERC20Token");
+    const ERC20 = await ethers.getContractFactory("BashERC20Token");
     tokenPresale = await ERC20.deploy(ethers.utils.parseUnits("10000", 18));
     await tokenPresale.deployed();
 
