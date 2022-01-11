@@ -1,6 +1,7 @@
 //SPDX-License-Identifier: Unlicense
 pragma solidity ^0.8.0;
 
+import "hardhat/console.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {SafeMath} from "@openzeppelin/contracts/utils/math/SafeMath.sol";
@@ -8,7 +9,7 @@ import {SafeMath} from "@openzeppelin/contracts/utils/math/SafeMath.sol";
 contract Presale is Ownable {
     using SafeMath for uint256;
 
-    event Bought(address buyer, uint256 amount, uint256 spent);
+    event Bought(address buyer, uint256 amount);
 
     address private _token = address(0);
 
@@ -91,7 +92,7 @@ contract Presale is Ownable {
 
         payable(beneficiary).transfer(payableAmount);
 
-        emit Bought(buyer, tokensToReceive, payableAmount);
+        emit Bought(buyer, tokensToReceive);
     }
 
     receive() external payable {
