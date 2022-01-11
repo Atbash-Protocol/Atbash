@@ -38,7 +38,7 @@ export const PresaleHandler: FC<{}> = () => {
                         <Table className='table' bordered striped>
                             <tbody>
                                 {presaleBalance && <>
-                                    <tr><td><b>$BASH left</b></td> <td>{ethers.utils.formatUnits(presaleBalance, 9)}</td></tr>
+                                    <tr><td><b>$BASH left</b></td> <td>{ethers.utils.formatUnits(presaleBalance, 18)}</td></tr>
                                     </>}
 
                                     {userBashBalance && <>
@@ -46,7 +46,7 @@ export const PresaleHandler: FC<{}> = () => {
                                             <td>
                                                 <b>Your $BASH</b>
                                             </td>
-                                            <td>{ethers.utils.formatUnits(userBashBalance, 9)}</td></tr>
+                                            <td>{ethers.utils.formatUnits(userBashBalance, 18)}</td></tr>
                                         </>}
                                     </tbody>
                         </Table>

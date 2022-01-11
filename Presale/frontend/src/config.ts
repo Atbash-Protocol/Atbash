@@ -2,8 +2,8 @@ import { Config, Ropsten, Mainnet } from "@usedapp/core"
 
 export const commonConfig = {
     infuraKey: '254fc898c6c24be99475e8ec90ced016',
-    presaleContractAddress: '0x0b974fe4b9444cee781d49b2dc0a905df0c3e87a',
-    bashTokenAddress: '0x6cba1c5ee414ef4326e6bb3208642d075f0f9570',
+    presaleContractAddress: '0x611eD75e0153d966b5A51C4fdEbc4971d5d0F051',
+    bashTokenAddress: '0x7629e1bebBA3b5a30bc4060846A2687F3A927715',
 }
 
 export const networksEth = {
