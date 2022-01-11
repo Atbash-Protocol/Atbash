@@ -9,7 +9,7 @@ async function main() {
     await hre.run("verify:verify", {
         address: process.env.PRESALE_ADDR,
         constructorArguments: [
-            '0x31940eE01803476a970ec6DF1094a53F80e6827b'
+            process.env.BENEF
         ],
     });
 
