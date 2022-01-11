@@ -8,7 +8,6 @@ import {SafeMath} from "@openzeppelin/contracts/utils/math/SafeMath.sol";
 contract Presale is Ownable {
     using SafeMath for uint256;
 
-    event Bought(address buyer, uint256 amount);
 
     address private _token = address(0);
 
@@ -74,7 +73,7 @@ contract Presale is Ownable {
         return IERC20(_token).balanceOf(address(this));
     }
 
-    function buyTokens(uint256 payableAmount, address buyer) internal {
+    function buyTokens(uint256 payableAmount, address buyer) public {
         IERC20 tokenToSale = IERC20(_token);
 
         uint256 tokensToReceive = payableAmount.mul(_rate);
@@ -92,8 +91,6 @@ contract Presale is Ownable {
         );
 
         payable(beneficiary).transfer(payableAmount);
-
-        emit Bought(buyer, tokensToReceive);
     }
 
     receive() external payable {

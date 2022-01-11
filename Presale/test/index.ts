@@ -2,7 +2,7 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
 import { BigNumber } from "ethers";
 import { ethers } from "hardhat";
-import { BashERC20Token, ERC20, ERC20Token, Presale } from "../typechain";
+import { ERC20Token, Presale } from "../typechain";
 
 describe("Presale.sol", function () {
 
@@ -144,21 +144,21 @@ describe("Presale.sol", function () {
 
     // expect(await deployer.getBalance()).is.equal(ethers.utils.)
 
-    await expect(buyer2.sendTransaction({to: presale.address, value: ethers.utils.parseEther("0.5")})).to.emit(presale, 'Bought');
+    await buyer2.sendTransaction({to: presale.address, value: ethers.utils.parseEther("0.5")});
     
     expect(await teamWallet.getBalance()).is.eq(ethers.utils.parseEther("10005.5"));
     expect(await ethers.provider.getBalance(presale.address)).is.equal(ethers.utils.parseEther("0"));
 
     expect(await tokenPresale.balanceOf(buyer2.address)).is.equal(ethers.utils.parseUnits("25", 18));
 
-    await expect(buyer3.sendTransaction({to: presale.address, value: ethers.utils.parseEther("0.1")})).to.emit(presale, 'Bought');
+    await buyer3.sendTransaction({to: presale.address, value: ethers.utils.parseEther("0.1")});
     
     expect(await teamWallet.getBalance()).is.eq(ethers.utils.parseEther("10005.6"));
     expect(await ethers.provider.getBalance(presale.address)).is.equal(ethers.utils.parseEther("0"));
 
     expect(await tokenPresale.balanceOf(buyer3.address)).is.equal(ethers.utils.parseUnits("5", 18));
 
-    await expect(buyer4.sendTransaction({to: presale.address, value: ethers.utils.parseEther("0.05577")})).to.emit(presale, 'Bought');
+    await buyer4.sendTransaction({to: presale.address, value: ethers.utils.parseEther("0.05577")});
     expect(await tokenPresale.balanceOf(buyer4.address)).is.equal(ethers.utils.parseUnits("2.7885", 18));
 
     expect(await teamWallet.getBalance()).is.eq(ethers.utils.parseEther("10005.65577"));
