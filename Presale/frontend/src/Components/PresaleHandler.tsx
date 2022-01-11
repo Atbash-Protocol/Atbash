@@ -1,6 +1,6 @@
 import React, { FC, useState, useEffect } from 'react'
 import { commonConfig } from '../config'
-import { useEthers, useTokenBalance, useEtherBalance } from '@usedapp/core'
+import { useEthers, useTokenBalance, useEtherBalance, useSendTransaction } from '@usedapp/core'
 import { Row, Col, Form, Table, Container, Button } from 'react-bootstrap'
 import { ethers } from 'ethers'
 
@@ -13,6 +13,7 @@ export const PresaleHandler: FC<{}> = () => {
     const userBashBalance = useTokenBalance(commonConfig.bashTokenAddress, account);
     const [ethToSpent, setEthToSpent] = useState<string>('');
     const [bashToReceive, setBashToReceive] = useState<string>('');
+    const [buyButtonDisabled, setBuyButtonDisabled] = useState<boolean>(false);
 
     useEffect(() => {
         if (myBalance && parseFloat(ethers.utils.formatEther(myBalance)) <= parseFloat(ethToSpent)) {
@@ -24,6 +25,12 @@ export const PresaleHandler: FC<{}> = () => {
     useEffect(() => {
         setBashToReceive(String(parseFloat((parseFloat(ethToSpent) * 50).toFixed(2))));
     }, [ethToSpent]);
+
+    const { sendTransaction, state } = useSendTransaction({ transactionName: 'Buying $aBash' });
+
+    const processBuyTheBestTokenInTheWorld = () => {
+
+    }
 
     if (!account || !myBalance) {
         return (<></>);
@@ -66,7 +73,12 @@ export const PresaleHandler: FC<{}> = () => {
                     <Row className='mt-3'>
                         <Col md={12} sm={12}>
                             <div className='d-grid gap-2'>
-                                <Button variant='primary'>Buy {bashToReceive} $aBASH</Button>
+                                <Button
+                                    onClick={() => processBuyTheBestTokenInTheWorld()}
+                                    variant='primary'
+                                    disabled={buyButtonDisabled}
+                                >Buy {bashToReceive} $aBASH
+                                </Button>
                             </div>
                         </Col>
                     </Row>
