@@ -1,7 +1,8 @@
 import { Config, Ropsten, Mainnet } from "@usedapp/core"
 
 export const commonConfig = {
-    infuraKey: '254fc898c6c24be99475e8ec90ced016'
+    infuraKey: '254fc898c6c24be99475e8ec90ced016',
+    presaleContractAddress: ''
 }
 
 export const networksEth = {

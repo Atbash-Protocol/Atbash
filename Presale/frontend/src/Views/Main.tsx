@@ -2,7 +2,8 @@ import React, { FC } from 'react'
 import { Col, Row } from 'react-bootstrap'
 import { Logo } from '../Components/Logo'
 import { ConnectWallet } from '../Components/ConnectWallet'
-import { useEthers, useEtherBalance, useTokenBalance } from '@usedapp/core'
+import { useEthers } from '@usedapp/core'
+import { AccountDetails } from '../Components/AccountDetails'
 
 export const Main: FC<{}> = () => {
     const {account} = useEthers();
@@ -18,7 +19,8 @@ export const Main: FC<{}> = () => {
                 <h2 className='mt-2'>Atbash Protocol</h2>
             </Col>
             <Col sm={3} md = {3}>
-                <ConnectWallet/>
+                {! account && <ConnectWallet/>}
+                {account && <AccountDetails/>}
             </Col>
         </Row>
       </>

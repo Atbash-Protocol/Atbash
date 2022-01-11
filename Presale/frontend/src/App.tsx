@@ -6,7 +6,7 @@ import { Container } from 'react-bootstrap';
 
 export const App: FC<{}> = () => {
   return (
-    <Container>
+    <Container fluid>
       <Main />
     </Container>
   )
