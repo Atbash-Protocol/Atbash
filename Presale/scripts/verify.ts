@@ -6,6 +6,7 @@
 import hre, { ethers } from "hardhat";
 
 async function main() {
+    
     await hre.run("verify:verify", {
         address: process.env.PRESALE_ADDR,
         constructorArguments: [

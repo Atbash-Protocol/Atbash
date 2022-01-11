@@ -1,8 +1,8 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
-import { sign } from "crypto";
+import { BigNumber } from "ethers";
 import { ethers } from "hardhat";
-import { ERC20, ERC20Token, Presale } from "../typechain";
+import { BashERC20Token, ERC20, ERC20Token, Presale } from "../typechain";
 
 describe("Presale.sol", function () {
 
@@ -14,6 +14,7 @@ describe("Presale.sol", function () {
   let buyer3: SignerWithAddress;
   let buyer4: SignerWithAddress;
   let teamWallet: SignerWithAddress;
+  let teamWalletBalance : BigNumber;
 
   beforeEach(async () => {
     const signers = await ethers.getSigners();
@@ -23,10 +24,13 @@ describe("Presale.sol", function () {
     buyer2 = signers[2]
     buyer3 = signers[3]
     buyer4 = signers[4]
-    teamWallet = signers[5]
+    teamWallet = signers[5];
+    teamWalletBalance = await teamWallet.getBalance();
+
+    
 
     const Presale = await ethers.getContractFactory("Presale");
-    presale = await Presale.deploy(deployer.address);
+    presale = await Presale.deploy(teamWallet.address);
     await presale.deployed();
 
     const ERC20 = await ethers.getContractFactory("ERC20Token");
@@ -114,7 +118,7 @@ describe("Presale.sol", function () {
 
     await expect(deployer.sendTransaction({ to: presale.address, value: ethers.utils.parseEther("5") })).to.be.revertedWith("Rate could not be 0");
 
-    await presale.connect(deployer).setRate(1000);
+    await presale.connect(deployer).setRate(50);
 
     await expect(deployer.sendTransaction({ to: presale.address, value: ethers.utils.parseEther("5") })).to.be.revertedWith("Not enough tokens to sale");
 
@@ -130,6 +134,9 @@ describe("Presale.sol", function () {
     expect(await tokenPresale.balanceOf(buyer2.address)).is.equal(ethers.utils.parseUnits("0", 18));
 
     await expect(buyer1.sendTransaction({to: presale.address, value: ethers.utils.parseEther("5")})).to.be.not.reverted;
+
+    expect(await teamWallet.getBalance()).is.eq(ethers.utils.parseEther("10005"));
+    expect(await ethers.provider.getBalance(presale.address)).is.equal(ethers.utils.parseEther("0"));
 
     // if we have rate 1000 tokens per 1 eth , so let's check what we have then
 
