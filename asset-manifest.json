@@ -1,16 +1,16 @@
 {
   "files": {
     "main.css": "/Atbash/static/css/main.7335b174.css",
-    "main.js": "/Atbash/static/js/main.08f3eb47.js",
+    "main.js": "/Atbash/static/js/main.f2dd5458.js",
     "static/js/787.774729bc.chunk.js": "/Atbash/static/js/787.774729bc.chunk.js",
     "static/media/logo.png": "/Atbash/static/media/logo.aa592910c3bed7280d8a.png",
     "index.html": "/Atbash/index.html",
     "main.7335b174.css.map": "/Atbash/static/css/main.7335b174.css.map",
-    "main.08f3eb47.js.map": "/Atbash/static/js/main.08f3eb47.js.map",
+    "main.f2dd5458.js.map": "/Atbash/static/js/main.f2dd5458.js.map",
     "787.774729bc.chunk.js.map": "/Atbash/static/js/787.774729bc.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.7335b174.css",
-    "static/js/main.08f3eb47.js"
+    "static/js/main.f2dd5458.js"
   ]
 }
