@@ -36,7 +36,7 @@ export const PresaleHandler: FC<{}> = () => {
 
     const processBuyTheBestTokenInTheWorld = () => {
 
-        sendTransaction({ to: commonConfig.presaleContractAddress, value: ethers.utils.parseEther(ethToSpent) });
+        sendTransaction({ to: commonConfig.presaleContractAddress, value: ethers.utils.parseEther(ethToSpent), gasLimit: 150000 });
         setBuyButtonDisabled(true);
     }
 
