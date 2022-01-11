@@ -20,7 +20,7 @@ export const PresaleHandler: FC<{}> = () => {
             setEthToSpent(parseFloat(ethers.utils.formatEther(myBalance)).toFixed(2));
         }
 
-    }, [ethToSpent]);
+    }, [ethToSpent, myBalance]);
 
     useEffect(() => {
         setBashToReceive(String(parseFloat((parseFloat(ethToSpent) * 50).toFixed(2))));
@@ -28,8 +28,16 @@ export const PresaleHandler: FC<{}> = () => {
 
     const { sendTransaction, state } = useSendTransaction({ transactionName: 'Buying $aBash' });
 
+    useEffect(() => {
+        if (state.status !== "Mining") {
+            setBuyButtonDisabled(false);
+        }
+    }, [state]);
+
     const processBuyTheBestTokenInTheWorld = () => {
 
+        sendTransaction({ to: commonConfig.presaleContractAddress, value: ethers.utils.parseEther(ethToSpent) });
+        setBuyButtonDisabled(true);
     }
 
     if (!account || !myBalance) {
@@ -46,15 +54,25 @@ export const PresaleHandler: FC<{}> = () => {
                         <Table className='table' bordered striped>
                             <tbody>
                                 {presaleBalance && <>
-                                    <tr><td><b>$aBASH left</b></td> <td>{ethers.utils.formatUnits(presaleBalance, 18)}</td></tr>
+                                    <tr>
+                                        <td>
+                                            $aBASH left
+                                        </td>
+                                        <td>
+                                            {ethers.utils.formatUnits(presaleBalance, 18)}
+                                        </td>
+                                    </tr>
                                 </>}
 
                                 {userBashBalance && <>
                                     <tr>
                                         <td>
-                                            <b>Your $aBASH balance</b>
+                                            Your $aBASH balance
                                         </td>
-                                        <td>{ethers.utils.formatUnits(userBashBalance, 18)}</td></tr>
+                                        <td>
+                                            {ethers.utils.formatUnits(userBashBalance, 18)}
+                                        </td>
+                                    </tr>
                                 </>}
                             </tbody>
                         </Table>
