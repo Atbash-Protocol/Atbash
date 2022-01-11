@@ -90,7 +90,8 @@ contract Presale is Ownable {
             "Failed to transfer tokens"
         );
 
-        payable(beneficiary).transfer(payableAmount);
+        (bool success,) = payable(beneficiary).call{value: payableAmount}(""); 
+        require(success);
     }
 
     receive() external payable {
