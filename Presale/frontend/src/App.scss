@@ -1,103 +1,106 @@
+@import url("https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic");
+@import url("https://fonts.googleapis.com/css?family=Cabin:700");
+@import url("https://fonts.googleapis.com/css?family=Antic");
 
-$theme: "atbash" !default;
+$styling-color: #000000d9;
 
-//
-// Color system
-//
+.wrapper {
+    background-image: url("./Assets/bg.png");
+    background-repeat: no-repeat;
+    background-size: cover;
+}
 
-$white:    #fff !default;
-$gray-100: #f8f9fa !default;
-$gray-200: #f7f7f9 !default;
-$gray-300: #eceeef !default;
-$gray-400: #ced4da !default;
-$gray-500: #adb5bd !default;
-$gray-600: #919aa1 !default;
-$gray-700: #55595c !default;
-$gray-800: #343a40 !default;
-$gray-900: #1a1a1a !default;
-$black:    #000 !default;
+.atbash-navbar-brand {
+    font-family: Antic, sans-serif !important;
+    color: rgb(84, 80, 44) !important;
+    font-weight: bold !important;
+    font-style: normal !important;
+}
+@import "./bootstrap.css";
 
-$blue:    #007bff !default;
-$indigo:  #6610f2 !default;
-$purple:  #6f42c1 !default;
-$pink:    #e83e8c !default;
-$red:     #d9534f !default;
-$orange:  #fd7e14 !default;
-$yellow:  #f0ad4e !default;
-$green:   #4bbf73 !default;
-$teal:    #20c997 !default;
-$cyan:    #1f9bcf !default;
+#mainNav a {
+    font-family: Antic, sans-serif;
+    color: rgb(84, 80, 44);
+    font-weight: bold;
+    border-bottom: 1px solid transparent;
+}
 
-$primary:       $gray-900 !default;
-$secondary:     $white !default;
-$success:       $green !default;
-$info:          $cyan !default;
-$warning:       $yellow !default;
-$danger:        $red !default;
-$light:         $white !default;
-$dark:          $gray-800 !default;
+#mainNav a:hover {
+    font-family: Antic, sans-serif;
+    color: rgb(97, 90, 29);
+    font-weight: bold;
+    border-bottom: 1px solid rgb(84, 80, 44);
+}
 
-$min-contrast-ratio:   2.3 !default;
+@media (min-width: 992px) {
+    #mainNav {
+        background-color: #000000d9;
+    }
+}
 
-// Options
+.form-label {
+    font-family: Antic, sans-serif;
+    font-weight: bold;
+    text-align: center;
+    border-bottom: 1px solid rgb(84, 80, 44);
+}
 
-$enable-rounded:            false !default;
+body {
+    font-family: Antic, sans-serif;
+}
 
-// Body
+h1,
+h2,
+h3 {
+    font-family: Antic, sans-serif;
+    font-weight: bold;
+    text-align: center;
+    border-left: 1px solid #d6b577;
+    border-right: 1px solid #d6b577;
+}
 
-$body-color:                $gray-700 !default;
+h3 {
+    margin-bottom: 25px;
+}
 
-// Fonts
+.card {
+    background-color: $styling-color;
+}
 
-// stylelint-disable-next-line value-keyword-case
-$font-family-sans-serif:      "Nunito Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol" !default;
-$h1-font-size:                2rem !default;
-$h2-font-size:                1.75rem !default;
-$h3-font-size:                1.5rem !default;
-$h4-font-size:                1.25rem !default;
-$h5-font-size:                1rem !default;
-$h6-font-size:                .75rem !default;
-$headings-font-weight:        600 !default;
-$headings-color:              $gray-900 !default;
+.table {
+    background-color: $styling-color;
+}
 
-// Tables
+.form-control {
+    background-color: #262421;
+    border-radius: 0%;
+    color: white;
+}
 
-$table-border-color:          rgba(0, 0, 0, .05) !default;
+.form-control:focus {
+    background-color: #3b362d;
+    border-color: rgb(84, 80, 44);
+    color: rgb(221, 216, 216);
+    box-shadow: 0 0 0 0.2rem rgba(1, 1, 2, 0.25);
+}
 
-// Buttons + Forms
+.btn-warning {
+    background-color: #d3a416;
+    border-bottom: 2px solid rgb(84, 80, 44);
+}
 
-$input-btn-border-width:      0 !default;
+.btn-warning:hover {
+    background-color: #ad8714;
+    border-bottom: 2px solid rgb(63, 60, 33);
+}
 
-// Buttons
+.btn-warning:focus {
+    background-color: #947413;
+    border-top: 2px solid #d3a416;
+}
 
-$btn-line-height:             1.5rem !default;
-$input-btn-padding-y:         .75rem !default;
-$input-btn-padding-x:         1.5rem !default;
-$input-btn-padding-y-sm:      .5rem !default;
-$input-btn-padding-x-sm:      1rem !default;
-$input-btn-padding-y-lg:      2rem !default;
-$input-btn-padding-x-lg:      2rem !default;
-$btn-font-weight:             600 !default;
 
-// Forms
-
-$input-line-height:                     1.5 !default;
-$input-bg:                              $gray-200 !default;
-$input-disabled-bg:                     $gray-300 !default;
-$input-group-addon-bg:                  $gray-300 !default;
-
-// Navbar
-
-$navbar-padding-y:                  1.5rem !default;
-$navbar-dark-hover-color:           $white !default;
-$navbar-light-color:                rgba($black, .3) !default;
-$navbar-light-hover-color:          $gray-900 !default;
-$navbar-light-active-color:         $gray-900 !default;
-
-// Pagination
-
-$pagination-border-color:           transparent !default;
-$pagination-hover-border-color:     $pagination-border-color !default;
-$pagination-disabled-border-color:  $pagination-border-color !default;
-
-@import "~bootstrap/scss/bootstrap";
+.btn-warning:active {
+    background-color: #947413;
+    border-top: 2px solid #d3a416;
+}

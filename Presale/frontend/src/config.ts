@@ -29,3 +29,8 @@ export const config: Config = {
 }
 
 
+
+export const socials = {
+    'discord': 'https://discord.gg/W4dTXtdcrU',
+    'twitter': 'https://twitter.com/AtbashProtocol',
+}

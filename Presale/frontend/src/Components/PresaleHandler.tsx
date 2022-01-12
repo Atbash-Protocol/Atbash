@@ -1,8 +1,9 @@
 import React, { FC, useState, useEffect } from 'react'
 import { commonConfig } from '../config'
 import { useEthers, useTokenBalance, useEtherBalance, useSendTransaction } from '@usedapp/core'
-import { Row, Col, Form, Table, Container, Button } from 'react-bootstrap'
+import { Row, Col, Form, Table, Container, Button, Card } from 'react-bootstrap'
 import { ethers } from 'ethers'
+import { Logo } from './Logo'
 
 export const PresaleHandler: FC<{}> = () => {
 
@@ -50,57 +51,71 @@ export const PresaleHandler: FC<{}> = () => {
             <Container className='mt-5'>
                 <Row>
 
-                    <Col sm={12} md={12}>
-                        <Table className='table' bordered striped>
-                            <tbody>
-                                {presaleBalance && <>
-                                    <tr>
-                                        <td>
-                                            $aBASH left
-                                        </td>
-                                        <td>
-                                            {ethers.utils.formatUnits(presaleBalance, 18)}
-                                        </td>
-                                    </tr>
-                                </>}
+                    <Col sm={6} md={6}>
+                        <Card>
+                            <Card.Body>
+                                <h3 className='mt-3'>Info</h3>
+                                <Table variant="dark" striped bordered hover>
+                                    <tbody>
+                                        {presaleBalance && <>
+                                            <tr>
+                                                <td>
+                                                    $aBASH left
+                                                </td>
+                                                <td>
+                                                    {ethers.utils.formatUnits(presaleBalance, 18)}
+                                                </td>
+                                            </tr>
+                                        </>}
 
-                                {userBashBalance && <>
-                                    <tr>
-                                        <td>
-                                            Your $aBASH balance
-                                        </td>
-                                        <td>
-                                            {ethers.utils.formatUnits(userBashBalance, 18)}
-                                        </td>
-                                    </tr>
-                                </>}
-                            </tbody>
-                        </Table>
+                                        {userBashBalance && <>
+                                            <tr>
+                                                <td>
+                                                    Your $aBASH balance
+                                                </td>
+                                                <td>
+                                                    {ethers.utils.formatUnits(userBashBalance, 18)}
+                                                </td>
+                                            </tr>
+                                        </>}
+                                    </tbody>
+                                </Table>
+
+                            </Card.Body>
+                        </Card>
+
 
                     </Col>
-                </Row>
-                <Row className="mt-3">
-                    <Col sm={12} md={12}>
-                        <Form.Group className="mt-3">
-                            <Form.Label>Amount ETH</Form.Label>
-                            <Form.Control maxLength={7} type='number' value={ethToSpent} max={parseFloat((ethers.utils.formatEther(myBalance))).toFixed(2)} onChange={(e) => setEthToSpent(e.target.value)} />
-                        </Form.Group>
+
+
+                    <Col sm={6} md={6}>
+                        <Card>
+                            <Card.Body>
+                                <Form.Group className="mt-3">
+                                    <h3>Amount ETH </h3>
+                                    <Form.Control maxLength={7} type='number' value={ethToSpent} max={parseFloat((ethers.utils.formatEther(myBalance))).toFixed(2)} onChange={(e) => setEthToSpent(e.target.value)} />
+                                </Form.Group>
+
+                                {!isNaN(parseFloat(bashToReceive)) && <>
+                                    <Row className='mt-3'>
+                                        <Col md={12} sm={12}>
+                                            <div className='d-grid gap-2'>
+                                                <Button
+                                                    className='btn-block'
+                                                    onClick={() => processBuyTheBestTokenInTheWorld()}
+                                                    variant='warning'
+                                                    disabled={buyButtonDisabled}
+                                                >Buy {bashToReceive} <Logo styleOverload={{ width: '25px' }} /> $aBASH
+                                                </Button>
+                                            </div>
+                                        </Col>
+                                    </Row>
+                                </>}
+                            </Card.Body>
+                        </Card>
                     </Col>
                 </Row>
-                {!isNaN(parseFloat(bashToReceive)) && <>
-                    <Row className='mt-3'>
-                        <Col md={12} sm={12}>
-                            <div className='d-grid gap-2'>
-                                <Button
-                                    onClick={() => processBuyTheBestTokenInTheWorld()}
-                                    variant='primary'
-                                    disabled={buyButtonDisabled}
-                                >Buy {bashToReceive} $aBASH
-                                </Button>
-                            </div>
-                        </Col>
-                    </Row>
-                </>}
+
             </Container>
         </>
     )

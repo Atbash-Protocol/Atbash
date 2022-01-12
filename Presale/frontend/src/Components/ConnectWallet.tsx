@@ -1,5 +1,5 @@
 import React, { FC } from 'react'
-import { ButtonGroup, Button } from 'react-bootstrap'
+import { ButtonGroup, Button, Card, Row, Col, Container } from 'react-bootstrap'
 import { useEthers } from '@usedapp/core'
 // import { WalletConnectConnector } from '@web3-react/walletconnect-connector'
 
@@ -17,11 +17,24 @@ export const ConnectWallet: FC<{}> = () => {
 
 
     return (
-        <>
-            <ButtonGroup aria-label="Connect wallet" className="mt-2">
-                <Button onClick={() => activateBrowserWallet()} variant="secondary">Metamask</Button>
-                {/* <Button onClick={() => activateWalletConnect()} variant="secondary">WalletConnect</Button> */}
-            </ButtonGroup>
-        </>
+        <Container className='mt-3'>
+            <Card>
+                <Card.Header>
+                    <h3>Connect Wallet</h3>
+                </Card.Header>
+                <Card.Body>
+                    <Row>
+                        <Col sm={12} md={12}>
+                            <Button className="btn-block" variant='warning' onClick={() => activateBrowserWallet()}>
+                                <img
+                                    src={'https://raw.githubusercontent.com/MetaMask/brand-resources/master/SVG/metamask-fox-wordmark-horizontal.svg'}
+                                    alt="MM"
+                                    style={{ width: '600px', height: '50px' }} />
+                            </Button>
+                        </Col>
+                    </Row>
+                </Card.Body>
+            </Card>
+        </Container>
     )
 }
