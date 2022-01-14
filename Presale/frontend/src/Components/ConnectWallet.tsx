@@ -29,7 +29,7 @@ export const ConnectWallet: FC<{}> = () => {
                                 <img
                                     src={'https://raw.githubusercontent.com/MetaMask/brand-resources/master/SVG/metamask-fox-wordmark-horizontal.svg'}
                                     alt="MM"
-                                    style={{ width: '600px', height: '50px' }} />
+                                    style={{ width: '200px', height: '50px' }} />
                             </Button>
                         </Col>
                     </Row>
