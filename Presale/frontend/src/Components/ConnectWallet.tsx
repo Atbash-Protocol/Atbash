@@ -26,10 +26,7 @@ export const ConnectWallet: FC<{}> = () => {
                     <Row>
                         <Col sm={12} md={12}>
                             <Button className="btn-block" variant='warning' onClick={() => activateBrowserWallet()}>
-                                <img
-                                    src={'https://raw.githubusercontent.com/MetaMask/brand-resources/master/SVG/metamask-fox-wordmark-horizontal.svg'}
-                                    alt="MM"
-                                    style={{ width: '200px', height: '50px' }} />
+                                Metamask
                             </Button>
                         </Col>
                     </Row>
