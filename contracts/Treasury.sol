@@ -314,8 +314,8 @@ contract BashTreasury is Ownable {
     uint public totalDebt;
 
     constructor (
-        address _Time,
-        address _MIM,
+        address _Time,  // bash
+        address _MIM,   // DAI / stable
         uint32 _secondsNeededForQueue
     ) {
         require( _Time != address(0) );
@@ -347,7 +347,7 @@ contract BashTreasury is Ownable {
             require( isLiquidityDepositor[ msg.sender ], "Not approved" );
         }
 
-        uint value = valueOf(_token, _amount);
+        uint value = valueOf(_token, _amount); // value in reserve's token (BASH) decimals: _token.decimals -> BASH decimals
         // mint OHM needed and store amount of rewards for distribution
         send_ = value.sub( _profit );
         IERC20Mintable( Time ).mint( msg.sender, send_ );

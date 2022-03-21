@@ -632,7 +632,7 @@ contract ATBASHStaking is Ownable {
     function stake( uint _amount, address _recipient ) external returns ( bool ) {
         rebase();
         
-        IERC20( Time ).safeTransferFrom( msg.sender, address(this), _amount );
+        IERC20( Time ).safeTransferFrom( msg.sender, address(this), _amount ); // Time = Ohm = Bash
 
         Claim memory info = warmupInfo[ _recipient ];
         require( !info.lock, "Deposits for account are locked" );

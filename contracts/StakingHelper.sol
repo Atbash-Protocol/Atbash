@@ -92,7 +92,7 @@ contract StakingHelper {
     }
 
     function stake( uint _amount, address recipient ) external {
-        IERC20( Time ).transferFrom( msg.sender, address(this), _amount );
+        IERC20( Time ).transferFrom( msg.sender, address(this), _amount ); // BASH
         IERC20( Time ).approve( staking, _amount );
         IStaking( staking ).stake( _amount, recipient );
         IStaking( staking ).claim( recipient );

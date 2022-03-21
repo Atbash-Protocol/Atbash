@@ -4,10 +4,6 @@ coverage
 coverage.json
 typechain
 
-#Hardhat files
-cache
-artifacts
-
 node_modules
 .env
 coverage
@@ -17,3 +13,8 @@ typechain
 #Hardhat files
 cache
 artifacts
+typechain-types
+
+#VS
+workspace.code-workspace
+_hardhat.config.js.backup

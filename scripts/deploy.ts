@@ -1,5 +1,12 @@
-const { ethers } = require("hardhat");
-const hre = require("hardhat");
+// We require the Hardhat Runtime Environment explicitly here. This is optional
+// but useful for running the script in a standalone fashion through `node <script>`.
+//
+// When running the script with `npx hardhat run <script>` you'll find the Hardhat
+// Runtime Environment's members available in the global scope.
+import hre, { ethers } from "hardhat";
+
+// const { ethers } = require("hardhat");
+// const hre = require("hardhat");
 
 /*
 Dai
@@ -410,18 +417,18 @@ async function main() {
         });
     } catch (error) {}
 
-    try {
-        await hre.run("verify:verify", {
-            address: ethBond.address,
-            constructorArguments: [
-                time.address,
-                principleAddressBond2,
-                treasury.address,
-                daoAddress,
-                ETH_USD_Feed
-            ],
-        });
-    } catch (error) {}
+    // try {
+    //     await hre.run("verify:verify", {
+    //         address: ethBond.address,
+    //         constructorArguments: [
+    //             time.address,
+    //             principleAddressBond2,
+    //             treasury.address,
+    //             daoAddress,
+    //             ETH_USD_Feed
+    //         ],
+    //     });
+    // } catch (error) {}
 
     try {
         await hre.run("verify:verify", {

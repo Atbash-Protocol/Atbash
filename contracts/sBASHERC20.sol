@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 pragma solidity 0.7.5;
 
+import "hardhat/console.sol";
 
 /**
  * @dev Wrappers over Solidity's arithmetic operations with added overflow
@@ -1033,7 +1034,7 @@ contract sBASH is ERC20Permit, Ownable {
     uint public INDEX;
 
     uint256 private constant MAX_UINT256 = ~uint256(0);
-    uint256 private constant INITIAL_FRAGMENTS_SUPPLY = 5000000 * 10**9;
+    uint256 private constant INITIAL_FRAGMENTS_SUPPLY = 5000000 * 10**9; // 9 decimal sbash
 
     // TOTAL_GONS is a multiple of INITIAL_FRAGMENTS_SUPPLY so that _gonsPerFragment is an integer.
     // Use the highest value that fits in a uint256 for max granularity.
@@ -1087,7 +1088,7 @@ contract sBASH is ERC20Permit, Ownable {
             emit LogRebase( epoch_, 0, index() );
             return _totalSupply;
         } else if ( circulatingSupply_ > 0 ){
-            rebaseAmount = profit_.mul( _totalSupply ).div( circulatingSupply_ );
+            rebaseAmount = profit_.mul( _totalSupply ).div( circulatingSupply_ ); // totalSupply / (totalySupply - stakingContractSupplyBalance)
         } else {
             rebaseAmount = profit_;
         }
@@ -1143,9 +1144,9 @@ contract sBASH is ERC20Permit, Ownable {
         return gons.div( _gonsPerFragment );
     }
 
-    // Staking contract holds excess MEMOries
+    // Staking contract holds excess MEMOries/sBASH
     function circulatingSupply() public view returns ( uint ) {
-        return _totalSupply.sub( balanceOf( stakingContract ) );
+        return _totalSupply.sub( balanceOf( stakingContract ) ); // sBASH - stakingContract sBASH
     }
 
     function index() public view returns ( uint ) {
@@ -1154,6 +1155,7 @@ contract sBASH is ERC20Permit, Ownable {
 
     function transfer( address to, uint256 value ) public override returns (bool) {
         uint256 gonValue = value.mul( _gonsPerFragment );
+        // console.log("sBASH transfer-value: %s , gons: %s, _gonsPerFragment: %s", value, gonValue, _gonsPerFragment);
         _gonBalances[ msg.sender ] = _gonBalances[ msg.sender ].sub( gonValue );
         _gonBalances[ to ] = _gonBalances[ to ].add( gonValue );
         emit Transfer( msg.sender, to, value );
