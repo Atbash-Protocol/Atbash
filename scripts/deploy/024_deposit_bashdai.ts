@@ -28,6 +28,6 @@ const func: DeployFunction = async function(hre: HardhatRuntimeEnvironment) {
     console.log(`Deposited ${balance} BASH-DAI to treasury`);
 };
 
-func.tags = ["BashDaiBond", "deposit-bashdai", "setup-bashdai-lp"];
+func.tags = ["bash-dai-bond", "deposit-bashdai"];
 func.dependencies = [CONTRACTS.treasury, CONTRACTS.bashDaiBondingCalculator, CONTRACTS.bashDaiBondDepository, CONTRACTS.bashDaiLpPair];
 export default func;

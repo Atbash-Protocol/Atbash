@@ -14,25 +14,34 @@ const func: DeployFunction = async function(hre: HardhatRuntimeEnvironment) {
     const treasury = BashTreasury__factory.connect(treasuryDeployment.address, signer);
     const bashDaiBondingCalculatorDeployment = await deployments.get(CONTRACTS.bashDaiBondingCalculator);
 
-    // todo: make idempotent?
-
     // Liquidity Manager is deployer
-    await waitFor(treasury.queue(MANAGING.LIQUIDITYMANAGER, deployer));
-    await waitFor(treasury.toggle(MANAGING.LIQUIDITYMANAGER, deployer, ZERO_ADDRESS)); 
-    
-    const bashDaiLpPairDeployment = await deployments.get(CONTRACTS.bashDaiLpPair);
-    
-    await waitFor(treasury.queue(MANAGING.LIQUIDITYTOKEN, bashDaiLpPairDeployment.address));
-    await waitFor(treasury.toggle(MANAGING.LIQUIDITYTOKEN, bashDaiLpPairDeployment.address, bashDaiBondingCalculatorDeployment.address));    // todo: does this need bonding calculator?
+    if (!await treasury.isLiquidityManager(deployer)) {
+        await waitFor(treasury.queue(MANAGING.LIQUIDITYMANAGER, deployer));
+        await waitFor(treasury.toggle(MANAGING.LIQUIDITYMANAGER, deployer, ZERO_ADDRESS)); 
+        console.log("deployer enabled as liquidity manager");
+    }
 
+    const bashDaiLpPairDeployment = await deployments.get(CONTRACTS.bashDaiLpPair);
+    if (!await treasury.isLiquidityToken(bashDaiLpPairDeployment.address)) {
+        await waitFor(treasury.queue(MANAGING.LIQUIDITYTOKEN, bashDaiLpPairDeployment.address));
+        await waitFor(treasury.toggle(MANAGING.LIQUIDITYTOKEN, bashDaiLpPairDeployment.address, bashDaiBondingCalculatorDeployment.address));
+        console.log(`bashDai enabled as liquidity token with bashDaiBondingCalculator ${bashDaiBondingCalculatorDeployment.address}`);
+    }
+    
     // BashDaiBond is a depositor
     const bashDaiBondDepositoryDeployment = await deployments.get(CONTRACTS.bashDaiBondDepository);
-    await waitFor(treasury.queue(MANAGING.LIQUIDITYDEPOSITOR, bashDaiBondDepositoryDeployment.address));
-    await waitFor(treasury.toggle(MANAGING.LIQUIDITYDEPOSITOR, bashDaiBondDepositoryDeployment.address, ZERO_ADDRESS));
+    if (!await treasury.isLiquidityDepositor(bashDaiBondDepositoryDeployment.address)) {
+        await waitFor(treasury.queue(MANAGING.LIQUIDITYDEPOSITOR, bashDaiBondDepositoryDeployment.address));
+        await waitFor(treasury.toggle(MANAGING.LIQUIDITYDEPOSITOR, bashDaiBondDepositoryDeployment.address, ZERO_ADDRESS));
+        console.log("bashDaiBondDepository enabled as liquidity depositor");
+    }
 
     // Allow deployer as depositor of LP
-    // await waitFor(treasury.queue(MANAGING.LIQUIDITYDEPOSITOR, deployer));
-    // await waitFor(treasury.toggle(MANAGING.LIQUIDITYDEPOSITOR, deployer, ZERO_ADDRESS));
+    if (!await treasury.isLiquidityDepositor(deployer)) { 
+        await waitFor(treasury.queue(MANAGING.LIQUIDITYDEPOSITOR, deployer));
+        await waitFor(treasury.toggle(MANAGING.LIQUIDITYDEPOSITOR, deployer, ZERO_ADDRESS));
+        console.log("deployer enabled as liquidity depositor");
+    }
 
     console.log("Treasury setup completed for BASH-DAI");
     // reward minting is only needed for BASH
@@ -49,6 +58,6 @@ const func: DeployFunction = async function(hre: HardhatRuntimeEnvironment) {
     // console.log(`Deposited ${balance} BASH-DAI to treasury`);
 };
 
-func.tags = ["BashDaiBond", "setup-bashdai-lp"];
+func.tags = ["bash-dai-bond", "setup-treasury-for-bashdai"];
 func.dependencies = [CONTRACTS.treasury, CONTRACTS.bashDaiBondingCalculator, CONTRACTS.bashDaiBondDepository, CONTRACTS.bashDaiLpPair];
 export default func;

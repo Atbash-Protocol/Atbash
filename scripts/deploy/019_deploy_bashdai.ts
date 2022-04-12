@@ -15,6 +15,11 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const { deployer } = await getNamedAccounts();
     const signer = ethers.provider.getSigner(deployer);
 
+
+    const bashDaiDeployment = await deployments.getOrNull(CONTRACTS.bashDaiLpPair);
+    if (bashDaiDeployment) return;
+
+    console.log("Setting up new BASH-DAI LP");
     const uniswapV2FactoryDeployment = await deploy("UniswapV2Factory", {
         from: deployer,
         args: [deployer],
@@ -35,24 +40,12 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const bashDaiAddress = await uniswapV2Factory.getPair(bash.address, dai.address);
     console.log(`BASH-DAI LP Address: ${bashDaiAddress}`);
 
-    // const bashDaiDeployment = await deploy(CONTRACTS.bashDaiLpPair, {
-    //     contract: "UniswapV2Pair",
-    //     deterministicDeployment:  
-    //     from: deployer,
-    //     args: [],
-    //     log: true,
-    //     skipIfAlreadyDeployed: true,
-    // });
-
     const bashDaiArtifact = await deployments.getExtendedArtifact("UniswapV2Pair");
     await deployments.save(CONTRACTS.bashDaiLpPair, {
         address: bashDaiAddress,
         abi: bashDaiArtifact.abi,
         bytecode: bashDaiArtifact.bytecode,
     });
-
-    // const bashDaiContract = await ethers.getContractFactory("UniswapV2Pair");
-    // const bashDai = await bashDaiContract.attach(bashDaiAddress);
 
     const bashDai = UniswapV2Pair__factory.connect(bashDaiAddress, signer);
     console.log("BASH-DAI contract");
@@ -62,7 +55,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const daiAmount = BigNumber.from("100000" + "000000000000000000");
     await dai.approve(deployer, daiAmount);
     await dai.transferFrom(deployer, bashDai.address, daiAmount); 
-    const bashAmount = BigNumber.from("1250000000000");
+    const bashAmount = BigNumber.from("1250" + "000000000");
     await bash.approve(deployer, bashAmount);
     await bash.transferFrom(deployer, bashDai.address, bashAmount);  
 
@@ -75,5 +68,5 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 };
 
 func.tags = ["test-setup-bashdai", CONTRACTS.bashDaiLpPair];
-func.dependencies = [CONTRACTS.bash, CONTRACTS.DAI, "minting"];
+func.dependencies = [CONTRACTS.bash, CONTRACTS.DAI];
 export default func;

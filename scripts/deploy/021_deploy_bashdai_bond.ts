@@ -70,5 +70,5 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 };
 
 func.dependencies = [CONTRACTS.bash, CONTRACTS.treasury, CONTRACTS.stakingHelper, CONTRACTS.bashDaiBondingCalculator, CONTRACTS.bashDaiBondDepository];
-func.tags = ["BashDaiBond"];
+func.tags = ["bash-dai-bond"];
 export default func;
