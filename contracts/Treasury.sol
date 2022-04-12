@@ -324,7 +324,7 @@ contract BashTreasury is Ownable {
         isReserveToken[ _MIM ] = true;
         reserveTokens.push( _MIM );
 
-    //    isLiquidityToken[ _OHMDAI ] = true;
+    //    isLiquidityToken[ _OHMDAI ] = true; // disabled, but you can still add using queue/lock
     //    liquidityTokens.push( _OHMDAI );
 
         secondsNeededForQueue = _secondsNeededForQueue;

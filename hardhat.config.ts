@@ -8,6 +8,8 @@ import "hardhat-gas-reporter";
 import "@nomiclabs/hardhat-etherscan";
 import "solidity-coverage";
 
+import "hardhat-deploy";
+
 dotenv.config();
 
 // This is a sample Hardhat task. To learn how to create your own go to
@@ -24,6 +26,7 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
 // Go to https://hardhat.org/config/ to learn more
 
 const config: HardhatUserConfig = {
+  defaultNetwork: "hardhat",
   solidity: {
     compilers: [
       {
@@ -31,7 +34,6 @@ const config: HardhatUserConfig = {
       },
       {
         version: "0.6.12",
-        settings: {},
       },
       {
         version: "0.7.5",
@@ -41,8 +43,32 @@ const config: HardhatUserConfig = {
             runs: 200,
           },
         }
+      },
+      {
+        version: "0.5.16"
       }
     ],
+  },
+  namedAccounts: {
+    deployer: {
+        default: 0,
+    },
+    // daoMultisig: {
+    //     // mainnet
+    //     1: "0x245cc372C84B3645Bf0Ffe6538620B04a217988B",
+    // },
+  },
+  typechain: {
+    outDir: "types",
+    target: "ethers-v5",
+  },
+  paths: {
+    artifacts: "./artifacts",
+    cache: "./cache",
+    sources: "./contracts",
+    tests: "./test",
+    deploy: "./scripts/deploy",
+    deployments: "./deployments",
   },
   networks: {
     hardhat: {
