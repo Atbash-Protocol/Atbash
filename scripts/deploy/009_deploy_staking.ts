@@ -1,6 +1,6 @@
 import {HardhatRuntimeEnvironment} from 'hardhat/types';
 import {DeployFunction} from 'hardhat-deploy/types';
-import { CONTRACTS, EPOCH_LENGTH_IN_IN_SECONDS, FIRST_EPOCH_NUMBER, FIRST_EPOCH_TIME } from '../constants';
+import { CONTRACTS, EPOCH_LENGTH_IN_SECONDS, FIRST_EPOCH_NUMBER, FIRST_EPOCH_TIME } from '../constants';
 import { INITIAL_INDEX } from '../constants';
 
 import { BASHERC20Token__factory, SBASH__factory } from '../../types'
@@ -21,13 +21,13 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     // Staking
     const staking = await deploy(CONTRACTS.staking, {
         from: deployer,
-        args: [bash.address, sbash.address, EPOCH_LENGTH_IN_IN_SECONDS, FIRST_EPOCH_NUMBER, FIRST_EPOCH_TIME],
+        args: [bash.address, sbash.address, EPOCH_LENGTH_IN_SECONDS, FIRST_EPOCH_NUMBER, FIRST_EPOCH_TIME],
         log: true,
         skipIfAlreadyDeployed: true,
     });
 
     console.log(`
-        epochLength      ${EPOCH_LENGTH_IN_IN_SECONDS} seconds
+        epochLength      ${EPOCH_LENGTH_IN_SECONDS} seconds
         firstEpochNumber ${FIRST_EPOCH_NUMBER}
         firstEpochTime   ${FIRST_EPOCH_TIME}
     `);
