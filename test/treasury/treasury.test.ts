@@ -16,11 +16,13 @@ import {
     ATBASHStaking,
     ATBASHStaking__factory,
     BashTreasury,
+    ATBASHBondingCalculator,
+    IUniswapV2Pair,
     // OlympusAuthority,
     // OlympusAuthority__factory,
 } from "../../types";
 import { getCurrentBlockTime, advanceBlockTime } from "../utils/blocktime";
-import { MANAGING, ZERO_ADDRESS } from "../../scripts/constants";
+import { CONTRACTS, MANAGING, ZERO_ADDRESS } from "../../scripts/constants";
 
 chai.should();
 chai.use(smock.matchers);
@@ -40,11 +42,16 @@ describe("Treasury", () => {
     let daiFake: FakeContract<IDai>;
     let sBashFake: FakeContract<IsBash>;
 
+    let bondingCalculatorFake: FakeContract<ATBASHBondingCalculator>;
+    let bashDaiFake: FakeContract<IUniswapV2Pair>;
+
     beforeEach(async () => {
         [owner, alice, bob, other, depositor] = await ethers.getSigners();
         bashFake = await smock.fake<IBash>("IBash");
         daiFake = await smock.fake<IDai>("IDai");
         sBashFake = await smock.fake<IsBash>("contracts/interfaces/IsBash.sol:IsBash");
+        bondingCalculatorFake = await smock.fake<ATBASHBondingCalculator>(CONTRACTS.bondingCalculator);
+        bashDaiFake = await smock.fake<IUniswapV2Pair>("contracts/uniswap/interfaces/IUniswapV2Pair.sol:IUniswapV2Pair");
     });
 
     describe("construction", () => {
@@ -75,7 +82,7 @@ describe("Treasury", () => {
     describe("deposit reserve", async () => {
         let treasury: BashTreasury;
         const depositAmountInDai = BigNumber.from(10).mul(BigNumber.from(10).pow(DAI_DECIMALS));
-        const sendAmount = 5;
+        const sendAmount = 5; // todo: test
         const profitInBash = BigNumber.from(5).mul(BigNumber.from(10).pow(BASH_DECIMALS));
 
         beforeEach(async () => {
@@ -109,24 +116,86 @@ describe("Treasury", () => {
             // mints to sender
             const depositAmountInBashDecimals = 
                 (BigNumber.from(depositAmountInDai).mul(BigNumber.from(10).pow(BASH_DECIMALS))).div((BigNumber.from(10).pow(DAI_DECIMALS)));
-            bashFake["mint(address,uint256)"].should.be.calledWith(depositor.address, depositAmountInBashDecimals.sub(profitInBash));
+            const bashToBeMinted = depositAmountInBashDecimals.sub(profitInBash);
+            bashFake["mint(address,uint256)"].should.be.calledWith(depositor.address, bashToBeMinted);
 
             // adds to total reserves in bash evaluation
             (await treasury.connect(depositor).totalReserves()).should.be.equal(depositAmountInBashDecimals);
         });
 
-        it ("emits ReservesUpdated", async () =>{
+        it ("emits ReservesUpdated", async () => {
+            // todo: arguments
             treasury.connect(depositor).deposit(depositAmountInDai, daiFake.address, profitInBash).should.emit(treasury, "ReservesUpdated");
         });
 
-        it ("emits Deposit", async () =>{
+        it ("emits Deposit", async () => {
+            // todo: arguments
             treasury.connect(depositor).deposit(depositAmountInDai, daiFake.address, profitInBash).should.emit(treasury, "Deposit");
+        });
+    });
+
+    describe("deposit liquidity", async () => {
+        let treasury: BashTreasury;
+        const depositAmountInBashDai = BigNumber.from(10).mul(BigNumber.from(10).pow(DAI_DECIMALS));
+        const sendAmount = 5;
+        const profitInBash = BigNumber.from(5).mul(BigNumber.from(10).pow(BASH_DECIMALS));
+        const bashDaiValuationInBash = BigNumber.from(80).mul(BigNumber.from(10).pow(BASH_DECIMALS)); // in BASH
+
+        beforeEach(async () => {
+            treasury = await new BashTreasury__factory(owner).deploy(
+                bashFake.address,
+                daiFake.address,
+                0
+            );
+            await treasury.connect(owner).queue(MANAGING.LIQUIDITYTOKEN, bashDaiFake.address);
+            await treasury.connect(owner).toggle(MANAGING.LIQUIDITYTOKEN, bashDaiFake.address, bondingCalculatorFake.address);
+
+            await treasury.connect(owner).queue(MANAGING.LIQUIDITYDEPOSITOR, depositor.address);
+            await treasury.connect(owner).toggle(MANAGING.LIQUIDITYDEPOSITOR, depositor.address, ZERO_ADDRESS);
+
+            // daiFake.transferFrom.whenCalledWith(depositor.address, treasury.address, depositAmountInDai).returns(true);
+            // daiFake.decimals.returns(DAI_DECIMALS);
+            bashDaiFake.transferFrom.whenCalledWith(depositor.address, treasury.address, depositAmountInBashDai).returns(true);
+            bashFake.decimals.returns(BASH_DECIMALS);
+            bashFake["mint(address,uint256)"].returns(true);
+            bondingCalculatorFake.valuation.whenCalledWith(bashDaiFake.address, depositAmountInBashDai).returns(bashDaiValuationInBash);
+        });
+
+        it("reverts when not a liquidity token", async () => {
+            treasury.connect(depositor).deposit(0, sBashFake.address, 0).should.be.revertedWith("Not accepted");
+        });
+
+        it("reverts when not a liquidity depositor", async () => {
+            treasury.connect(other).deposit(depositAmountInBashDai, bashDaiFake.address, profitInBash).should.be.revertedWith("Not approved");
+        });
+
+        it("deposits to total reserves and mints profits to sender ", async () => {
+            await treasury.connect(depositor).deposit(depositAmountInBashDai, bashDaiFake.address, profitInBash);
+
+            bashDaiFake.transferFrom.should.be.calledWith(depositor.address, treasury.address, depositAmountInBashDai);
+            
+            bondingCalculatorFake.valuation.should.be.calledWith(bashDaiFake.address, depositAmountInBashDai);
+
+            // mints to sender
+            const bashToBeMinted = bashDaiValuationInBash.sub(profitInBash);
+            bashFake["mint(address,uint256)"].should.be.calledWith(depositor.address, bashToBeMinted);
+            
+            // adds to total reserves in bash evaluation
+            (await treasury.connect(depositor).totalReserves()).should.be.equal(bashDaiValuationInBash);
+        });
+
+        it ("emits ReservesUpdated", async () => {
+            treasury.connect(depositor).deposit(depositAmountInBashDai, daiFake.address, profitInBash).should.emit(treasury, "ReservesUpdated");
+        });
+
+        it ("emits Deposit", async () => {
+            treasury.connect(depositor).deposit(depositAmountInBashDai, daiFake.address, profitInBash).should.emit(treasury, "Deposit");
         });
     });
 
     describe("mint rewards", async () => {
         it("reverts if amount is more than reserves available", async () => {
-            
+            true.should.be.false;
         });
     });
 });
