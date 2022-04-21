@@ -723,7 +723,7 @@ contract atbashBondDepository is Ownable {
 
     constructor ( 
         address _Time, // ohm, bash
-        address _principle, 
+        address _principle, // dai, bashdai
         address _treasury, 
         address _DAO, 
         address _bondCalculator

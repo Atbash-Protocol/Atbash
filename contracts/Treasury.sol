@@ -598,7 +598,7 @@ contract BashTreasury is Ownable {
     }
 
     /**
-        @notice returns OHM valuation of asset
+        @notice returns BASH valuation of asset
         @param _token address
         @param _amount uint
         @return value_ uint

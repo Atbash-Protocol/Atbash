@@ -4,6 +4,7 @@ import { ethers, network } from "hardhat";
 const { BigNumber } = ethers;
 import { FakeContract, smock } from "@defi-wonderland/smock";
 import {
+    AtbashBondDepository,
     BashTreasury__factory,
     IDai,
     IBash,
@@ -18,6 +19,8 @@ import {
     BashTreasury,
     ATBASHBondingCalculator,
     IUniswapV2Pair,
+    AtbashBondDepository__factory,
+    ITreasury,
     // OlympusAuthority,
     // OlympusAuthority__factory,
 } from "../../types";
@@ -30,9 +33,8 @@ chai.use(smock.matchers);
 const BASH_DECIMALS = 1;
 const DAI_DECIMALS = (BASH_DECIMALS * 2).toFixed();
 const BASHDAI_DECIMALS = DAI_DECIMALS;
-const NO_LOCKING_TIMEOUT = 0;
 
-describe("Treasury", () => {
+describe("AtbashBondDepository", () => {
     let owner: SignerWithAddress;
     let reserveManager: SignerWithAddress;
     let depositor: SignerWithAddress;
@@ -42,7 +44,7 @@ describe("Treasury", () => {
     
     let bashFake: FakeContract<IBash>;
     let daiFake: FakeContract<IDai>;
-    let sBashFake: FakeContract<IsBash>;
+    let treasuryFake: FakeContract<ITreasury>;
 
     let bondingCalculatorFake: FakeContract<ATBASHBondingCalculator>;
     let bashDaiFake: FakeContract<IUniswapV2Pair>;
@@ -51,172 +53,114 @@ describe("Treasury", () => {
         [owner, alice, bob, other, depositor] = await ethers.getSigners();
         bashFake = await smock.fake<IBash>("IBash");
         daiFake = await smock.fake<IDai>("IDai");
-        sBashFake = await smock.fake<IsBash>("contracts/interfaces/IsBash.sol:IsBash");
+        treasuryFake = await smock.fake<ITreasury>(CONTRACTS.treasury);
         bondingCalculatorFake = await smock.fake<ATBASHBondingCalculator>(CONTRACTS.bondingCalculator);
         bashDaiFake = await smock.fake<IUniswapV2Pair>("contracts/uniswap/interfaces/IUniswapV2Pair.sol:IUniswapV2Pair");
     });
 
     describe("construction", () => {
-        it("can be constructed and sets reserve token to DAI", async () => {
-            const treasury = await new BashTreasury__factory(owner).deploy(
+        it("can be constructed ....", async () => {
+            const bondDepository = await new AtbashBondDepository__factory(owner).deploy(
                 bashFake.address,
                 daiFake.address,
-                1000
+                treasuryFake.address,
+                owner.address,
+                ZERO_ADDRESS
             );
-            (await treasury.connect(owner).isReserveToken(daiFake.address)).should.be.true;
+            (await bondDepository.connect(owner).isLiquidityBond()).should.be.false;
         });
 
-        it("does not allow 0x0 Bash Token address", async () => { 
-            (new BashTreasury__factory(owner).deploy(
+        it("does not allow 0x0 Bash token address", async () => { 
+            (new AtbashBondDepository__factory(owner).deploy(
                 ZERO_ADDRESS,
                 daiFake.address,
-                1000
+                treasuryFake.address,
+                owner.address,
+                bondingCalculatorFake.address
             )).should.be.reverted;
         });
-    });
 
-    describe("managing", async () => {
-        it("reverts when queue lock has not expired", async () => { 
-            const treasury = await new BashTreasury__factory(owner).deploy(
+        it("does not allow 0x0 principle token address", async () => { 
+            (new AtbashBondDepository__factory(owner).deploy(
                 bashFake.address,
-                daiFake.address,
-                1000);    // long lock time
-            await treasury.connect(owner).queue(MANAGING.RESERVEDEPOSITOR, depositor.address);
-            treasury.connect(owner).toggle(MANAGING.RESERVEDEPOSITOR, depositor.address, ZERO_ADDRESS)
-                .should.be.revertedWith("Queue not expired");
+                ZERO_ADDRESS,
+                treasuryFake.address,
+                owner.address,
+                bondingCalculatorFake.address
+            )).should.be.reverted;
         });
 
-        it("reverts when toggling without queue", async () => { 
-            const treasury = await new BashTreasury__factory(owner).deploy(
+        it("does not allow 0x0 treasury address", async () => { 
+            (new AtbashBondDepository__factory(owner).deploy(
                 bashFake.address,
                 daiFake.address,
-                1000);    // long lock time
-            // await treasury.connect(owner).queue(MANAGING.RESERVEDEPOSITOR, depositor.address);
-            treasury.connect(owner).toggle(MANAGING.RESERVEDEPOSITOR, depositor.address, ZERO_ADDRESS)
-                .should.be.revertedWith("Must queue");
+                ZERO_ADDRESS,
+                owner.address,
+                bondingCalculatorFake.address
+            )).should.be.reverted;
+        });
+
+        it("does not allow 0x0 DAO address", async () => { 
+            (new AtbashBondDepository__factory(owner).deploy(
+                bashFake.address,
+                daiFake.address,
+                treasuryFake.address,
+                ZERO_ADDRESS,
+                bondingCalculatorFake.address
+            )).should.be.reverted;
+        });
+
+        it("configures as liquidity bond if bonding calculator provided", async () => { 
+            const bondDepository = await new AtbashBondDepository__factory(owner).deploy(
+                bashFake.address,
+                daiFake.address,
+                treasuryFake.address,
+                owner.address,
+                bondingCalculatorFake.address
+            );
+            (await bondDepository.connect(owner).isLiquidityBond()).should.be.true;
         });
     });
 
-    describe("deposit reserve", async () => {
-        let treasury: BashTreasury;
-        const depositAmountInDai = BigNumber.from(10).mul(BigNumber.from(10).pow(DAI_DECIMALS));
-        const sendAmount = 5; // todo: test
-        const profitInBash = BigNumber.from(5).mul(BigNumber.from(10).pow(BASH_DECIMALS));
+    describe("initialize terms", () => {
+        let bondDepository: AtbashBondDepository;
 
         beforeEach(async () => {
-            treasury = await new BashTreasury__factory(owner).deploy(
+            bondDepository = await new AtbashBondDepository__factory(owner).deploy(
                 bashFake.address,
                 daiFake.address,
-                NO_LOCKING_TIMEOUT
+                treasuryFake.address,
+                owner.address,
+                ZERO_ADDRESS
             );
-            await treasury.connect(owner).queue(MANAGING.RESERVEDEPOSITOR, depositor.address);
-            await treasury.connect(owner).toggle(MANAGING.RESERVEDEPOSITOR, depositor.address, ZERO_ADDRESS);
-
-            daiFake.transferFrom.whenCalledWith(depositor.address, treasury.address, depositAmountInDai).returns(true);
-            daiFake.decimals.returns(DAI_DECIMALS);
-            bashFake.decimals.returns(BASH_DECIMALS);
-            bashFake["mint(address,uint256)"].returns(true);
         });
 
-        it("reverts when not a reserve token", async () => {
-            treasury.connect(depositor).deposit(0, sBashFake.address, 0).should.be.revertedWith("Not accepted");
-        });
-
-        it("reverts when not a reserve depositor", async () => {
-            treasury.connect(other).deposit(depositAmountInDai, daiFake.address, profitInBash).should.be.revertedWith("Not approved");
-        });
-
-        it("deposits to total reserves and mints profits to sender ", async () => {
-            await treasury.connect(depositor).deposit(depositAmountInDai, daiFake.address, profitInBash);
-
-            daiFake.transferFrom.should.be.calledWith(depositor.address, treasury.address, depositAmountInDai);
-            
-            // mints to sender
-            const depositAmountInBashDecimals = 
-                (BigNumber.from(depositAmountInDai).mul(BigNumber.from(10).pow(BASH_DECIMALS))).div((BigNumber.from(10).pow(DAI_DECIMALS)));
-            const bashToBeMinted = depositAmountInBashDecimals.sub(profitInBash);
-            bashFake["mint(address,uint256)"].should.be.calledWith(depositor.address, bashToBeMinted);
-
-            // adds to total reserves in bash evaluation
-            (await treasury.connect(depositor).totalReserves()).should.be.equal(depositAmountInBashDecimals);
-        });
-
-        it ("emits ReservesUpdated", async () => {
-            // todo: arguments
-            treasury.connect(depositor).deposit(depositAmountInDai, daiFake.address, profitInBash).should.emit(treasury, "ReservesUpdated");
-        });
-
-        it ("emits Deposit", async () => {
-            // todo: arguments
-            treasury.connect(depositor).deposit(depositAmountInDai, daiFake.address, profitInBash).should.emit(treasury, "Deposit");
-        });
-    });
-
-    describe("deposit liquidity", async () => {
-        let treasury: BashTreasury;
-        const depositAmountInBashDai = BigNumber.from(10).mul(BigNumber.from(10).pow(DAI_DECIMALS));
-        const sendAmount = 5;
-        const profitInBash = BigNumber.from(5).mul(BigNumber.from(10).pow(BASH_DECIMALS));
-        const bashDaiValuationInBash = BigNumber.from(80).mul(BigNumber.from(10).pow(BASH_DECIMALS)); // in BASH
-
-        beforeEach(async () => {
-            treasury = await new BashTreasury__factory(owner).deploy(
-                bashFake.address,
-                daiFake.address,
-                NO_LOCKING_TIMEOUT
+        it("only allowed when current terms control variable at zero", async () => {
+            await bondDepository.initializeBondTerms(
+                100, 0, 0, 0, 0, 0, 0
             );
-            await treasury.connect(owner).queue(MANAGING.LIQUIDITYTOKEN, bashDaiFake.address);
-            await treasury.connect(owner).toggle(MANAGING.LIQUIDITYTOKEN, bashDaiFake.address, bondingCalculatorFake.address);
-            await treasury.connect(owner).queue(MANAGING.LIQUIDITYDEPOSITOR, depositor.address);
-            await treasury.connect(owner).toggle(MANAGING.LIQUIDITYDEPOSITOR, depositor.address, ZERO_ADDRESS);
-
-            // daiFake.transferFrom.whenCalledWith(depositor.address, treasury.address, depositAmountInDai).returns(true);
-            // daiFake.decimals.returns(DAI_DECIMALS);
-            bashDaiFake.transferFrom.whenCalledWith(depositor.address, treasury.address, depositAmountInBashDai).returns(true);
-            bashFake.decimals.returns(BASH_DECIMALS);
-            bashFake["mint(address,uint256)"].returns(true);
-            bondingCalculatorFake.valuation.whenCalledWith(bashDaiFake.address, depositAmountInBashDai).returns(bashDaiValuationInBash);
-        });
-
-        it("reverts when not a liquidity token", async () => {
-            treasury.connect(depositor).deposit(0, sBashFake.address, 0).should.be.revertedWith("Not accepted");
-        });
-
-        it("reverts when not a liquidity depositor", async () => {
-            treasury.connect(other).deposit(depositAmountInBashDai, bashDaiFake.address, profitInBash).should.be.revertedWith("Not approved");
-        });
-
-        it("deposits to total reserves and mints profits to sender ", async () => {
-            await treasury.connect(depositor).deposit(depositAmountInBashDai, bashDaiFake.address, profitInBash);
-
-            bashDaiFake.transferFrom.should.be.calledWith(depositor.address, treasury.address, depositAmountInBashDai);
             
-            bondingCalculatorFake.valuation.should.be.calledWith(bashDaiFake.address, depositAmountInBashDai);
-
-            // mints to sender
-            const bashToBeMinted = bashDaiValuationInBash.sub(profitInBash);
-            bashFake["mint(address,uint256)"].should.be.calledWith(depositor.address, bashToBeMinted);
-            
-            // adds to total reserves in bash evaluation
-            (await treasury.connect(depositor).totalReserves()).should.be.equal(bashDaiValuationInBash);
+            bondDepository.initializeBondTerms(
+                100, 0, 0, 0, 0, 0, 0
+            ).should.be.revertedWith("Bonds must be initialized from 0");
         });
 
-        it ("emits ReservesUpdated", async () => {
-            // todo: arguments
-            treasury.connect(depositor).deposit(depositAmountInBashDai, daiFake.address, profitInBash).should.emit(treasury, "ReservesUpdated");
+        it("can only be intialized by owner", async () => {
+            bondDepository.connect(alice).initializeBondTerms(
+                100, 0, 0, 0, 0, 0, 0
+            ).should.be.revertedWith("Ownable: caller is not the owner");
         });
 
-        it ("emits Deposit", async () => {
-            // todo: arguments
-            treasury.connect(depositor).deposit(depositAmountInBashDai, daiFake.address, profitInBash).should.emit(treasury, "Deposit");
+        it("sets total debt to initial debt", async () => {
+            const initialDebt = 100;
+            await bondDepository.initializeBondTerms(
+                100, 0, 0, 0, 0, initialDebt, 0
+            );
+
+            (await bondDepository.totalDebt()).should.be.equal(initialDebt);
         });
     });
-
-    describe("mint rewards", async () => {
-        it("reverts if amount is more than reserves available", async () => {
-            true.should.be.false;
-        });
-    });
+    
 });
 
 // describe("Treasury OHM", async () => {
