@@ -392,12 +392,12 @@ contract BashTreasury is Ownable {
     uint256 public totalDebt;
 
     constructor(
-        address Bash, 
+        address _Bash, 
         address _DAI, // stable
         uint32 _secondsNeededForQueue
     ) {
-        require(Bash != address(0));
-        Bash = Bash;
+        require(_Bash != address(0));
+        Bash = _Bash;
 
         isReserveToken[_DAI] = true;
         reserveTokens.push(_DAI);
