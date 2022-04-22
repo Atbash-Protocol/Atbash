@@ -4,6 +4,7 @@
 // When running the script with `npx hardhat run <script>` you'll find the Hardhat
 // Runtime Environment's members available in the global scope.
 import hre, { ethers } from "hardhat";
+import * as dotenv from "dotenv";
 
 // const { ethers } = require("hardhat");
 // const hre = require("hardhat");
@@ -15,13 +16,16 @@ DAI/BASH LP
 DAI/ETH LP
 */
 
+dotenv.config();
+
 async function main() {
     const [deployer] = await ethers.getSigners();
     console.log("Deploying contracts with the account: " + deployer.address);
-
+    console.log("DAI_ADDRESS: %s", process.env.DAI_ADDRESS);
+    
     const date = new Date().getTime();
     const timelock = "0";
-    const epochLength = 28800;//  60 * 10 // 28800;  // 28000seconds = 8 hours
+    const epochLength =  60 * 10; // 28800;  // 28000seconds = 8 hours
     const firstEpochNumber = "0";
     const firstEpochTime = parseInt(JSON.stringify((date / 1000) + epochLength )); // in seconds
     const index = "1000000000"; // ohm "7675210820";// "1";
@@ -50,41 +54,44 @@ async function main() {
     //const mim = await MIM.deploy(chainID);
     //await mim.deployed();
     //console.log("MIM: ", mim.address);
-    const MIM = await hre.ethers.getContractFactory("MockERC20");
-    const mim = await MIM.deploy("dai", "dai", "10000000000000000000000000000")
-    await mim.deployed()
-    console.log(`dai:  ${mim.address}`)
 
+    // const MIM = await hre.ethers.getContractFactory("MockERC20");
+    const DAI_ADDRESS = "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9"; // local: "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9";
+    const dai = await hre.ethers.getContractAt("MockERC20", DAI_ADDRESS);
+    // const mim = await MIM.deploy("dai", "dai", "10000000000000000000000000000")
+    // await mim.deployed()
+    console.log(`dai:  ${dai.address}`)
+    // return;
     ////////////////////////////////////////////////////////////////
 
-    const Time = await ethers.getContractFactory("BASHERC20Token");
-    const time = await Time.deploy();
-    await time.deployed();
-    console.log("bash: ", time.address);
+    const BashContract = await ethers.getContractFactory("BASHERC20Token");
+    const bash = await BashContract.deploy();
+    await bash.deployed();
+    console.log("bash: ", bash.address);
 
-    const Memories = await ethers.getContractFactory("sBASH");
-    const memo = await Memories.deploy();
-    await memo.deployed();
-    console.log("sbash: ", memo.address);
+    const sBashContract = await ethers.getContractFactory("sBASH");
+    const sBash = await sBashContract.deploy();
+    await sBash.deployed();
+    console.log("sBash: ", sBash.address);
 
     const BondingCalculator = await ethers.getContractFactory("ATBASHBondingCalculator");
-    const bondingCalculator = await BondingCalculator.deploy(time.address);
+    const bondingCalculator = await BondingCalculator.deploy(bash.address);
     await bondingCalculator.deployed();
     console.log("bondingCalculator: ", bondingCalculator.address);
 
     const Treasury = await ethers.getContractFactory("BashTreasury");
-    const treasury = await Treasury.deploy(time.address, mim.address, timelock);
+    const treasury = await Treasury.deploy(bash.address, dai.address, timelock);
     await treasury.deployed();
     console.log("treasury: ", treasury.address);
 
-    tx = await time.setVault(treasury.address);
+    tx = await bash.setVault(treasury.address);
     await tx.wait(1)
     console.log("set vault");
 
     const Staking = await ethers.getContractFactory("ATBASHStaking");
     const staking = await Staking.deploy(
-        time.address,
-        memo.address,
+        bash.address,
+        sBash.address,
         epochLength,
         firstEpochNumber,
         firstEpochTime
@@ -97,18 +104,17 @@ async function main() {
         firstEpochTime   ${firstEpochTime}
     `)
 
-    tx = await memo.initialize(staking.address);
+    tx = await sBash.initialize(staking.address);
     await tx.wait(1)
     console.log("initialize sBASH");
 
-    tx = await memo.setIndex(index);
+    tx = await sBash.setIndex(index);
     await tx.wait(1)
-    console.log("set Index: ", tx);
 
     const Distributor = await ethers.getContractFactory("Distributor");
     const distributor = await Distributor.deploy(
         treasury.address,
-        time.address,
+        bash.address,
         epochLength,
         nextEpochTime
     );
@@ -118,7 +124,7 @@ async function main() {
     const StakingHelper = await ethers.getContractFactory("StakingHelper");
     const stakingHelper = await StakingHelper.deploy(
         staking.address,
-        time.address,
+        bash.address,
     );
     await stakingHelper.deployed();
     console.log("stakingHelper: ", stakingHelper.address);
@@ -126,7 +132,7 @@ async function main() {
     const StakingWarmup = await ethers.getContractFactory("StakingWarmup");
     const stakingWarmup = await StakingWarmup.deploy(
         staking.address,
-        memo.address,
+        sBash.address,
     );
     await stakingWarmup.deployed();
     console.log("stakingWarmup: ", stakingWarmup.address);
@@ -147,29 +153,29 @@ async function main() {
     await tx.wait(1)
     console.log("setWarmup for Staking:", warmupPeriod);
 
-    const WrappedMemo = await ethers.getContractFactory("wsBASH");
-    const wMemo = await WrappedMemo.deploy(
-      memo.address
+    const WrappedSBash = await ethers.getContractFactory("wsBASH");
+    const wsBash = await WrappedSBash.deploy(
+      sBash.address
     );
-    await wMemo.deployed();
-    console.log("wsBash: ", wMemo.address);
+    await wsBash.deployed();
+    console.log("wsBash: ", wsBash.address);
 
     // BONDS
     ////////////////////////////////////////////////////////////////
     // For A Single Bond (bondingCalculator 0 address for non LP bonds)
 
-    principleAddressBond1 = mim.address;
+    // principleAddressBond1 = dai.address;
 
     const BondDepository = await ethers.getContractFactory("atbashBondDepository"); 
-    const mimBond = await BondDepository.deploy(
-        time.address,
-        principleAddressBond1,
+    const daiBond = await BondDepository.deploy(
+        bash.address,
+        dai.address,
         treasury.address,
         daoAddress,
         zeroAddress,    //zero addr for non LP bond
     );
-    await mimBond.deployed();
-    console.log("daiBond: ", mimBond.address);
+    await daiBond.deployed();
+    console.log("daiBond: ", daiBond.address);
 
     principleAddressBond2 = WETH;
 
@@ -192,7 +198,7 @@ async function main() {
     const maxBondDebt = '1000000000000000'; // Max debt bond can take on
     const intialBondDebt = '0'              // Initial Bond debt
 
-    tx = await mimBond.initializeBondTerms(
+    tx = await daiBond.initializeBondTerms(
         daiBondBCV,          // _controlVariable
         minBondPrice,        // _minimumPrice
         maxBondPayout,       // _maxPayout
@@ -214,7 +220,7 @@ async function main() {
     `)
 
 
-    tx = await mimBond.setStaking(
+    tx = await daiBond.setStaking(
         stakingHelper.address,
         1
     )
@@ -240,9 +246,9 @@ async function main() {
     ////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////
 
-    tx = await mim.mint("150000000000000000000000000000000000000000000")
-    await tx.wait(1)
-    console.log("Minted dai: ", "10000000000000000000000000000000  (150000000000000000000000000000000000000000000 ?)");
+    // tx = await mim.mint("150000000000000000000000000000000000000000000")
+    // await tx.wait(1)
+    // console.log("Minted dai: ", "10000000000000000000000000000000  (150000000000000000000000000000000000000000000 ?)");
 
     tx = await treasury.queue(0, deployer.address); 
     await tx.wait(1)
@@ -257,11 +263,11 @@ async function main() {
     tx = await treasury.queue(8, deployer.address); 
     await tx.wait(1)
 
-    tx = await treasury.queue(0, mimBond.address);
+    tx = await treasury.queue(0, daiBond.address);
     await tx.wait(1)
-    tx = await treasury.queue(4, mimBond.address);
+    tx = await treasury.queue(4, daiBond.address);
     await tx.wait(1)
-    tx = await treasury.queue(8, mimBond.address);
+    tx = await treasury.queue(8, daiBond.address);
     await tx.wait(1)
     //await treasury.queue(0, ethBond.address);
     //await treasury.queue(4, ethBond.address);
@@ -275,7 +281,7 @@ async function main() {
     tx = await treasury.queue(8, distributor.address);
     await tx.wait(1)
 
-    tx = await treasury.queue(9, memo.address);
+    tx = await treasury.queue(9, sBash.address);
     await tx.wait(1)
 
     console.log("ALL QUEUES DONE");
@@ -293,11 +299,11 @@ async function main() {
     tx = await treasury.toggle(8, deployer.address, zeroAddress);
     await tx.wait(1)
 
-    tx = await treasury.toggle(0, mimBond.address, zeroAddress);
+    tx = await treasury.toggle(0, daiBond.address, zeroAddress);
     await tx.wait(1)
-    tx = await treasury.toggle(4, mimBond.address, zeroAddress);
+    tx = await treasury.toggle(4, daiBond.address, zeroAddress);
     await tx.wait(1)
-    tx = await treasury.toggle(8, mimBond.address, zeroAddress);
+    tx = await treasury.toggle(8, daiBond.address, zeroAddress);
     await tx.wait(1)
     //await treasury.toggle(0, ethBond.address, zeroAddress);
     //await treasury.toggle(4, ethBond.address, zeroAddress);
@@ -311,7 +317,7 @@ async function main() {
     tx = await treasury.toggle(8, distributor.address, zeroAddress);
     await tx.wait(1)
 
-    tx = await treasury.toggle(9, memo.address, zeroAddress);
+    tx = await treasury.toggle(9, sBash.address, zeroAddress);
     await tx.wait(1)
 
     console.log("ALL TOGGLES DONE");
@@ -320,26 +326,26 @@ async function main() {
     // Deposit and Mint blkd
     const mimAmount = "100000000000000000000000"    // 100k dai 100000e18
     const mimProfit = "10000000000000"              // deposit 10k bash and mint 90k back to depositor
-    tx = await mim.approve(treasury.address, "1000000000000000000000000000000000000000"); // Approve treasury to use the mim
+    tx = await dai.approve(treasury.address, "1000000000000000000000000000000000000000"); // Approve treasury to use the mim
     await tx.wait(1)
     console.log("mim Approved to treasury :", mimAmount);
-    tx = await treasury.deposit(mimAmount, mim.address, mimProfit); // Deposit mim into treasury
+    tx = await treasury.deposit(mimAmount, dai.address, mimProfit); // Deposit mim into treasury
     await tx.wait(1)
     console.log("mim Deposited in treasury :", mimAmount);
-    const blkdMintedAgainstmim = await time.balanceOf(deployer.address);
+    const blkdMintedAgainstmim = await bash.balanceOf(deployer.address);
     console.log("Time minted against mim: ", blkdMintedAgainstmim.toString());
     /////////////////////////////////////////////////////////////////////////////////
 
     try {
         await hre.run("verify:verify", {
-            address: time.address, 
+            address: bash.address, 
             constructorArguments: [],
         });
     } catch (error) {}
 
     try {
         await hre.run("verify:verify", {
-            address: memo.address,
+            address: sBash.address,
             constructorArguments: [],
         });
     } catch (error) {}
@@ -347,7 +353,7 @@ async function main() {
     try {
         await hre.run("verify:verify", {
             address: treasury.address,
-            constructorArguments: [time.address, mim.address, timelock],
+            constructorArguments: [bash.address, dai.address, timelock],
         });
     } catch (error) {}
 
@@ -355,8 +361,8 @@ async function main() {
         await hre.run("verify:verify", {
             address: staking.address,
             constructorArguments: [
-              time.address,
-              memo.address,
+              bash.address,
+              sBash.address,
               epochLength,
               firstEpochNumber,
               firstEpochTime
@@ -369,7 +375,7 @@ async function main() {
             address: distributor.address,
             constructorArguments: [
               treasury.address,
-              time.address,
+              bash.address,
               epochLength,
               nextEpochTime
             ],
@@ -381,7 +387,7 @@ async function main() {
         address: stakingHelper.address,
         constructorArguments: [  
           staking.address,
-          time.address,
+          bash.address,
         ],
     });
     } catch (error) {
@@ -393,22 +399,22 @@ async function main() {
           address: stakingWarmup.address,
           constructorArguments: [    
             staking.address,
-            memo.address,],
+            sBash.address,],
       });
     } catch (error) {}
 
     try {
         await hre.run("verify:verify", {
             address: bondingCalculator.address,
-            constructorArguments: [time.address],
+            constructorArguments: [bash.address],
         });
     } catch (error) {}
 
     try {
         await hre.run("verify:verify", {
-            address: mimBond.address,
+            address: daiBond.address,
             constructorArguments: [
-              time.address,
+              bash.address,
               principleAddressBond1,
               treasury.address,
               daoAddress,
@@ -432,7 +438,7 @@ async function main() {
 
     try {
         await hre.run("verify:verify", {
-            address: mim.address,
+            address: dai.address,
             constructorArguments: [
                 chainID
             ],
@@ -441,9 +447,9 @@ async function main() {
 
     try {
         await hre.run("verify:verify", {
-            address: wMemo.address,
+            address: wsBash.address,
             constructorArguments: [
-              memo.address
+              sBash.address
             ],
         });
     } catch (error) {}

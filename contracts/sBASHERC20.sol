@@ -1145,6 +1145,7 @@ contract sBASH is ERC20Permit, Ownable {
     }
 
     // Staking contract holds excess MEMOries/sBASH
+    // todo: in ohmv2 adds supply in warmup
     function circulatingSupply() public view returns ( uint ) {
         return _totalSupply.sub( balanceOf( stakingContract ) ); // sBASH - stakingContract sBASH
     }
