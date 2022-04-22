@@ -25,6 +25,9 @@ Local deployment using hardhat network:
 Testing specific deployments for local hardhat
 `yarn deploy:hardhat`
 
+**Rinkeby**
+Requires `.env` see `example.env` 
+
 ## Testing
 `yarn test`
 
