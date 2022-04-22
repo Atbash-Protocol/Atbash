@@ -20,4 +20,4 @@ workspace.code-workspace
 _hardhat.config.js.backup
 yarn-error.log
 
-types/
+/types/
