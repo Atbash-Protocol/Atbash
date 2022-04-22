@@ -7,7 +7,7 @@ import {
     BASHERC20Token__factory,
 } from "../../types";
 
-describe("BashTokenTest", () => {
+describe("Bash", () => {
     let deployer: SignerWithAddress;
     let vault: SignerWithAddress;
     let bob: SignerWithAddress;

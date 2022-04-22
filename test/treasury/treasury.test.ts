@@ -64,6 +64,7 @@ describe("Treasury", () => {
                 1000
             );
             (await treasury.connect(owner).isReserveToken(daiFake.address)).should.be.true;
+            (await treasury.connect(owner).Bash()).should.be.equal(bashFake);
         });
 
         it("does not allow 0x0 Bash Token address", async () => { 
