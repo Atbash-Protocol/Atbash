@@ -609,7 +609,7 @@ contract BashTreasury is Ownable {
         returns (uint256 value_)
     {
         if (isReserveToken[_token]) {
-            // convert amount to match OHM decimals
+            // convert amount to match Bash decimals
             value_ = _amount.mul(10**IERC20(Bash).decimals()).div(
                 10**IERC20(_token).decimals()
             );

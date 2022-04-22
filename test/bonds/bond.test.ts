@@ -17,10 +17,12 @@ import {
     ATBASHStaking,
     ATBASHStaking__factory,
     BashTreasury,
+    StakingHelper,
     ATBASHBondingCalculator,
     IUniswapV2Pair,
     AtbashBondDepository__factory,
     ITreasury,
+    IStakingHelper,
     // OlympusAuthority,
     // OlympusAuthority__factory,
 } from "../../types";
@@ -45,9 +47,19 @@ describe("AtbashBondDepository", () => {
     let bashFake: FakeContract<IBash>;
     let daiFake: FakeContract<IDai>;
     let treasuryFake: FakeContract<ITreasury>;
+    let stakingHelperFake: FakeContract<IStakingHelper>;
+    let stakingFake: FakeContract<IStaking>;
 
     let bondingCalculatorFake: FakeContract<ATBASHBondingCalculator>;
     let bashDaiFake: FakeContract<IUniswapV2Pair>;
+
+    const bondControlVariable = 120;              
+    const vestingLength = 864000;    
+    const minimumPrice = 8000;           
+    const maxPayout = 4;              
+    const bondFee = 0;                
+    const maxDebt = 1000000000000000; 
+    const initialDebt = 0;  
 
     beforeEach(async () => {
         [owner, alice, bob, other, depositor] = await ethers.getSigners();
@@ -56,6 +68,8 @@ describe("AtbashBondDepository", () => {
         treasuryFake = await smock.fake<ITreasury>(CONTRACTS.treasury);
         bondingCalculatorFake = await smock.fake<ATBASHBondingCalculator>(CONTRACTS.bondingCalculator);
         bashDaiFake = await smock.fake<IUniswapV2Pair>("contracts/uniswap/interfaces/IUniswapV2Pair.sol:IUniswapV2Pair");
+        stakingHelperFake = await smock.fake<IStakingHelper>(CONTRACTS.stakingHelper);
+        stakingFake = await smock.fake<IStaking>(CONTRACTS.staking);
     });
 
     describe("construction", () => {
@@ -152,6 +166,65 @@ describe("AtbashBondDepository", () => {
         });
 
         it("sets total debt to initial debt", async () => {
+            const initialDebt = 100;
+            await bondDepository.initializeBondTerms(
+                100, 0, 0, 0, 0, initialDebt, 0
+            );
+
+            (await bondDepository.totalDebt()).should.be.equal(initialDebt);
+        });
+
+        it("sets initial bond terms", async () => {
+            await bondDepository.initializeBondTerms(
+                bondControlVariable, minimumPrice, maxPayout, bondFee, maxDebt, initialDebt, vestingLength
+            );
+
+            const terms = await bondDepository.terms();
+            terms.controlVariable.should.be.equal(bondControlVariable);
+            terms.minimumPrice.should.be.equal(minimumPrice);
+            terms.maxPayout.should.be.equal(maxPayout);
+            terms.fee.should.be.equal(bondFee);
+            terms.maxDebt.should.be.equal(maxDebt);
+            terms.vestingTerm.should.be.equal(vestingLength);
+        });
+
+        it("sets last decay to current block time", async () => {
+            const currentBlockTime = await getCurrentBlockTime();
+            await bondDepository.initializeBondTerms(
+                bondControlVariable, minimumPrice, maxPayout, bondFee, maxDebt, initialDebt, vestingLength
+            );
+            (await bondDepository.lastDecay()).should.be.greaterThanOrEqual(currentBlockTime);
+        });
+
+        it("only allows owner to set staking contract", async () => {
+            bondDepository.connect(other).setStaking(stakingFake.address, false)
+                .should.be.revertedWith("Ownable: caller is not the owner");
+        });
+
+        it("only allows owner to set staking helper contract", async () => {
+            bondDepository.connect(other).setStaking(stakingHelperFake.address, true)
+                .should.be.revertedWith("Ownable: caller is not the owner");
+        });
+    });
+    
+
+    describe("deposit", async () => {
+        let bondDepository: AtbashBondDepository;
+
+        beforeEach(async () => {
+            bondDepository = await new AtbashBondDepository__factory(owner).deploy(
+                bashFake.address,
+                daiFake.address,
+                treasuryFake.address,
+                owner.address,
+                ZERO_ADDRESS
+            );
+            await bondDepository.initializeBondTerms(
+                bondControlVariable, minimumPrice, maxPayout, bondFee, maxDebt, initialDebt, vestingLength
+            );
+        });
+
+        it("", async () => {
             const initialDebt = 100;
             await bondDepository.initializeBondTerms(
                 100, 0, 0, 0, 0, initialDebt, 0
