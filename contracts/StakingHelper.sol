@@ -82,19 +82,19 @@ interface IStaking {
 contract StakingHelper {
 
     address public immutable staking;
-    address public immutable bash;
+    address public immutable Time;
 
-    constructor ( address _staking, address _bash ) {
+    constructor ( address _staking, address _Time ) {
         require( _staking != address(0) );
         staking = _staking;
-        require( _bash != address(0) );
-        bash = _bash;
+        require( _Time != address(0) );
+        Time = _Time;
     }
 
-    function stake( uint _amount ) external {
-        IERC20( bash ).transferFrom( msg.sender, address(this), _amount );
-        IERC20( bash ).approve( staking, _amount );
-        IStaking( staking ).stake( _amount, msg.sender );
-        IStaking( staking ).claim( msg.sender );
+    function stake( uint _amount, address recipient ) external {
+        IERC20( Time ).transferFrom( msg.sender, address(this), _amount ); // BASH
+        IERC20( Time ).approve( staking, _amount );
+        IStaking( staking ).stake( _amount, recipient );
+        IStaking( staking ).claim( recipient );
     }
 }
