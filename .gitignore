@@ -7,4 +7,9 @@ typechain
 #Hardhat files
 cache
 artifacts
-types
+typechain-types
+/types/
+
+#VS
+workspace.code-workspace
+yarn-error.log
