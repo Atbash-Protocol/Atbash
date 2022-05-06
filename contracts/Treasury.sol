@@ -340,7 +340,7 @@ contract BashTreasury is Ownable {
         LIQUIDITYMANAGER,
         DEBTOR,
         REWARDMANAGER,
-        SOHM
+        SBASH
     }
 
     address public immutable Bash;
@@ -678,7 +678,7 @@ contract BashTreasury is Ownable {
             rewardManagerQueue[_address] = uint32(block.timestamp).add32(
                 secondsNeededForQueue
             );
-        } else if (_managing == MANAGING.SOHM) {
+        } else if (_managing == MANAGING.SBASH) {
             // 9
             sOHMQueue = uint32(block.timestamp).add32(secondsNeededForQueue);
         } else return false;
@@ -812,7 +812,7 @@ contract BashTreasury is Ownable {
             }
             result = !isRewardManager[_address];
             isRewardManager[_address] = result;
-        } else if (_managing == MANAGING.SOHM) {
+        } else if (_managing == MANAGING.SBASH) {
             // 9
             sOHMQueue = 0;
             MEMOries = _address;

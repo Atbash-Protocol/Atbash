@@ -73,7 +73,7 @@ describe("AtbashBondDepository", () => {
     });
 
     describe("construction", () => {
-        it("can be constructed ....", async () => {
+        it("can be constructed", async () => {
             const bondDepository = await new AtbashBondDepository__factory(owner).deploy(
                 bashFake.address,
                 daiFake.address,
@@ -81,7 +81,9 @@ describe("AtbashBondDepository", () => {
                 owner.address,
                 ZERO_ADDRESS
             );
-            (await bondDepository.connect(owner).isLiquidityBond()).should.be.false;
+            (await bondDepository.isLiquidityBond()).should.be.false;
+            (await bondDepository.Bash()).should.be.equal(bashFake.address);
+
         });
 
         it("does not allow 0x0 Bash token address", async () => { 
@@ -207,32 +209,73 @@ describe("AtbashBondDepository", () => {
         });
     });
     
+    describe("bond - standard stable reserve", () => {
+        describe("deposit", async () => {
+            let bondDepository: AtbashBondDepository;
+    
+            beforeEach(async () => {
+                bondDepository = await new AtbashBondDepository__factory(owner).deploy(
+                    bashFake.address,
+                    daiFake.address,
+                    treasuryFake.address,
+                    owner.address,
+                    ZERO_ADDRESS
+                );
+                await bondDepository.initializeBondTerms(
+                    bondControlVariable, minimumPrice, maxPayout, bondFee, maxDebt, initialDebt, vestingLength
+                );
 
-    describe("deposit", async () => {
-        let bondDepository: AtbashBondDepository;
-
-        beforeEach(async () => {
-            bondDepository = await new AtbashBondDepository__factory(owner).deploy(
-                bashFake.address,
-                daiFake.address,
-                treasuryFake.address,
-                owner.address,
-                ZERO_ADDRESS
-            );
-            await bondDepository.initializeBondTerms(
-                bondControlVariable, minimumPrice, maxPayout, bondFee, maxDebt, initialDebt, vestingLength
-            );
+                daiFake.decimals.returns(DAI_DECIMALS);
+            });
+    
+            it("must provide valid depositor address", async () => {
+                bondDepository.deposit(0, 0, ZERO_ADDRESS).should.be.revertedWith("Invalid address")
+            });
+    
+            it("x", async () => {
+    
+            });
+    
+            it("decays existing debt", async () => {
+                // todo: set initial debt for first pass debt decay
+                true.should.be.false;
+            });
         });
 
-        it("", async () => {
-            const initialDebt = 100;
-            await bondDepository.initializeBondTerms(
-                100, 0, 0, 0, 0, initialDebt, 0
-            );
-
-            (await bondDepository.totalDebt()).should.be.equal(initialDebt);
+        describe("bond - LP", () => {
+            describe("depositx", async () => {
+                let bondDepository: AtbashBondDepository;
+        
+                beforeEach(async () => {
+                    bondDepository = await new AtbashBondDepository__factory(owner).deploy(
+                        bashFake.address,
+                        daiFake.address,
+                        treasuryFake.address,
+                        owner.address,
+                        ZERO_ADDRESS
+                    );
+                    await bondDepository.initializeBondTerms(
+                        bondControlVariable, minimumPrice, maxPayout, bondFee, maxDebt, initialDebt, vestingLength
+                    );
+                });
+        
+                it("xmust provide valid depositor address", async () => {
+                    bondDepository.deposit(0, 0, ZERO_ADDRESS).should.be.revertedWith("Invalid address")
+                });
+        
+                it("xx", async () => {
+        
+                });
+        
+                it("xdecays existing debt", async () => {
+                    // todo: set initial debt for first pass debt decay
+                    true.should.be.false;
+                });
+            });
         });
     });
+
+    
     
 });
 

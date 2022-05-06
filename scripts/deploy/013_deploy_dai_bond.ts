@@ -34,7 +34,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
     const daiBondBCV = '120';               // DAI bond BCV         // Halsey: So then the start should be 120
     const bondVestingLength = '864000';     // Bond vesting length seconds
-    const minBondPrice = '8000';            // Min bond price
+    const minBondPrice = '8000';            // Min bond price (cents)
     const maxBondPayout = '4'               // Max bond payout     /
     const bondFee = '0';                    // DAO fee for bond
     const maxBondDebt = '1000000000000000'; // Max debt bond can take on

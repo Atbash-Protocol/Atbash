@@ -51,5 +51,5 @@ export enum MANAGING {
     LIQUIDITYMANAGER = 6, 
     DEBTOR = 7, 
     REWARDMANAGER = 8, 
-    SOHM = 9 
+    SBASH = 9 
 }

@@ -53,6 +53,10 @@ const config: HardhatUserConfig = {
     deployer: {
         default: 0,
     },
+    testWallet: {
+        default: 10,
+        4: "0xd738E31Ed20F2701Db1a68841C6a7cAA8F6A6B43", 
+    }
     // daoMultisig: {
     //     // mainnet
     //     1: "0x245cc372C84B3645Bf0Ffe6538620B04a217988B",
@@ -82,8 +86,8 @@ const config: HardhatUserConfig = {
     },
     rinkeby: {
       url: process.env.RINKEBY_URL || "",
-      accounts:
-        process.env.RINKEBY_PRIVATE_KEY !== undefined ? [process.env.RINKEBY_PRIVATE_KEY] : [],
+      accounts: 
+        process.env.RINKEBY_PRIVATE_KEY !== undefined ? [`${process.env.RINKEBY_PRIVATE_KEY}`, `${process.env.RINKEBY_TESTWALLET_KEY}`] : [],
     },
     mainnet: {
       url: process.env.MAINNET_URL || "",

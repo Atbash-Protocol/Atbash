@@ -50,7 +50,7 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
     // sBash
     const sbashDeployment = await deployments.get(CONTRACTS.sBash);
     const sbash = SBASH__factory.connect(sbashDeployment.address, signer);
-    await waitFor(treasury.queue(MANAGING.SOHM, sbash.address));
+    await waitFor(treasury.queue(MANAGING.SBASH, sbash.address));
 
     console.log("QUEUES done");
 
@@ -80,7 +80,7 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
     await waitFor(treasury.toggle(MANAGING.REWARDMANAGER, distributor.address, ZERO_ADDRESS));
 
     // sBash
-    await waitFor(treasury.toggle(MANAGING.SOHM, sbash.address, ZERO_ADDRESS));
+    await waitFor(treasury.toggle(MANAGING.SBASH, sbash.address, ZERO_ADDRESS));
 
     console.log("ALL TOGGLES DONE");
 };

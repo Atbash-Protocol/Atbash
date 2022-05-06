@@ -34,13 +34,14 @@
     "test": "hardhat test",
     "gas": "cross-env REPORT_GAS=true hardhat test",
     "typechain": "cross-env TS_NODE_TRANSPILE_ONLY=true hardhat typechain",
-    "deploy:rinkeby": "hardhat --network rinkeby deploy --tags deposit-bashdai",
+    "deploy:rinkeby": "hardhat --network rinkeby deploy --tags fix-rinkeby-bashdai-treasury-setup",
     "deploy:hardhat": "hardhat --network hardhat deploy",
     "sourcify:rinkeby": "hardhat --network rinkeby sourcify",
     "etherscan:rinkeby": "hardhat --network rinkeby etherscan-verify --tags testrinkeby",
     "prestart": "yarn run typechain",
     "start": "hardhat node --network hardhat",
-    "console:hardhat": "hardhat console --network localhost"
+    "console:hardhat": "hardhat console --network localhost",
+    "console:rinkeby": "hardhat console --network rinkeby"
   },
   "dependencies": {
     "@defi-wonderland/smock": "^2.0.7",
