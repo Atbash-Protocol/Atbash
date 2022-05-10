@@ -27,6 +27,7 @@ Testing specific deployments for local hardhat
 
 **Rinkeby**
 Requires `.env` see `example.env` 
+Deployments/fixes specific to Rinkeby are in contracts/rinkeby
 
 ## Testing
 `yarn test`
