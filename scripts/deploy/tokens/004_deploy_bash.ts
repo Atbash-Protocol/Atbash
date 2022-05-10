@@ -1,27 +1,20 @@
 import {HardhatRuntimeEnvironment} from 'hardhat/types';
 import {DeployFunction} from 'hardhat-deploy/types';
-import { CONTRACTS } from '../constants';
-import { SBASH__factory } from '../../types'
+import { CONTRACTS } from '../../constants';
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const { deployments, getNamedAccounts, network, ethers } = hre;
 
     const { deploy } = deployments;
     const { deployer } = await getNamedAccounts();
-    const signer = ethers.provider.getSigner(deployer);
 
-    const sbashDeployment = await deployments.get(CONTRACTS.sBash);
-    const sbash = SBASH__factory.connect(sbashDeployment.address, signer);
-
-    await deploy(CONTRACTS.wsBash, {
+    await deploy(CONTRACTS.bash, {
         from: deployer,
-        args: [sbash.address],
+        args: [],
         log: true,
         skipIfAlreadyDeployed: true,
     });
 };
 
-func.dependencies = [CONTRACTS.sBash];
-func.tags = [CONTRACTS.wsBash, "Token"];
+func.tags = [CONTRACTS.bash, "Token"];
 export default func;
-

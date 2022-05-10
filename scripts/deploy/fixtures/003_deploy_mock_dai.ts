@@ -1,8 +1,8 @@
 import {HardhatRuntimeEnvironment} from 'hardhat/types';
 import {DeployFunction} from 'hardhat-deploy/types';
-import { CONTRACTS } from '../constants';
+import { CONTRACTS } from '../../constants';
 
-import { DAI__factory } from '../../types'
+import { DAI__factory } from '../../../types'
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const { deployments, getNamedAccounts, network, ethers } = hre;
@@ -26,6 +26,10 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     await mockDai.mint(daiAmount);
     console.log(`Minted DAI Amount: ${daiAmount}`);
     await mockDai.approve(deployer, daiAmount);
+};
+
+func.skip = async (hre: HardhatRuntimeEnvironment) => {
+    return hre.network.name.toLowerCase() != "mainnet";
 };
 
 func.tags = [CONTRACTS.DAI, "Token"];

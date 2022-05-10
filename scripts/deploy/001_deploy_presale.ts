@@ -18,19 +18,13 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
         skipIfAlreadyDeployed: true,
     });
 
-    const aBASHDeployment = await deploy(CONTRACTS.aBash, {
-        from: deployer,
-        args: [ethers.utils.parseUnits("100000", 18)],   
-        log: true,
-        skipIfAlreadyDeployed: true,
-    });
-
-    if (!aBASHDeployment.newlyDeployed) return;
+    const aBashDeployment = await deployments.get(CONTRACTS.aBash);
 
     const presaleContract = Presale__factory.connect(presaleDeployment.address, signer);
-    await presaleContract.setPresaleToken(aBASHDeployment.address);
+    await presaleContract.setPresaleToken(aBashDeployment.address);
     await presaleContract.setRate(50);  
 };
 
-func.tags = [CONTRACTS.aBash, "Presale", "Token"];
+func.tags = ["Presale"];
+func.dependencies = [CONTRACTS.aBash];
 export default func;
