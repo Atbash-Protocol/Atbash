@@ -33,6 +33,10 @@ const func: DeployFunction = async function(hre: HardhatRuntimeEnvironment) {
     console.log(`Deposited ${deployerBashDaiBalance} BASH-DAI to treasury`);
 };
 
-func.tags = ["fix-rinkeby-bashdai-setup", "bash-dai-bond", "deposit-bashdai"];
+func.skip = async (hre: HardhatRuntimeEnvironment) => {
+    return hre.network.name.toLowerCase() != "rinkeby";
+};
+
+func.tags = ["fix-rinkeby-bashdai-deploy-deposit"];
 func.dependencies = [CONTRACTS.treasury, CONTRACTS.bashDaiBondingCalculator, CONTRACTS.bashDaiBondDepository, CONTRACTS.bashDaiLpPair];
 export default func;

@@ -32,5 +32,5 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     await presaleContract.setRate(50);  
 };
 
-func.tags = [CONTRACTS.aBash, "Presale", "Tokens"];
+func.tags = [CONTRACTS.aBash, "Presale", "Token"];
 export default func;

@@ -42,7 +42,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
     const bashDaiArtifact = await deployments.getExtendedArtifact("UniswapV2Pair");
     await deployments.save(CONTRACTS.bashDaiLpPair, {
-        address: bashDaiAddress,
+        address: bash.address,
         abi: bashDaiArtifact.abi,
         bytecode: bashDaiArtifact.bytecode,
     });

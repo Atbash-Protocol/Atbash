@@ -85,5 +85,5 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
     console.log("ALL TOGGLES DONE");
 };
 
-func.dependencies = ["Tokens", "Staking", "Bonds", CONTRACTS.treasury, CONTRACTS.bondDepository, CONTRACTS.stakingDistributor, CONTRACTS.sBash];
+func.dependencies = ["Token", "Staking", "Bonds", CONTRACTS.treasury, CONTRACTS.bondDepository, CONTRACTS.stakingDistributor, CONTRACTS.sBash];
 export default func;

@@ -28,5 +28,5 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     await mockDai.approve(deployer, daiAmount);
 };
 
-func.tags = [CONTRACTS.DAI, "Tokens"];
+func.tags = [CONTRACTS.DAI, "Token"];
 export default func;

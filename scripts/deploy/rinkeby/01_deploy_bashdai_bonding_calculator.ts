@@ -14,8 +14,12 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
         from: deployer,
         args: [bash.address],
         log: true,
-        skipIfAlreadyDeployed: false,
+        skipIfAlreadyDeployed: true,
     });
+};
+
+func.skip = async (hre: HardhatRuntimeEnvironment) => {
+    return hre.network.name.toLowerCase() != "rinkeby";
 };
 
 func.dependencies = [CONTRACTS.bash];

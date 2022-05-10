@@ -28,7 +28,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
                 bashDaiBondingCalculatorDeployment.address // used for LP Bonds
             ],
         log: true,
-        skipIfAlreadyDeployed: false,
+        skipIfAlreadyDeployed: true,
     });
 
     if (!bashDaiBondDeployment.newlyDeployed) return;   // todo: idempotent?
@@ -68,6 +68,9 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     console.log("Set staking helper for BASH-DAI bond");
 };
 
+func.skip = async (hre: HardhatRuntimeEnvironment) => {
+    return hre.network.name.toLowerCase() != "rinkeby";
+};
 func.dependencies = [CONTRACTS.bash, CONTRACTS.treasury, CONTRACTS.stakingHelper, CONTRACTS.bashDaiBondingCalculator, CONTRACTS.bashDaiBondDepository];
 func.tags = ["fix-rinkeby-bashdai-deploy"];
 export default func;

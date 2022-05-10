@@ -55,6 +55,6 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     await waitFor(sbash.setIndex(INITIAL_INDEX));
 };
 
-func.dependencies = [CONTRACTS.bash, CONTRACTS.sBash, "Tokens"];
+func.dependencies = [CONTRACTS.bash, CONTRACTS.sBash, "Token"];
 func.tags = [CONTRACTS.stakingWarmup, "Staking"];
 export default func;

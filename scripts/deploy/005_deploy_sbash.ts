@@ -16,5 +16,5 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     });
 };
 
-func.tags = [CONTRACTS.sBash, "Tokens"];
+func.tags = [CONTRACTS.sBash, "Token"];
 export default func;

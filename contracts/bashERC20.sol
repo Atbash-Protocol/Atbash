@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 pragma solidity 0.7.5;
 
+import {Counters} from "./libraries/Counters.sol";
+
 library EnumerableSet {
 
   // To implement this library for multiple types with as little code
@@ -719,26 +721,6 @@ abstract contract ERC20 is IERC20 {
     }
 
   function _beforeTokenTransfer( address from_, address to_, uint256 amount_ ) internal virtual { }
-}
-
-library Counters {
-    using SafeMath for uint256;
-
-    struct Counter {
-        uint256 _value; // default: 0
-    }
-
-    function current(Counter storage counter) internal view returns (uint256) {
-        return counter._value;
-    }
-
-    function increment(Counter storage counter) internal {
-        counter._value += 1;
-    }
-
-    function decrement(Counter storage counter) internal {
-        counter._value = counter._value.sub(1);
-    }
 }
 
 interface IERC2612Permit {
