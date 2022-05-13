@@ -1,9 +1,9 @@
 import {HardhatRuntimeEnvironment} from 'hardhat/types';
 import {DeployFunction} from 'hardhat-deploy/types';
-import { CONTRACTS, EPOCH_LENGTH_IN_SECONDS, NEXT_EPOCH_TIME, STAKING_REWARD_RATE } from '../constants';
+import { CONTRACTS, EPOCH_LENGTH_IN_SECONDS, NEXT_EPOCH_TIME, STAKING_REWARD_RATE } from '../../constants';
 
-import { BASHERC20Token__factory, SBASH__factory, Distributor__factory } from '../../types'
-import { waitFor } from '../txHelper'
+import { BASHERC20Token__factory, SBASH__factory, Distributor__factory } from '../../../types'
+import { waitFor } from '../../txHelper'
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const { deployments, getNamedAccounts, network, ethers } = hre;
@@ -22,18 +22,22 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
         args: [treasury.address, bash.address, EPOCH_LENGTH_IN_SECONDS, NEXT_EPOCH_TIME],
         log: true,
         skipIfAlreadyDeployed: true,
-        
     });
 
-    if (!distributorDeployment.newlyDeployed) return;
+    // if (!distributorDeployment.newlyDeployed) 
+    // {
+    //     console.warn("The distributor was already deployed for this network, skipping setup");
+    //     return;
+    // }
 
-    // Distributor staking reward rate
-    const stakingDeployment = await deployments.get(CONTRACTS.staking);
-    const distributor = Distributor__factory.connect(distributorDeployment.address, signer);
+    // // Distributor staking reward rate
+    // const stakingDeployment = await deployments.get(CONTRACTS.staking);
+    // const distributor = Distributor__factory.connect(distributorDeployment.address, signer);
 
-     await waitFor(distributor.addRecipient(stakingDeployment.address, STAKING_REWARD_RATE));
-     console.log(`Distributor Add Recipient: ${STAKING_REWARD_RATE}`);
+    //  await waitFor(distributor.addRecipient(stakingDeployment.address, STAKING_REWARD_RATE));
+    //  console.log(`Distributor added staking contract as recipient with reward rate: ${STAKING_REWARD_RATE}`);
 };
-func.dependencies = [CONTRACTS.treasury, CONTRACTS.bash, CONTRACTS.staking];
+
+func.dependencies = [CONTRACTS.treasury, CONTRACTS.bash]; // , CONTRACTS.staking];
 func.tags = [CONTRACTS.stakingDistributor, "Staking"];
 export default func;

@@ -1,9 +1,10 @@
 import {HardhatRuntimeEnvironment} from 'hardhat/types';
 import {DeployFunction} from 'hardhat-deploy/types';
-import { CONTRACTS, ZERO_ADDRESS } from '../constants';
+import { CONTRACTS, ZERO_ADDRESS } from '../../constants';
 
-import { BASHERC20Token__factory, DAI__factory, BashTreasury__factory, AtbashBondDepository__factory, StakingHelper__factory } from '../../types';
-import { waitFor } from '../txHelper';
+import { BASHERC20Token__factory, DAI__factory, BashTreasury__factory, AtbashBondDepository__factory, StakingHelper__factory } from '../../../types';
+import { waitFor } from '../../txHelper';
+import { Guid } from 'guid-typescript';
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const { deployments, getNamedAccounts, network, ethers } = hre;
@@ -21,17 +22,12 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const treasury = BashTreasury__factory.connect(treasuryDeployment.address, signer);
 
     const daoAddress = deployer;
-    console.log(`Using provider address as DAO Address: DAO Address ${daoAddress}`)
-    const daiBondDeployment = await deploy(CONTRACTS.bondDepository, {
-        contract: CONTRACTS.bondDepository,
-        from: deployer,
-        args: [bash.address, dai.address, treasury.address, daoAddress, ZERO_ADDRESS],
-        log: true,
-        skipIfAlreadyDeployed: true,
-    });
+    
+    console.log("Setting up DAI Stable Bond");
 
-    if (!daiBondDeployment.newlyDeployed) return;   // todo: idempotent?
-
+    // todo: get dai bond
+    var daiBondDeployment = await deployments.get(CONTRACTS.bondDepository);
+    
     const daiBondBCV = '120';               // DAI bond BCV         // Halsey: So then the start should be 120
     const bondVestingLength = '864000';     // Bond vesting length seconds
     const minBondPrice = '8000';            // Min bond price (cents)
@@ -66,9 +62,16 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const stakingHelper = StakingHelper__factory.connect(stakingHelperDeployment.address, signer);
     await waitFor(daiBond.setStaking(stakingHelper.address, true));
     console.log("Set staking helper for DAI bond");
+    console.log("Stable bond setup complete");
+    return true; // don't run again
 };
 
+func.id = "2022-launch-dai-bond";
+func.dependencies = [CONTRACTS.bash, 
+                    CONTRACTS.DAI, 
+                    CONTRACTS.treasury, 
+                    CONTRACTS.stakingHelper,
+                    CONTRACTS.bondDepository];
+func.tags = ["Launch"];
 
-func.dependencies = [CONTRACTS.bash, CONTRACTS.DAI, CONTRACTS.treasury, CONTRACTS.stakingHelper];
-func.tags = ["Bonds"];
 export default func;

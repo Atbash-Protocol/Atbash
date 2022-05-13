@@ -1,10 +1,10 @@
 import {HardhatRuntimeEnvironment} from 'hardhat/types';
 import {DeployFunction} from 'hardhat-deploy/types';
-import { CONTRACTS, EPOCH_LENGTH_IN_SECONDS, FIRST_EPOCH_NUMBER, FIRST_EPOCH_TIME } from '../constants';
-import { INITIAL_INDEX } from '../constants';
+import { CONTRACTS, EPOCH_LENGTH_IN_SECONDS, FIRST_EPOCH_NUMBER, FIRST_EPOCH_TIME } from '../../constants';
+import { INITIAL_INDEX } from '../../constants';
 
-import { BASHERC20Token__factory, SBASH__factory } from '../../types'
-import { waitFor } from '../txHelper'
+import { BASHERC20Token__factory, SBASH__factory } from '../../../types'
+import { waitFor } from '../../txHelper'
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const { deployments, getNamedAccounts, network, ethers } = hre;
@@ -27,6 +27,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     });
 
     console.log(`
+        Staking Initialization:
         epochLength      ${EPOCH_LENGTH_IN_SECONDS} seconds
         firstEpochNumber ${FIRST_EPOCH_NUMBER}
         firstEpochTime   ${FIRST_EPOCH_TIME}
@@ -48,13 +49,17 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
         skipIfAlreadyDeployed: true,
     });
 
-    if (!staking.newlyDeployed && !stakingHelper.newlyDeployed && !stakingWarmup.newlyDeployed) return;
+    // if (!staking.newlyDeployed || !stakingHelper.newlyDeployed || !stakingWarmup.newlyDeployed) 
+    // {
+    //     console.warn("Some or all of the staking contracts were already deployed for this network, skipping setup");
+    //     return;
+    // }
 
-    console.log("Initialize sBASH with staking & set index");
-    await waitFor(sbash.initialize(staking.address));
-    await waitFor(sbash.setIndex(INITIAL_INDEX));
+    // console.log("Initialize sBASH with staking contract & set initial index");
+    // await waitFor(sbash.initialize(staking.address));
+    // await waitFor(sbash.setIndex(INITIAL_INDEX));
 };
 
-func.dependencies = [CONTRACTS.bash, CONTRACTS.sBash, "Token"];
-func.tags = [CONTRACTS.stakingWarmup, "Staking"];
+func.dependencies = [CONTRACTS.bash, CONTRACTS.sBash];
+func.tags = [CONTRACTS.stakingWarmup, CONTRACTS.staking, CONTRACTS.stakingHelper, "Staking"];
 export default func;

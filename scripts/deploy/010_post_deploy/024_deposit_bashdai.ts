@@ -1,9 +1,9 @@
 import {HardhatRuntimeEnvironment} from 'hardhat/types';
-import {DeployFunction} from 'hardhat-deploy/types';
-import { CONTRACTS } from '../constants';
+import {DeployFunction, Deployment} from 'hardhat-deploy/types';
+import { CONTRACTS } from '../../constants';
 
-import { BashTreasury__factory, UniswapV2Pair__factory } from '../../types';
-import { waitFor } from '../txHelper';
+import { BashTreasury__factory, UniswapV2Pair__factory } from '../../../types';
+import { waitFor } from '../../txHelper';
 import { Contract } from 'ethers';
 
 const func: DeployFunction = async function(hre: HardhatRuntimeEnvironment) {
@@ -15,7 +15,15 @@ const func: DeployFunction = async function(hre: HardhatRuntimeEnvironment) {
     const treasuryDeployment = await deployments.get(CONTRACTS.treasury);
     const treasury = BashTreasury__factory.connect(treasuryDeployment.address, signer);
 
-    const bashDaiLpPairDeployment = await deployments.get(CONTRACTS.bashDaiLpPair);
+    let bashDaiLpPairDeployment: Deployment;
+    try {
+        bashDaiLpPairDeployment = await deployments.get(CONTRACTS.bashDaiLpPair);
+    }
+    catch (e: any) {
+        console.error(`BASH-DAI LP deployment not found for network: ${hre.network.name}, Exception: ${e}`);
+        throw "BASH-DAI LP deployment not found";
+    }
+
     console.log(`bashDaiLp Address: ${bashDaiLpPairDeployment.address}, num deployments: ${bashDaiLpPairDeployment.numDeployments}`);
     const bashDai = await UniswapV2Pair__factory.connect(bashDaiLpPairDeployment.address, signer);
     const balance = await bashDai.balanceOf(deployer);
@@ -26,8 +34,15 @@ const func: DeployFunction = async function(hre: HardhatRuntimeEnvironment) {
     const profit = 0;    
     await waitFor(treasury.deposit(balance, bashDaiLpPairDeployment.address, profit));
     console.log(`Deposited ${balance} BASH-DAI to treasury`);
+    return true;
 };
 
-func.tags = ["bash-dai-bond", "deposit-bashdai"];
-func.dependencies = [CONTRACTS.treasury, CONTRACTS.bashDaiBondingCalculator, CONTRACTS.bashDaiBondDepository, CONTRACTS.bashDaiLpPair];
+func.id = "2022-launch-deposit-bashdai";
+func.tags = ["Launch"];
+// func.tags = ["BashDaiBondDeposit"];
+
+func.dependencies = [CONTRACTS.treasury, 
+                        CONTRACTS.bashDaiBondingCalculator, 
+                        CONTRACTS.bashDaiBondDepository, 
+                        CONTRACTS.bashDaiLpPair];
 export default func;

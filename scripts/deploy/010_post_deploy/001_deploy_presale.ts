@@ -1,8 +1,8 @@
 import {HardhatRuntimeEnvironment} from 'hardhat/types';
 import {DeployFunction} from 'hardhat-deploy/types';
-import { CONTRACTS } from '../constants';
+import { CONTRACTS } from '../../constants';
 
-import { Presale__factory } from '../../types'
+import { Presale__factory } from '../../../types'
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const { deployments, getNamedAccounts, network, ethers } = hre;
@@ -18,8 +18,11 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
         skipIfAlreadyDeployed: true,
     });
 
-    const aBashDeployment = await deployments.get(CONTRACTS.aBash);
+    if (!presaleDeployment.newlyDeployed) {
+        console.log("Presale already deployed, skipping setup");
+    }
 
+    const aBashDeployment = await deployments.get(CONTRACTS.aBash);
     const presaleContract = Presale__factory.connect(presaleDeployment.address, signer);
     await presaleContract.setPresaleToken(aBashDeployment.address);
     await presaleContract.setRate(50);  

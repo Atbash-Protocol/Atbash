@@ -1,9 +1,10 @@
 import {HardhatRuntimeEnvironment} from 'hardhat/types';
 import {DeployFunction} from 'hardhat-deploy/types';
-import { CONTRACTS, ZERO_ADDRESS, MANAGING } from '../constants';
+import { CONTRACTS, ZERO_ADDRESS, MANAGING } from '../../constants';
 
-import { SBASH__factory, BashTreasury__factory, AtbashBondDepository__factory, Distributor__factory,  } from '../../types'
-import { waitFor } from '../txHelper'
+import { SBASH__factory, BashTreasury__factory, AtbashBondDepository__factory, Distributor__factory,  } from '../../../types'
+import { waitFor } from '../../txHelper'
+import { Guid } from 'guid-typescript';
 
 const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
     const { deployments, getNamedAccounts, network, ethers } = hre;
@@ -52,16 +53,18 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
     const sbash = SBASH__factory.connect(sbashDeployment.address, signer);
     await waitFor(treasury.queue(MANAGING.SBASH, sbash.address));
 
-    console.log("QUEUES done");
+    console.log("Setting up treasury for staking distributor and bonds");
 
     // Toggles
+    
+    // Taken care of in treasury init
     // Deployer
-    await waitFor(treasury.toggle(MANAGING.RESERVEDEPOSITOR, deployer, ZERO_ADDRESS));
-    await waitFor(treasury.toggle(MANAGING.RESERVEMANAGER, deployer, ZERO_ADDRESS));
-    await waitFor(treasury.toggle(MANAGING.LIQUIDITYDEPOSITOR, deployer, ZERO_ADDRESS));
-    await waitFor(treasury.toggle(MANAGING.LIQUIDITYMANAGER, deployer, ZERO_ADDRESS));
-    await waitFor(treasury.toggle(MANAGING.DEBTOR, deployer, ZERO_ADDRESS));
-    await waitFor(treasury.toggle(MANAGING.REWARDMANAGER, deployer, ZERO_ADDRESS));
+    // await waitFor(treasury.toggle(MANAGING.RESERVEDEPOSITOR, deployer, ZERO_ADDRESS));
+    // await waitFor(treasury.toggle(MANAGING.RESERVEMANAGER, deployer, ZERO_ADDRESS));
+    // await waitFor(treasury.toggle(MANAGING.LIQUIDITYDEPOSITOR, deployer, ZERO_ADDRESS));
+    // await waitFor(treasury.toggle(MANAGING.LIQUIDITYMANAGER, deployer, ZERO_ADDRESS));
+    // await waitFor(treasury.toggle(MANAGING.DEBTOR, deployer, ZERO_ADDRESS));
+    // await waitFor(treasury.toggle(MANAGING.REWARDMANAGER, deployer, ZERO_ADDRESS));
 
     // DAI Bond
     await waitFor(treasury.toggle(MANAGING.RESERVEDEPOSITOR, daiBond.address, ZERO_ADDRESS));
@@ -79,11 +82,21 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
     // Distributor - Mints Rewards
     await waitFor(treasury.toggle(MANAGING.REWARDMANAGER, distributor.address, ZERO_ADDRESS));
 
-    // sBash
-    await waitFor(treasury.toggle(MANAGING.SBASH, sbash.address, ZERO_ADDRESS));
+    // taken care of in init
+    // // sBash
+    // await waitFor(treasury.toggle(MANAGING.SBASH, sbash.address, ZERO_ADDRESS));
 
-    console.log("ALL TOGGLES DONE");
+    console.log("Treasury setup for staking and bonds completed");
+
+    return true; // don't run again
 };
 
-func.dependencies = ["Token", "Staking", "Bonds", CONTRACTS.treasury, CONTRACTS.bondDepository, CONTRACTS.stakingDistributor, CONTRACTS.sBash];
+func.id = "2022-launch-treasury-bonds-and-staking";
+//func.tags = ["TreasurySetupForBondsAndStaking"]
+func.tags = ["Launch"];
+
+func.dependencies = [CONTRACTS.treasury, 
+                    CONTRACTS.bondDepository, 
+                    CONTRACTS.stakingDistributor, 
+                    CONTRACTS.sBash];
 export default func;

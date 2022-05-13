@@ -1,9 +1,12 @@
 import * as dotenv from "dotenv";
+import { BigNumber } from "ethers";
 dotenv.config();
 
 export const CONTRACTS: Record<string, string> = {
+    // Common
     DAI: "DAI",
-    MockERC20: "MockERC20",
+
+    // Atbash
     aBash: "aBASHERC20",
     atbashPresale: "Presale",
     bash: "BASHERC20Token",
@@ -16,9 +19,14 @@ export const CONTRACTS: Record<string, string> = {
     stakingHelper: "StakingHelper",
     stakingWarmup: "StakingWarmup",
     wsBash: "wsBASH",
-    bondDepository: "atbashBondDepository", // dai
-    bashDaiBondDepository: "bashDaiBondDepository",
-    bashDaiLpPair: "BashDaiUniswapPairV2",
+    bondDepository: "atbashBondDepository", // dai stable bond
+    bashDaiBondDepository: "bashDaiBondDepository", // bash-dai LP bond
+    bashDaiLpPair: "BashDaiUniswapPairV2", // uniswap pair
+    
+    // Supportive & Fixtures
+    MockERC20: "MockERC20",
+    UniswapV2Factory: "UniswapV2Factory",
+    UniswapV2Pair: "UniswapV2Pair"
 };
 
 // Constructor Arguments
@@ -38,6 +46,14 @@ export const INITIAL_MINT_PROFIT = "1000000000000";
 export const WARMUP_PERIOD = "0";
 export const NEXT_EPOCH_TIME =  parseInt( JSON.stringify((date / 1000) + EPOCH_LENGTH_IN_SECONDS));
 export const STAKING_REWARD_RATE = "5000";
+
+// 25k worth of liquidity (25k DAI)
+// 5k worth of bash (5k DAI)
+export const INITIAL_DAI_RESERVES_AMOUNT = 5000;    //BigNumber.from("5000"); // 5k DAI
+export const INITIAL_BASH_LIQUIDITY_IN_DAI = 25000;     // bash needed at deposit not including what's needed for LP
+export const BASH_STARTING_MARKET_VALUE_IN_DAI = 80;    // 1 BASH:80 DAI
+
+// export const INITIAL_BASH_LP_AMOUNT = ; //BigNumber.from("312" + "500000000");  // bash used for LP, the rest for treasury
 
 export const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 

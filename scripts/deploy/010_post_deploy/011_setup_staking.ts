@@ -1,9 +1,9 @@
 import {HardhatRuntimeEnvironment} from 'hardhat/types';
 import {DeployFunction} from 'hardhat-deploy/types';
-import { CONTRACTS, STAKING_REWARD_RATE, WARMUP_PERIOD } from '../constants';
+import { CONTRACTS, STAKING_REWARD_RATE, WARMUP_PERIOD } from '../../constants';
 
-import { Distributor__factory, ATBASHStaking__factory } from '../../types'
-import { waitFor } from '../txHelper'
+import { Distributor__factory, ATBASHStaking__factory } from '../../../types'
+import { waitFor } from '../../txHelper'
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const { deployments, getNamedAccounts, network, ethers } = hre;
@@ -11,8 +11,6 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const { deployer } = await getNamedAccounts();
     const signer = ethers.provider.getSigner(deployer);
 
-    // todo: how to test if already done?
-    // todo: how to make this idempotent
     const stakingDeployment = await deployments.get(CONTRACTS.staking);
     const staking = ATBASHStaking__factory.connect(stakingDeployment.address, signer);
 
@@ -28,7 +26,14 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
     await waitFor(staking.setWarmup(WARMUP_PERIOD));
     console.log(`Warmup Period: ${WARMUP_PERIOD}`);
+
+    return true;
 };
 
-func.dependencies = [CONTRACTS.stakingDistributor, CONTRACTS.staking, CONTRACTS.stakingWarmup, "Staking"];
+func.id = "2022-launch-staking";
+func.tags = ["Launch"];
+
+func.dependencies = [CONTRACTS.stakingDistributor, 
+                        CONTRACTS.staking, 
+                        CONTRACTS.stakingWarmup];
 export default func;

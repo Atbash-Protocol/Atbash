@@ -29,7 +29,10 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 };
 
 func.skip = async (hre: HardhatRuntimeEnvironment) => {
-    return hre.network.name.toLowerCase() != "mainnet";
+    const skipping = hre.network.name.toLowerCase() == "mainnet";
+    if (skipping) 
+        console.warn("Skipping DAI deployment for mainnet");
+    return skipping;
 };
 
 func.tags = [CONTRACTS.DAI, "Token"];

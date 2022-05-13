@@ -1,8 +1,8 @@
 import {HardhatRuntimeEnvironment} from 'hardhat/types';
-import {DeployFunction} from 'hardhat-deploy/types';
-import { CONTRACTS, MANAGING, ZERO_ADDRESS } from '../constants';
-import { BashTreasury__factory } from '../../types';
-import { waitFor } from '../txHelper';
+import {DeployFunction, Deployment} from 'hardhat-deploy/types';
+import { CONTRACTS, MANAGING, ZERO_ADDRESS } from '../../constants';
+import { BashTreasury__factory } from '../../../types';
+import { waitFor } from '../../txHelper';
 
 const func: DeployFunction = async function(hre: HardhatRuntimeEnvironment) {
     const { deployments, getNamedAccounts, network, ethers } = hre;
@@ -21,7 +21,15 @@ const func: DeployFunction = async function(hre: HardhatRuntimeEnvironment) {
         console.log("deployer enabled as liquidity manager");
     }
 
-    const bashDaiLpPairDeployment = await deployments.get(CONTRACTS.bashDaiLpPair);
+    let bashDaiLpPairDeployment: Deployment;
+    try {
+        bashDaiLpPairDeployment = await deployments.get(CONTRACTS.bashDaiLpPair);
+    }
+    catch (e: any) {
+        console.error(`BASH-DAI LP deployment not found for network: ${hre.network.name}, Exception: ${e}`);
+        throw "BASH-DAI LP deployment not found";
+    }
+
     if (!await treasury.isLiquidityToken(bashDaiLpPairDeployment.address)) {
         await waitFor(treasury.queue(MANAGING.LIQUIDITYTOKEN, bashDaiLpPairDeployment.address));
         await waitFor(treasury.toggle(MANAGING.LIQUIDITYTOKEN, bashDaiLpPairDeployment.address, bashDaiBondingCalculatorDeployment.address));
@@ -44,6 +52,7 @@ const func: DeployFunction = async function(hre: HardhatRuntimeEnvironment) {
     }
 
     console.log("Treasury setup completed for BASH-DAI");
+    return true;
     // reward minting is only needed for BASH
     // const distributorDeployment = await deployments.get(CONTRACTS.stakingDistributor);
     // await waitFor(treasury.queue(MANAGING.REWARDMANAGER, distributorDeployment.address));
@@ -58,6 +67,10 @@ const func: DeployFunction = async function(hre: HardhatRuntimeEnvironment) {
     // console.log(`Deposited ${balance} BASH-DAI to treasury`);
 };
 
-func.tags = ["bash-dai-bond", "setup-treasury-for-bashdai"];
-func.dependencies = [CONTRACTS.treasury, CONTRACTS.bashDaiBondingCalculator, CONTRACTS.bashDaiBondDepository, CONTRACTS.bashDaiLpPair];
+func.id = "2022-launch-treasury-for-bashdai";
+func.tags = ["Launch"];
+func.dependencies = [CONTRACTS.treasury, 
+                        CONTRACTS.bashDaiBondingCalculator, 
+                        CONTRACTS.bashDaiBondDepository, 
+                        CONTRACTS.bashDaiLpPair];
 export default func;

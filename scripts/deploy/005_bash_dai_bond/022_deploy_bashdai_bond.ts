@@ -1,9 +1,9 @@
 import {HardhatRuntimeEnvironment} from 'hardhat/types';
-import {DeployFunction} from 'hardhat-deploy/types';
-import { CONTRACTS } from '../constants';
+import {DeployFunction, Deployment} from 'hardhat-deploy/types';
+import { CONTRACTS } from '../../constants';
 
-import { BASHERC20Token__factory, BashTreasury__factory, AtbashBondDepository__factory } from '../../types';
-import { waitFor } from '../txHelper';
+import { BASHERC20Token__factory, BashTreasury__factory, AtbashBondDepository__factory } from '../../../types';
+import { waitFor } from '../../txHelper';
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const { deployments, getNamedAccounts, network, ethers } = hre;
@@ -14,10 +14,18 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const bashDeployment = await deployments.get(CONTRACTS.bash);
     const treasuryDeployment = await deployments.get(CONTRACTS.treasury);
     const bashDaiBondingCalculatorDeployment = await deployments.get(CONTRACTS.bashDaiBondingCalculator);
-    const bashDaiLpPairDeployment = await deployments.get(CONTRACTS.bashDaiLpPair);
+
+    let bashDaiLpPairDeployment: Deployment;
+    try {
+        bashDaiLpPairDeployment = await deployments.get(CONTRACTS.bashDaiLpPair);
+    }
+    catch (e: any) {
+        console.error(`BASH-DAI LP deployment not found for network: ${hre.network.name}, Exception: ${e}`);
+        throw "BASH-DAI LP deployment not found";
+    }
 
     const daoAddress = deployer;
-    console.log(`Using provider address as DAO Address: DAO Address ${daoAddress}`)
+    console.log(`Using deployer address as DAO Address: DAO Address ${daoAddress}`)
     const bashDaiBondDeployment = await deploy(CONTRACTS.bashDaiBondDepository, {
         contract: CONTRACTS.bondDepository, // reusing existing contract, instantiate with new name
         from: deployer,
@@ -69,6 +77,10 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     console.log("Set staking helper for BASH-DAI bond");
 };
 
-func.dependencies = [CONTRACTS.bash, CONTRACTS.treasury, CONTRACTS.stakingHelper, CONTRACTS.bashDaiBondingCalculator, CONTRACTS.bashDaiBondDepository];
-func.tags = ["bash-dai-bond"];
+func.dependencies = [CONTRACTS.bash, 
+                    CONTRACTS.treasury, 
+                    CONTRACTS.stakingHelper, 
+                    CONTRACTS.bashDaiBondingCalculator, 
+                    CONTRACTS.bashDaiLpPair];
+func.tags = [CONTRACTS.bashDaiBondDepository, "BashDaiBond"];
 export default func;

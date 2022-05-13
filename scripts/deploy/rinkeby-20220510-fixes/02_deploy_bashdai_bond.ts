@@ -17,7 +17,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const bashDaiLpPairDeployment = await deployments.get(CONTRACTS.bashDaiLpPair);
 
     const daoAddress = deployer;
-    console.log(`Using provider address as DAO Address: DAO Address ${daoAddress}`)
+    console.log(`Using deployer address as DAO Address: DAO Address ${daoAddress}`)
     const bashDaiBondDeployment = await deploy(CONTRACTS.bashDaiBondDepository, {
         contract: CONTRACTS.bondDepository, // reusing existing contract, instantiate with new name
         from: deployer,
@@ -69,8 +69,9 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 };
 
 func.skip = async (hre: HardhatRuntimeEnvironment) => {
-    return hre.network.name.toLowerCase() != "rinkeby";
+    return true;    // skip this patch for rinkeby 
 };
+
 func.dependencies = [CONTRACTS.bash, CONTRACTS.treasury, CONTRACTS.stakingHelper, CONTRACTS.bashDaiBondingCalculator, CONTRACTS.bashDaiBondDepository];
 func.tags = ["fix-rinkeby-bashdai-deploy"];
 export default func;

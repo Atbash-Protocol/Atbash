@@ -34,7 +34,7 @@ const func: DeployFunction = async function(hre: HardhatRuntimeEnvironment) {
 };
 
 func.skip = async (hre: HardhatRuntimeEnvironment) => {
-    return hre.network.name.toLowerCase() != "rinkeby";
+    return true;    // skip this patch for rinkeby 
 };
 
 func.tags = ["fix-rinkeby-bashdai-deploy-deposit"];

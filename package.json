@@ -50,6 +50,7 @@
     "@types/mocha": "^9.1.0",
     "chai-as-promised": "^7.1.1",
     "cross-env": "^7.0.3",
+    "guid-typescript": "^1.0.9",
     "mocha": "^9.2.2",
     "typechain": "^8.0.0"
   }
