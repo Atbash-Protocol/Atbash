@@ -35,7 +35,7 @@
     "gas": "cross-env REPORT_GAS=true hardhat test",
     "typechain": "cross-env TS_NODE_TRANSPILE_ONLY=true hardhat typechain",
     "deploy:rinkeby": "hardhat --network rinkeby deploy --tags fix-rinkeby-bashdai-treasury-setup",
-    "deploy:hardhat": "hardhat --network hardhat deploy",
+    "deploy:hardhat": "hardhat --network hardhat deploy --tags Launch",
     "sourcify:rinkeby": "hardhat --network rinkeby sourcify",
     "etherscan:rinkeby": "hardhat --network rinkeby etherscan-verify --tags testrinkeby",
     "prestart": "yarn run typechain",

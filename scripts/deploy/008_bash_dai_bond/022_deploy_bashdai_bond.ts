@@ -1,6 +1,6 @@
 import {HardhatRuntimeEnvironment} from 'hardhat/types';
 import {DeployFunction, Deployment} from 'hardhat-deploy/types';
-import { CONTRACTS } from '../../constants';
+import { CONTRACTS, getConfig } from '../../constants';
 
 import { BASHERC20Token__factory, BashTreasury__factory, AtbashBondDepository__factory } from '../../../types';
 import { waitFor } from '../../txHelper';
@@ -41,9 +41,11 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
     if (!bashDaiBondDeployment.newlyDeployed) return;   // todo: idempotent?
 
+    const config = getConfig(hre.network.name);
+
     // todo: what are the bashdai terms?
     const bashDaiBondBCV = '120';               // DAI bond BCV         // Halsey: So then the start should be 120
-    const bondVestingLength = '864000';     // Bond vesting length seconds
+    const bondVestingLength = config.bondVestingLength; // '864000';     // Bond vesting length seconds
     const minBondPrice = '8000';            // Min bond price
     const maxBondPayout = '4'               // Max bond payout     /
     const bondFee = '0';                    // DAO fee for bond

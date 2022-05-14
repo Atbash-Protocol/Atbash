@@ -48,12 +48,10 @@ export const NEXT_EPOCH_TIME =  parseInt( JSON.stringify((date / 1000) + EPOCH_L
 export const STAKING_REWARD_RATE = "5000";
 
 // 25k worth of liquidity (25k DAI)
-// 5k worth of bash (5k DAI)
+// 5k of bash (5k DAI) in reserve
 export const INITIAL_DAI_RESERVES_AMOUNT = 5000;    //BigNumber.from("5000"); // 5k DAI
 export const INITIAL_BASH_LIQUIDITY_IN_DAI = 25000;     // bash needed at deposit not including what's needed for LP
 export const BASH_STARTING_MARKET_VALUE_IN_DAI = 80;    // 1 BASH:80 DAI
-
-// export const INITIAL_BASH_LP_AMOUNT = ; //BigNumber.from("312" + "500000000");  // bash used for LP, the rest for treasury
 
 export const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
@@ -68,4 +66,30 @@ export enum MANAGING {
     DEBTOR = 7, 
     REWARDMANAGER = 8, 
     SBASH = 9 
+}
+
+interface INetworkOptions {
+    EPOCH_LENGTH_IN_SECONDS: number,
+    FIRST_EPOCH_NUMBER: string,
+    FIRST_EPOCH_TIME: number,
+    bondVestingLength: string,
+}
+export function getConfig(network: string) : INetworkOptions {
+    switch (network) {
+        case "hardhat":
+            return {
+                EPOCH_LENGTH_IN_SECONDS: 60 * 10,
+                FIRST_EPOCH_NUMBER,
+                FIRST_EPOCH_TIME,
+                bondVestingLength: "600",   // 600s
+            };
+        default:
+            return {
+                EPOCH_LENGTH_IN_SECONDS,
+                FIRST_EPOCH_NUMBER,
+                FIRST_EPOCH_TIME,
+                bondVestingLength: "864000", // 10 days
+            }
+    }
+    
 }

@@ -1,6 +1,6 @@
 import {HardhatRuntimeEnvironment} from 'hardhat/types';
 import {DeployFunction} from 'hardhat-deploy/types';
-import { CONTRACTS, ZERO_ADDRESS } from '../../constants';
+import { CONTRACTS, getConfig, ZERO_ADDRESS } from '../../constants';
 
 import { BASHERC20Token__factory, DAI__factory, BashTreasury__factory, AtbashBondDepository__factory, StakingHelper__factory } from '../../../types';
 import { waitFor } from '../../txHelper';
@@ -28,8 +28,10 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     // todo: get dai bond
     var daiBondDeployment = await deployments.get(CONTRACTS.bondDepository);
     
+    const config = getConfig(hre.network.name);
+
     const daiBondBCV = '120';               // DAI bond BCV         // Halsey: So then the start should be 120
-    const bondVestingLength = '864000';     // Bond vesting length seconds
+    const bondVestingLength = config.bondVestingLength; // '864000';     // Bond vesting length seconds
     const minBondPrice = '8000';            // Min bond price (cents)
     const maxBondPayout = '4'               // Max bond payout     /
     const bondFee = '0';                    // DAO fee for bond
