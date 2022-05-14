@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 pragma solidity 0.7.5;
 
+import {ITreasury} from "./interfaces/ITreasury.sol";
+
 interface IOwnable {
   function policy() external view returns (address);
 
@@ -818,19 +820,6 @@ library FixedPoint {
   }
 }
 
-interface ITreasury {
-  function deposit(
-    uint256 _amount,
-    address _token,
-    uint256 _profit
-  ) external returns (bool);
-
-  function valueOfToken(address _token, uint256 _amount)
-    external
-    view
-    returns (uint256 value_);
-}
-
 interface IBondCalculator {
   function valuation(address _LP, uint256 _amount)
     external
@@ -1086,7 +1075,7 @@ contract MockOlympusBondDepository is Ownable {
 
     require(_maxPrice >= nativePrice, "Slippage limit: more than max price"); // slippage protection
 
-    uint256 value = ITreasury(treasury).valueOfToken(principle, _amount);
+    uint256 value = ITreasury(treasury).tokenValue(principle, _amount);
     uint256 payout = payoutFor(value); // payout to bonder is computed
 
     require(payout >= 10000000, "Bond too small"); // must be > 0.01 OHM ( underflow protection )

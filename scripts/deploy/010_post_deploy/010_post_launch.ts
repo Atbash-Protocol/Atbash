@@ -39,7 +39,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     // Distributor staking reward rate
     // const stakingDeployment = await deployments.get(CONTRACTS.staking);
     const distributorDeployment = await deployments.get(CONTRACTS.stakingDistributor);
-    const distributor = Distributor__factory.connect(distributorDeployment.address, signer);
+    const distributor = await Distributor__factory.connect(distributorDeployment.address, signer);
     await waitFor(distributor.addRecipient(stakingDeployment.address, STAKING_REWARD_RATE));
     console.log(`Distributor added staking contract as recipient with reward rate: ${STAKING_REWARD_RATE}`);
     ///////////

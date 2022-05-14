@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 pragma solidity 0.7.5;
 
+import {ITreasury} from "./interfaces/ITreasury.sol";
+
 interface IOwnable {
   function policy() external view returns (address);
 
@@ -655,12 +657,6 @@ interface AggregatorV3Interface {
     );
 }
 
-interface ITreasury {
-    function deposit( uint _amount, address _token, uint _profit ) external returns ( bool );
-    function valueOf( address _token, uint _amount ) external view returns ( uint value_ );
-    function mintRewards( address _recipient, uint _amount ) external;
-}
-
 interface IStaking {
     function stake( uint _amount, address _recipient ) external returns ( bool );
 }
@@ -889,7 +885,7 @@ contract SnowbankPriceFeedBondDepository is Ownable {
 
         require( _maxPrice >= nativePrice, "Slippage limit: more than max price" ); // slippage protection
 
-        uint value = ITreasury( treasury ).valueOf( principle, _amount );
+        uint value = ITreasury( treasury ).tokenValue( principle, _amount );
         uint payout = payoutFor( value ); // payout to bonder is computed
 
         require( payout >= 10000000, "Bond too small" ); // must be > 0.01 OHM ( underflow protection )

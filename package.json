@@ -41,7 +41,8 @@
     "prestart": "yarn run typechain",
     "start": "hardhat node --network hardhat",
     "console:hardhat": "hardhat console --network localhost",
-    "console:rinkeby": "hardhat console --network rinkeby"
+    "console:rinkeby": "hardhat console --network rinkeby",
+    "test:debug": "hardhat --network localhost run ./scripts/sandbox.ts"
   },
   "dependencies": {
     "@defi-wonderland/smock": "^2.0.7",

@@ -14,24 +14,28 @@ const func: DeployFunction = async function(hre: HardhatRuntimeEnvironment) {
     const { deployer } = await getNamedAccounts();
     const signer = ethers.provider.getSigner(deployer);
 
-    const bashLiquidityNeededAtMarketLaunchPricing = INITIAL_BASH_LIQUIDITY_IN_DAI / BASH_STARTING_MARKET_VALUE_IN_DAI;
-    const bashLiquidityNeededAtMarketLaunchPricingInWei = parseEther(bashLiquidityNeededAtMarketLaunchPricing.toString());
-    const initialDaiReserveAmountInWei = parseEther(INITIAL_DAI_RESERVES_AMOUNT.toString());
+    // const bashLiquidityNeededAtMarketLaunchPricing = INITIAL_BASH_LIQUIDITY_IN_DAI / BASH_STARTING_MARKET_VALUE_IN_DAI;
+    // const bashLiquidityNeededAtMarketLaunchPricingInWei = parseEther(bashLiquidityNeededAtMarketLaunchPricing.toString());
+    // const initialDaiReserveAmountInWei = parseEther(INITIAL_DAI_RESERVES_AMOUNT.toString());
 
-    const daiAmount = initialDaiReserveAmountInWei
-                        .add(bashLiquidityNeededAtMarketLaunchPricingInWei);
+    // const daiAmount = initialDaiReserveAmountInWei
+    //                     .add(bashLiquidityNeededAtMarketLaunchPricingInWei);
 
-    // const daiAmount = BigNumber.from(INITIAL_DAI_RESERVES_AMOUNT)
-    //                         .add(bashLiquidityNeededAtMarketLaunchPricing)
-    //                         .mul(BigNumber.from(10).pow(18));
+    // // const daiAmount = BigNumber.from(INITIAL_DAI_RESERVES_AMOUNT)
+    // //                         .add(bashLiquidityNeededAtMarketLaunchPricing)
+    // //                         .mul(BigNumber.from(10).pow(18));
 
-    //const bashProfit = "10000000000000"       // deposit 10k bash and mint 90k back to depositor
-    // const bashProfit = "312" + "500000000";    // bash used for LP, the rest for treasury 
-    const bashLiquidityNeededAtMarketLaunchPricingInGwei = 
-                    parseUnits(bashLiquidityNeededAtMarketLaunchPricing.toString(), "gwei");
-    const bashProfit = bashLiquidityNeededAtMarketLaunchPricingInGwei;
-    console.log(`Check: treasury deposit:  DAI: ${daiAmount.toString()}, bashProfit: ${bashProfit}`);
+    // //const bashProfit = "10000000000000"       // deposit 10k bash and mint 90k back to depositor
+    // // const bashProfit = "312" + "500000000";    // bash used for LP, the rest for treasury 
+    // const bashLiquidityNeededAtMarketLaunchPricingInGwei = 
+    //                 parseUnits(bashLiquidityNeededAtMarketLaunchPricing.toString(), "gwei");
+    // const bashProfit = bashLiquidityNeededAtMarketLaunchPricingInGwei;
+    // console.log(`Check: treasury deposit:  DAI: ${daiAmount.toString()}, bashProfit: ${bashProfit}`);
 
+    const bashDeployment = await deployments.get(CONTRACTS.bash);
+    const bash = await BASHERC20Token__factory.connect(bashDeployment.address, signer);
+    const bashBalance = await bash.balanceOf(deployer);
+    console.log(`Bash balance: ${bashBalance}`)
     // const bashProfit = BigNumber.from(bashLiquidityNeededAtMarketLaunchPricing)
     //                     .mul(BigNumber.from(10).pow(9));
                         

@@ -72,15 +72,18 @@ interface INetworkOptions {
     EPOCH_LENGTH_IN_SECONDS: number,
     FIRST_EPOCH_NUMBER: string,
     FIRST_EPOCH_TIME: number,
+    NEXT_EPOCH_TIME: number,
     bondVestingLength: string,
 }
 export function getConfig(network: string) : INetworkOptions {
     switch (network) {
         case "hardhat":
+            const epochLength = 60 * 10;
             return {
-                EPOCH_LENGTH_IN_SECONDS: 60 * 10,
+                EPOCH_LENGTH_IN_SECONDS: epochLength,
                 FIRST_EPOCH_NUMBER,
                 FIRST_EPOCH_TIME,
+                NEXT_EPOCH_TIME: parseInt( JSON.stringify((date / 1000) + epochLength)),
                 bondVestingLength: "600",   // 600s
             };
         default:
@@ -88,6 +91,7 @@ export function getConfig(network: string) : INetworkOptions {
                 EPOCH_LENGTH_IN_SECONDS,
                 FIRST_EPOCH_NUMBER,
                 FIRST_EPOCH_TIME,
+                NEXT_EPOCH_TIME,
                 bondVestingLength: "864000", // 10 days
             }
     }

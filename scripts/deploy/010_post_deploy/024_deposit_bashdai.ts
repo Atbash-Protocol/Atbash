@@ -2,9 +2,9 @@ import {HardhatRuntimeEnvironment} from 'hardhat/types';
 import {DeployFunction, Deployment} from 'hardhat-deploy/types';
 import { CONTRACTS } from '../../constants';
 
-import { BashTreasury__factory, UniswapV2Pair__factory } from '../../../types';
+import { BASHERC20Token__factory, BashTreasury__factory, UniswapV2Pair__factory } from '../../../types';
 import { waitFor } from '../../txHelper';
-import { Contract } from 'ethers';
+import { BigNumber, Contract } from 'ethers';
 
 const func: DeployFunction = async function(hre: HardhatRuntimeEnvironment) {
     const { deployments, getNamedAccounts, network, ethers } = hre;
@@ -31,9 +31,17 @@ const func: DeployFunction = async function(hre: HardhatRuntimeEnvironment) {
     console.log(`Token 0: ${await bashDai.token0()}, token 1: ${await bashDai.token1()}`);
 
     console.log(`Current deployer BASH-DAI balance: ${balance}, address: ${bashDaiLpPairDeployment.address}`);
-    const profit = 0;    
+    // const profit = 0;
+    // todo: what should we do with this profit? 
+    // todo: why double deposit 25k?
+    const profit = await treasury.tokenValue(bashDaiLpPairDeployment.address, balance.toString());
+    console.log(`${balance} of BASH-DAI is worth ${profit} BASH, ${typeof(profit)}`);   
     await waitFor(treasury.deposit(balance, bashDaiLpPairDeployment.address, profit));
     console.log(`Deposited ${balance} BASH-DAI to treasury`);
+
+    const bashDeployment = await deployments.get(CONTRACTS.bash);
+    const bash = await BASHERC20Token__factory.connect(bashDeployment.address, signer);
+    console.log(`Deployer BASH balance: ${await bash.balanceOf(deployer)}`);
     return true;
 };
 

@@ -6,6 +6,7 @@
 pragma solidity 0.7.5;
 
 import {IERC20} from "./interfaces/IERC20.sol";
+import {ITreasury} from "./interfaces/ITreasury.sol";
 import "hardhat/console.sol";
 
 library SafeMath {
@@ -296,7 +297,7 @@ interface IBondCalculator {
         returns (uint256 _value);
 }
 
-contract BashTreasury is Ownable {
+contract BashTreasury is Ownable, ITreasury {
     using SafeMath for uint256;
     using SafeMath for uint32;
     using SafeERC20 for IERC20;
@@ -419,7 +420,7 @@ contract BashTreasury is Ownable {
         uint256 _amount,
         address _token,
         uint256 _profit
-    ) external returns (uint256 send_) {
+    ) external override returns (uint256 send_) {
         require(
             isReserveToken[_token] || isLiquidityToken[_token],
             "Not accepted"
@@ -433,7 +434,7 @@ contract BashTreasury is Ownable {
             require(isLiquidityDepositor[msg.sender], "Not approved");
         }
 
-        uint256 value = valueOf(_token, _amount); // value of token in BASH
+        uint256 value = tokenValue(_token, _amount); // value of token in BASH
         // mint BASH needed and store amount of rewards for distribution
         console.log("%s sub %s", value, _profit);
         send_ = value.sub(_profit);
@@ -454,7 +455,7 @@ contract BashTreasury is Ownable {
         require(isReserveToken[_token], "Not accepted"); // Only reserves can be used for redemptions
         require(isReserveSpender[msg.sender] == true, "Not approved");
 
-        uint256 value = valueOf(_token, _amount);
+        uint256 value = tokenValue(_token, _amount);
         IOHMERC20(Bash).burnFrom(msg.sender, value);
 
         totalReserves = totalReserves.sub(value);
@@ -474,7 +475,7 @@ contract BashTreasury is Ownable {
         require(isDebtor[msg.sender], "Not approved");
         require(isReserveToken[_token], "Not accepted");
 
-        uint256 value = valueOf(_token, _amount);
+        uint256 value = tokenValue(_token, _amount);
 
         uint256 maximumDebt = IERC20(MEMOries).balanceOf(msg.sender); // Can only borrow against sOHM held
         uint256 availableDebt = maximumDebt.sub(debtorBalance[msg.sender]);
@@ -502,7 +503,7 @@ contract BashTreasury is Ownable {
 
         IERC20(_token).safeTransferFrom(msg.sender, address(this), _amount);
 
-        uint256 value = valueOf(_token, _amount);
+        uint256 value = tokenValue(_token, _amount);
         debtorBalance[msg.sender] = debtorBalance[msg.sender].sub(value);
         totalDebt = totalDebt.sub(value);
 
@@ -539,7 +540,7 @@ contract BashTreasury is Ownable {
             require(isReserveManager[msg.sender], "Not approved");
         }
 
-        uint256 value = valueOf(_token, _amount);
+        uint256 value = tokenValue(_token, _amount);
         require(value <= excessReserves(), "Insufficient reserves");
 
         totalReserves = totalReserves.sub(value);
@@ -553,7 +554,7 @@ contract BashTreasury is Ownable {
     /**
         @notice send epoch reward to staking contract
      */
-    function mintRewards(address _recipient, uint256 _amount) external {
+    function mintRewards(address _recipient, uint256 _amount) override external {
         require(isRewardManager[msg.sender], "Not approved");
         require(_amount <= excessReserves(), "Insufficient reserves");
 
@@ -578,7 +579,7 @@ contract BashTreasury is Ownable {
         uint256 reserves;
         for (uint256 i = 0; i < reserveTokens.length; i++) {
             reserves = reserves.add(
-                valueOf(
+                tokenValue(
                     reserveTokens[i],
                     IERC20(reserveTokens[i]).balanceOf(address(this))
                 )
@@ -586,7 +587,7 @@ contract BashTreasury is Ownable {
         }
         for (uint256 i = 0; i < liquidityTokens.length; i++) {
             reserves = reserves.add(
-                valueOf(
+                tokenValue(
                     liquidityTokens[i],
                     IERC20(liquidityTokens[i]).balanceOf(address(this))
                 )
@@ -603,9 +604,10 @@ contract BashTreasury is Ownable {
         @param _amount uint
         @return value_ uint
      */
-    function valueOf(address _token, uint256 _amount)
+    function tokenValue(address _token, uint256 _amount)
         public
         view
+        override
         returns (uint256 value_)
     {
         if (isReserveToken[_token]) {
@@ -620,6 +622,22 @@ contract BashTreasury is Ownable {
             );
         }
     }
+
+    // function tokenValue(address _token, uint256 _amount) public view override returns (uint256 value_)
+    // {
+    //     if (isReserveToken[_token]) {
+    //         // convert amount to match Bash decimals
+    //         value_ = _amount.mul(10**IERC20(Bash).decimals()).div(
+    //             10**IERC20(_token).decimals()
+    //         );
+    //     } else if (isLiquidityToken[_token]) {
+    //         value_ = IBondCalculator(bondCalculator[_token]).valuation(
+    //             _token,
+    //             _amount
+    //         );
+    //     }
+    // }
+
 
     /**
         @notice queue address to change boolean in mapping
