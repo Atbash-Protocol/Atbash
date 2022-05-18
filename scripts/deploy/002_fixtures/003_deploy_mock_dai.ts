@@ -20,7 +20,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
     if (!result.newlyDeployed) return;
 
-    const mockDai = DAI__factory.connect(result.address, signer);
+    const mockDai = await DAI__factory.connect(result.address, signer);
     
     const daiAmount = "150000000000000000000000000000000000000000000";
     await mockDai.mint(daiAmount);

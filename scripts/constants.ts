@@ -25,8 +25,10 @@ export const CONTRACTS: Record<string, string> = {
     
     // Supportive & Fixtures
     MockERC20: "MockERC20",
+    WETH: "WETH",
     UniswapV2Factory: "UniswapV2Factory",
-    UniswapV2Pair: "UniswapV2Pair"
+    UniswapV2Pair: "UniswapV2Pair",
+    UniswapV2Router: "UniswapV2Router02"
 };
 
 // Constructor Arguments

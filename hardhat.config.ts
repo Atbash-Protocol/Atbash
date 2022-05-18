@@ -83,6 +83,7 @@ const config: HardhatUserConfig = {
   networks: {
     hardhat: {
       chainId: 1337,
+      allowUnlimitedContractSize: true
     },
     ropsten: {
       url: process.env.ROPSTEN_URL || "",
