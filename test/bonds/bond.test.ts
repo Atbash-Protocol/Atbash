@@ -67,7 +67,7 @@ describe("AtbashBondDepository", () => {
         daiFake = await smock.fake<IDai>("IDai");
         treasuryFake = await smock.fake<ITreasury>(CONTRACTS.treasury);
         bondingCalculatorFake = await smock.fake<ATBASHBondingCalculator>(CONTRACTS.bondingCalculator);
-        bashDaiFake = await smock.fake<IUniswapV2Pair>("contracts/uniswap/interfaces/IUniswapV2Pair.sol:IUniswapV2Pair");
+        bashDaiFake = await smock.fake<IUniswapV2Pair>("IUniswapV2Pair");
         stakingHelperFake = await smock.fake<IStakingHelper>(CONTRACTS.stakingHelper);
         stakingFake = await smock.fake<IStaking>(CONTRACTS.staking);
     });

@@ -2,7 +2,7 @@ import { HardhatRuntimeEnvironment } from 'hardhat/types';
 import { DeployFunction } from 'hardhat-deploy/types';
 import { CONTRACTS } from '../../constants';
 
-import { BASHERC20Token__factory, DAI__factory, UniswapV2Factory__factory, UniswapV2Pair__factory } from '../../../types'
+import { BASHERC20Token__factory, DAI__factory, UniswapV2Factory__factory } from '../../../types'
 
 import { waitFor } from '../../txHelper';
 

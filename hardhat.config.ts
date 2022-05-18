@@ -36,6 +36,12 @@ const config: HardhatUserConfig = {
         version: "0.6.12",
       },
       {
+        version: "0.6.6",
+      },
+      {
+        version: "0.5.16"
+      },
+      {
         version: "0.7.5",
         settings: {
           optimizer: {
@@ -103,6 +109,18 @@ const config: HardhatUserConfig = {
   etherscan: {
     apiKey: process.env.ETHERSCAN_API_KEY,
   },
+  external: {
+    contracts: [
+      {
+        artifacts: "",
+        deploy: ""
+      }
+    ],
+    deployments: {
+      hardhat: [],
+      rinkeby: [],
+    }
+  }
 };
 
 export default config;

@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 pragma solidity 0.7.5;
 
+import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol";
+
 library FullMath {
     function fullMul(uint256 x, uint256 y) private pure returns (uint256 l, uint256 h) {
         uint256 mm = mulmod(x, y, uint256(-1));
@@ -243,16 +245,6 @@ library SafeMath {
 
 interface IERC20 {
     function decimals() external view returns (uint8);
-}
-
-interface IUniswapV2ERC20 {
-    function totalSupply() external view returns (uint);
-}
-
-interface IUniswapV2Pair is IUniswapV2ERC20 {
-    function getReserves() external view returns (uint112 reserve0, uint112 reserve1, uint32 blockTimestampLast);
-    function token0() external view returns ( address );
-    function token1() external view returns ( address );
 }
 
 interface IBondingCalculator {

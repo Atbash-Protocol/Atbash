@@ -2,7 +2,7 @@
 pragma solidity 0.7.5;
 
 import {IERC20} from "./interfaces/IERC20.sol";
-import {IUniswapV2Pair} from "./uniswap/interfaces/IUniswapV2Pair.sol";
+import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol";
 
 library FullMath {
     function fullMul(uint256 x, uint256 y)

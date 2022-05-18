@@ -33,7 +33,7 @@ describe("AtbashBondingCalculator", () => {
     beforeEach(async () => {
         [owner, alice, bob, other, depositor] = await ethers.getSigners();
         bashFake = await smock.fake<IBash>("IBash");
-        bashDaiFake = await smock.fake<IUniswapV2Pair>("contracts/uniswap/interfaces/IUniswapV2Pair.sol:IUniswapV2Pair");
+        bashDaiFake = await smock.fake<IUniswapV2Pair>("IUniswapV2Pair");
         daiFake = await smock.fake<IDai>("IDai");
     });
 

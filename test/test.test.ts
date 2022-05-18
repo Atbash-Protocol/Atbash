@@ -18,7 +18,7 @@ import {
     BashTreasury,
     ATBASHBondingCalculator,
     IUniswapV2Pair,
-    UniswapV2Pair__factory,
+    IUniswapV2Pair__factory,
     // OlympusAuthority,
     // OlympusAuthority__factory,
 } from "../types";
@@ -58,11 +58,11 @@ describe("test", () => {
         const bashDaiLpPairDeployment = await deployments.get(CONTRACTS.bashDaiLpPair);
 
 
-        const bashDai = await UniswapV2Pair__factory.connect(bashDaiLpPairDeployment.address, signer);
+        const bashDai = await IUniswapV2Pair__factory.connect(bashDaiLpPairDeployment.address, signer);
         const balance = await bashDai.balanceOf(deployer);
 
 
-        const result = await treasury.valueOf(bashDaiLpPairDeployment.address, balance);
+        const result = await treasury.tokenValue(bashDaiLpPairDeployment.address, balance);
 
 
     });

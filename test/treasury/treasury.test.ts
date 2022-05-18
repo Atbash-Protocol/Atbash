@@ -53,7 +53,7 @@ describe("Treasury", () => {
         daiFake = await smock.fake<IDai>("IDai");
         sBashFake = await smock.fake<IsBash>("contracts/interfaces/IsBash.sol:IsBash");
         bondingCalculatorFake = await smock.fake<ATBASHBondingCalculator>(CONTRACTS.bondingCalculator);
-        bashDaiFake = await smock.fake<IUniswapV2Pair>("contracts/uniswap/interfaces/IUniswapV2Pair.sol:IUniswapV2Pair");
+        bashDaiFake = await smock.fake<IUniswapV2Pair>("IUniswapV2Pair");
     });
 
     describe("construction", () => {
