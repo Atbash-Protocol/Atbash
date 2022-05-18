@@ -1,9 +1,10 @@
 import {HardhatRuntimeEnvironment} from 'hardhat/types';
 import {DeployFunction} from 'hardhat-deploy/types';
-import { CONTRACTS } from '../../constants';
+import { BASH_STARTING_MARKET_VALUE_IN_DAI, CONTRACTS } from '../../constants';
 
 import { DAI__factory, UniswapV2Router02__factory } from '../../../types'
 import { getCurrentBlockTime } from '../../../test/utils/blocktime';
+import { BigNumber } from 'ethers';
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const { deployments, getNamedAccounts, network, ethers } = hre;
@@ -20,17 +21,23 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const uniswapRouterDeployment = await deployments.get(CONTRACTS.UniswapV2Router);
 
     const uniswapRouter = await UniswapV2Router02__factory.connect(uniswapRouterDeployment.address, signer);
-    
-    const dai = await DAI__factory.connect(daiDeployment.address, signer);
-    const amountIn = parseInt("880", 18);   // 11 worth of bash at 1:80
-    await dai.approve(uniswapRouterDeployment.address, amountIn);
 
-    const amountOut = parseInt("10", 9); // at least 10 bash
-    // const path = [daiDeployment.address, bashDeployment.address];
-    const path = [bashDeployment.address, daiDeployment.address];
+    var bashWanted = BigNumber.from(10);
+    var daiMax = bashWanted.mul(BASH_STARTING_MARKET_VALUE_IN_DAI).add(100);  // rough estimate, more accurate would be using pair to get marketvalue
+    
+    bashWanted = bashWanted.mul(BigNumber.from(10).pow(9));
+    daiMax = daiMax.mul(BigNumber.from(10).pow(18));
+
+    // const bashWanted2 = parseUnits("10", 9); // at least 10 bash
+
+    const dai = await DAI__factory.connect(daiDeployment.address, signer);
+    // const daiMax2 = parseUnits("1000", 18);   // 10 worth of bash at 1:80
+    await dai.approve(uniswapRouterDeployment.address, daiMax);
+
+    const path = [daiDeployment.address, bashDeployment.address];
 
     const deadline = await getCurrentBlockTime() + 1000;
-    await uniswapRouter.swapTokensForExactTokens(amountOut, amountIn, path, deployer, deadline);
+    await uniswapRouter.swapTokensForExactTokens(bashWanted, daiMax, path, deployer, deadline);
     console.log("Added BASH for deployer");
 };
 

@@ -77,6 +77,8 @@ interface INetworkOptions {
     NEXT_EPOCH_TIME: number,
     bondVestingLength: string,
 }
+
+// network specific options
 export function getConfig(network: string) : INetworkOptions {
     switch (network) {
         case "hardhat":
