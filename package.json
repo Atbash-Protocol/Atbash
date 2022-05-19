@@ -53,6 +53,14 @@
     "start": "hardhat node --network hardhat",
     "console:hardhat": "hardhat console --network localhost",
     "console:rinkeby": "hardhat console --network rinkeby",
-    "test:debug": "hardhat --network localhost run ./scripts/sandbox.ts"
+    "fork:execute": "node ./_scripts.js fork:run",
+    "fork:deploy": "node ./_scripts.js fork:deploy",
+    "fork:dev": "node ./_scripts.js fork:dev",
+    "fork:node": "node ./_scripts.js fork:node",
+    "fork:test": "node ./_scripts.js fork:test",
+    "test:debug": "hardhat --network localhost run ./scripts/sandbox.ts",
+
+    "fork:nodetest": "node ./_scripts.js fork:node mainnet --tags Token"
+
   }
 }

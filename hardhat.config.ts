@@ -7,10 +7,16 @@ import "@typechain/hardhat";
 import "hardhat-gas-reporter";
 import "@nomiclabs/hardhat-etherscan";
 import "solidity-coverage";
-
 import "hardhat-deploy";
 
+import {node_url, accounts, privateKey} from './scripts/network';
+
 dotenv.config();
+
+// While waiting for hardhat PR: https://github.com/nomiclabs/hardhat/pull/1542
+if (process.env.HARDHAT_FORK) {
+  process.env['HARDHAT_DEPLOY_FORK'] = process.env.HARDHAT_FORK;
+}
 
 // This is a sample Hardhat task. To learn how to create your own go to
 // https://hardhat.org/guides/create-task.html
@@ -83,24 +89,38 @@ const config: HardhatUserConfig = {
   networks: {
     hardhat: {
       chainId: 1337,
-      allowUnlimitedContractSize: true
+      live: false,
+      allowUnlimitedContractSize: true,
+      // process.env.HARDHAT_FORK will specify the network that the fork is made from.
+      // this line ensure the use of the corresponding accounts (set by _script.js)
+      forking: process.env.HARDHAT_FORK
+        ? {
+            // TODO once PR merged : network: process.env.HARDHAT_FORK,
+            url: node_url(process.env.HARDHAT_FORK),
+            blockNumber: process.env.HARDHAT_FORK_NUMBER
+              ? parseInt(process.env.HARDHAT_FORK_NUMBER)
+              : undefined,
+          }
+        : undefined,
     },
+    // localhost: {
+    //   url: node_url('localhost'),
+    //   accounts: privateKey(),  
+    // },
     ropsten: {
-      url: process.env.ROPSTEN_URL || "",
-      timeout: 3000000,
-      accounts:
-        process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
+      url: node_url('ropsten'),
+      accounts: privateKey('ropsten'),
+      live: true,
     },
     rinkeby: {
-      url: process.env.RINKEBY_URL || "",
-      accounts: 
-        process.env.RINKEBY_PRIVATE_KEY !== undefined ? [`${process.env.RINKEBY_PRIVATE_KEY}`, `${process.env.RINKEBY_TESTWALLET_KEY}`] : [],
+      url: node_url('rinkeby'),
+      accounts: privateKey('rinkeby'),
+      live: true,
     },
     mainnet: {
-      url: process.env.MAINNET_URL || "",
-      timeout: 3000000,
-      accounts:
-        process.env.MAINNET_PRIVATE_KEY !== undefined ? [process.env.MAINNET_PRIVATE_KEY] : [],
+      url: node_url('mainnet'),
+      accounts: privateKey('mainnet'),
+      live: true,
     },
   },
   gasReporter: {
@@ -111,14 +131,8 @@ const config: HardhatUserConfig = {
     apiKey: process.env.ETHERSCAN_API_KEY,
   },
   external: {
-    contracts: [
-      {
-        artifacts: "",
-        deploy: ""
-      }
-    ],
     deployments: {
-      hardhat: [],
+      hardhat: ["deployments/mainnet"],
       rinkeby: [],
     }
   }

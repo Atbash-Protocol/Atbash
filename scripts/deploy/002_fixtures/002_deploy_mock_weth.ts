@@ -20,7 +20,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
         skipIfAlreadyDeployed: true,
     });
 
-    if (!result.newlyDeployed) return;
+    if (!result.newlyDeployed) return;  
 
     const mockWeth = await MockERC20__factory.connect(result.address, signer);
     
@@ -31,9 +31,11 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 };
 
 func.skip = async (hre: HardhatRuntimeEnvironment) => {
-    const skipping = hre.network.name.toLowerCase() != "hardhat";
+    // console.log(`info: ${hre.network.name}, ${hre.}`);
+    // todo: this doesn't work for forking
+    const skipping = hre.network.name.toLowerCase() != "hardhat";   // todo: convert this to hardhat config
     if (skipping) 
-        console.warn("Skipping WETH deployment for non-hardhat networks");
+        console.warn("Skipping WETH deployment for non-hardhat networks"); 
     return skipping;
 };
 
