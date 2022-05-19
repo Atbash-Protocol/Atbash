@@ -41,12 +41,10 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const bashLiquidityNeededAtMarketLaunchPricing = INITIAL_BASH_LIQUIDITY_IN_DAI / BASH_STARTING_MARKET_VALUE_IN_DAI;
     const bashAmountInGwei = parseUnits(bashLiquidityNeededAtMarketLaunchPricing.toString(), "gwei"); // bash decimals
     
-    // const bashAmount =  INITIAL_BASH_LP_AMOUNT; // BigNumber.from("312" + "500000000"); // 312.5 bash
     await bash.approve(deployer, bashAmountInGwei);
     await bash.transferFrom(deployer, bashDai.address, bashAmountInGwei);  
     
     console.log(`Current deployer DAI amount: ${await dai.balanceOf(deployer)}`);
-    // const daiAmount = BigNumber.from("100000" + "000000000000000000");
     const bashAmountInWei = parseEther(bashLiquidityNeededAtMarketLaunchPricing.toString());
     const daiAmount = bashAmountInWei.mul(BASH_STARTING_MARKET_VALUE_IN_DAI);
     await dai.approve(deployer, daiAmount);

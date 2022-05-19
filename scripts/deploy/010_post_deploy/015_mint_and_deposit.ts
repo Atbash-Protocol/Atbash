@@ -18,22 +18,13 @@ const func: DeployFunction = async function(hre: HardhatRuntimeEnvironment) {
 
     const daiDeployment = await deployments.get(CONTRACTS.DAI);
     const dai = DAI__factory.connect(daiDeployment.address, signer);
-
-    // todo: make idempotent?
     
-    // const daiAmmount = "100000000000000000000000"    // 100k dai 100000e18
-    //const daiAmmount = "5312" + "500000000000000000";   // halsey: toal 5,312.5 (5k initial + 312.5 for BASH-DAI LP)
     const bashLiquidityNeededAtMarketLaunchPricing = INITIAL_BASH_LIQUIDITY_IN_DAI / BASH_STARTING_MARKET_VALUE_IN_DAI;
     const bashLiquidityNeededAtMarketLaunchPricingInWei = parseEther(bashLiquidityNeededAtMarketLaunchPricing.toString());
     const initialDaiReserveAmountInWei = parseEther(INITIAL_DAI_RESERVES_AMOUNT.toString());
 
     const daiAmount = initialDaiReserveAmountInWei
                         .add(bashLiquidityNeededAtMarketLaunchPricingInWei); // in DAI decimals
-
-    //const bashProfit = "10000000000000"       // deposit 10k bash and mint 90k back to depositor
-    // const bashProfit = "312" + "500000000";    // bash used for LP, the rest for treasury 
-    // const bashLiquidityNeededAtMarketLaunchPricingInGwei = 
-    //                 parseUnits(bashLiquidityNeededAtMarketLaunchPricing.toString(), "gwei");
 
     const bashProfitInGwei = parseUnits(INITIAL_DAI_RESERVES_AMOUNT.toString(), "gwei"); // bash decimals
     console.log(`Check: treasury deposit:  DAI: ${daiAmount.toString()}, bashProfit: ${bashProfitInGwei}`);

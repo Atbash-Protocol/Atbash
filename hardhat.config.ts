@@ -60,7 +60,7 @@ const config: HardhatUserConfig = {
         default: 0,
     },
     testWallet: {
-        default: 10,
+        default: 1,
         4: "0xd738E31Ed20F2701Db1a68841C6a7cAA8F6A6B43", 
     }
     // daoMultisig: {

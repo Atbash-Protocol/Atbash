@@ -10,7 +10,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const { deployments, getNamedAccounts, network, ethers } = hre;
 
     const { deploy } = deployments;
-    const { deployer } = await getNamedAccounts();
+    const { deployer, testWallet } = await getNamedAccounts();
     const signer = await ethers.provider.getSigner(deployer);
 
     console.log("Swapping DAI for BASH to test with to deployer...");
@@ -28,17 +28,18 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     bashWanted = bashWanted.mul(BigNumber.from(10).pow(9));
     daiMax = daiMax.mul(BigNumber.from(10).pow(18));
 
-    // const bashWanted2 = parseUnits("10", 9); // at least 10 bash
-
     const dai = await DAI__factory.connect(daiDeployment.address, signer);
-    // const daiMax2 = parseUnits("1000", 18);   // 10 worth of bash at 1:80
     await dai.approve(uniswapRouterDeployment.address, daiMax);
 
     const path = [daiDeployment.address, bashDeployment.address];
-
     const deadline = await getCurrentBlockTime() + 1000;
     await uniswapRouter.swapTokensForExactTokens(bashWanted, daiMax, path, deployer, deadline);
-    console.log("Added BASH for deployer");
+
+    await dai.approve(deployer, daiMax);
+    await dai.transferFrom(deployer, testWallet, daiMax);
+    await dai.approve(uniswapRouterDeployment.address, daiMax);
+    await uniswapRouter.swapTokensForExactTokens(bashWanted, daiMax, path, testWallet, deadline);
+    console.log("Added BASH for deployer and testWallet");
 };
 
 func.skip = async (hre: HardhatRuntimeEnvironment) => {
