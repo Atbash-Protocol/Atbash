@@ -13,14 +13,14 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const { deployer } = await getNamedAccounts();
     const signer = ethers.provider.getSigner(deployer);
 
+    console.log("Setting up BASH-DAI LP Pair");
+
     console.warn("!!! Assert that either 1) re-use existing network LP, or 2) newly created"); 
     const bashDaiDeployment = await deployments.getOrNull(CONTRACTS.bashDaiLpPair);
-    if (bashDaiDeployment) { 
-        console.log("BASH-DAI already defined in deployment for this network, will use existing pair, and skipping."); 
+    if (bashDaiDeployment && bashDaiDeployment.address != '') { 
+        console.warn("BASH-DAI already defined in deployment for this network, will use existing pair, and skipping."); 
         return; // no throw - just skip
     } 
-
-    console.log("Setting up mock BASH-DAI LP Pair");
 
     const uniswapV2FactoryDeployment = await deployments.get(CONTRACTS.UniswapV2Factory);
     const uniswapV2Factory = UniswapV2Factory__factory.connect(uniswapV2FactoryDeployment.address, signer);
@@ -53,14 +53,6 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
     console.log("BASH-DAI Pair created & deployment saved.");
 };
-
-// no longer needed - we check if the LP exists first before attempting to create it
-// func.skip = async (hre: HardhatRuntimeEnvironment) => {
-//     const skipping = hre.network.name.toLowerCase() != "hardhat";
-//     if (skipping)
-//         console.warn("Skipping mock BASH-DAI LP deployment for non hardhat network");
-//     return skipping;
-// };
 
 func.tags = [CONTRACTS.bashDaiLpPair];
 func.dependencies = [CONTRACTS.bash, CONTRACTS.DAI, CONTRACTS.UniswapV2Factory];

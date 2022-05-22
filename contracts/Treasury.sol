@@ -7,7 +7,6 @@ pragma solidity 0.7.5;
 
 import {IERC20} from "./interfaces/IERC20.sol";
 import {ITreasury} from "./interfaces/ITreasury.sol";
-import "hardhat/console.sol";
 
 library SafeMath {
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
@@ -425,7 +424,6 @@ contract BashTreasury is Ownable, ITreasury {
             isReserveToken[_token] || isLiquidityToken[_token],
             "Not accepted"
         );
-        console.log("%s, %s, %s", msg.sender, address(this), _amount);
         IERC20(_token).safeTransferFrom(msg.sender, address(this), _amount);
 
         if (isReserveToken[_token]) {
@@ -436,7 +434,6 @@ contract BashTreasury is Ownable, ITreasury {
 
         uint256 value = tokenValue(_token, _amount); // value of token in BASH
         // mint BASH needed and store amount of rewards for distribution
-        console.log("%s sub %s", value, _profit);
         send_ = value.sub(_profit);
         IERC20Mintable(Bash).mint(msg.sender, send_);
 

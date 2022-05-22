@@ -5,6 +5,7 @@ import { BASH_STARTING_MARKET_VALUE_IN_DAI, CONTRACTS } from '../../constants';
 import { DAI__factory, UniswapV2Router02__factory } from '../../../types'
 import { getCurrentBlockTime } from '../../../test/utils/blocktime';
 import { BigNumber } from 'ethers';
+import { isNotLocalTestingNetwork } from '../../network';
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const { deployments, getNamedAccounts, network, ethers } = hre;
@@ -13,9 +14,11 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const { deployer, testWallet } = await getNamedAccounts();
     const signer = await ethers.provider.getSigner(deployer);
 
-    console.log("Swapping DAI for BASH to test with to deployer...");
-    console.warn("!!! In rinkeby and mainnet forking - assert not deployed, and the factory is reused from mainnet");
-
+    console.log("Swapping DAI for BASH for testing accounts...");
+    if (isNotLocalTestingNetwork(hre.network)) {
+        console.error("Swapping DAI for BASH is only for local hardhat testing");
+        throw "ERROR: Network configuration";
+    }
     const daiDeployment = await deployments.get(CONTRACTS.DAI);
     const bashDeployment = await deployments.get(CONTRACTS.bash);    
     const uniswapRouterDeployment = await deployments.get(CONTRACTS.UniswapV2Router);
@@ -42,12 +45,8 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     console.log("Added BASH for deployer and testWallet");
 };
 
-func.skip = async (hre: HardhatRuntimeEnvironment) => {
-    const skipping = hre.network.name.toLowerCase() != "hardhat";
-    if (skipping) 
-        console.warn("Skipping swapping DAI to BASH used for testing for local hardhat network.");
-    return skipping;
-};
+// only deploy to hardhat local
+func.skip = async (hre: HardhatRuntimeEnvironment) => isNotLocalTestingNetwork(hre.network);
 
 func.tags = ["Fixture"];
 func.dependencies = [CONTRACTS.DAI, CONTRACTS.bash, CONTRACTS.UniswapV2Router]

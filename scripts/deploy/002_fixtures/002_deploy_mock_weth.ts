@@ -2,7 +2,8 @@ import {HardhatRuntimeEnvironment} from 'hardhat/types';
 import {DeployFunction} from 'hardhat-deploy/types';
 import { CONTRACTS } from '../../constants';
 
-import { DAI__factory, MockERC20__factory } from '../../../types'
+import { MockERC20__factory } from '../../../types'
+import { isNotLocalTestingNetwork } from '../../network';
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const { deployments, getNamedAccounts, network, ethers } = hre;
@@ -11,7 +12,11 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const { deployer } = await getNamedAccounts();
     const signer = await ethers.provider.getSigner(deployer);
 
-    console.warn("!!! In rinkeby and mainnet forking - assert not deployed, and the factory is reused from mainnet");
+    if (isNotLocalTestingNetwork(hre.network)) {
+        console.error("Mock WETH is only for local hardhat network testing.");
+        throw "ERROR: Network configuration";
+    }
+
     const result = await deploy(CONTRACTS.WETH, {
         contract: CONTRACTS.MockERC20, // Reuse contract, different deployment name
         from: deployer,
@@ -30,14 +35,8 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     await mockWeth.approve(deployer, wethAmount);
 };
 
-func.skip = async (hre: HardhatRuntimeEnvironment) => {
-    // console.log(`info: ${hre.network.name}, ${hre.}`);
-    // todo: this doesn't work for forking
-    const skipping = hre.network.name.toLowerCase() != "hardhat";   // todo: convert this to hardhat config
-    if (skipping) 
-        console.warn("Skipping WETH deployment for non-hardhat networks"); 
-    return skipping;
-};
+// only deploy to hardhat local
+func.skip = async (hre: HardhatRuntimeEnvironment) => isNotLocalTestingNetwork(hre.network);
 
 func.tags = [CONTRACTS.WETH, "Token"];
 export default func;

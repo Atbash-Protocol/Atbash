@@ -20,6 +20,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
     if (!presaleDeployment.newlyDeployed) {
         console.log("Presale already deployed, skipping setup");
+        return;
     }
 
     const aBashDeployment = await deployments.get(CONTRACTS.aBash);

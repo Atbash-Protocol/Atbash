@@ -103,24 +103,21 @@ const config: HardhatUserConfig = {
           }
         : undefined,
     },
-    // localhost: {
-    //   url: node_url('localhost'),
-    //   accounts: privateKey(),  
-    // },
+    localhost: {
+      url: node_url('localhost'),
+      accounts: privateKey(),  
+    },
     ropsten: {
       url: node_url('ropsten'),
       accounts: privateKey('ropsten'),
-      live: true,
     },
     rinkeby: {
       url: node_url('rinkeby'),
       accounts: privateKey('rinkeby'),
-      live: true,
     },
     mainnet: {
       url: node_url('mainnet'),
       accounts: privateKey('mainnet'),
-      live: true,
     },
   },
   gasReporter: {
@@ -132,7 +129,7 @@ const config: HardhatUserConfig = {
   },
   external: {
     deployments: {
-      hardhat: ["deployments/mainnet"],
+      // hardhat: ["deployments/mainnet"],
       rinkeby: [],
     }
   }

@@ -5,6 +5,7 @@ import { CONTRACTS } from '../../constants';
 import { BASHERC20Token__factory, BashTreasury__factory, UniswapV2Pair__factory } from '../../../types';
 import { waitFor } from '../../txHelper';
 import { BigNumber, Contract } from 'ethers';
+import "../../extensions";
 
 const func: DeployFunction = async function(hre: HardhatRuntimeEnvironment) {
     const { deployments, getNamedAccounts, network, ethers } = hre;
@@ -28,20 +29,17 @@ const func: DeployFunction = async function(hre: HardhatRuntimeEnvironment) {
     const bashDai = await UniswapV2Pair__factory.connect(bashDaiLpPairDeployment.address, signer);
     const balance = await bashDai.balanceOf(deployer);
     await bashDai.approve(treasury.address, balance);
-    console.log(`Token 0: ${await bashDai.token0()}, token 1: ${await bashDai.token1()}`);
+    console.log(`BASH-DAI LP: Token 0: ${await bashDai.token0()}, Token 1: ${await bashDai.token1()}`);
+    console.log(`Current deployer BASH-DAI balance: ${balance.toEtherComma()}, address: ${bashDaiLpPairDeployment.address}`);
 
-    console.log(`Current deployer BASH-DAI balance: ${balance}, address: ${bashDaiLpPairDeployment.address}`);
-    // const profit = 0;
-    // todo: what should we do with this profit? 
-    // todo: why double deposit 25k?
     const profit = await treasury.tokenValue(bashDaiLpPairDeployment.address, balance.toString());
-    console.log(`${balance} of BASH-DAI is worth ${profit} BASH, ${typeof(profit)}`);   
+    console.log(`${balance.toEtherComma()} of BASH-DAI is worth ${profit.toGweiComma()} BASH`);   
     await waitFor(treasury.deposit(balance, bashDaiLpPairDeployment.address, profit));
-    console.log(`Deposited ${balance} BASH-DAI to treasury`);
+    console.log(`Deposited ${balance.toEtherComma()} BASH-DAI to treasury`);
 
     const bashDeployment = await deployments.get(CONTRACTS.bash);
     const bash = await BASHERC20Token__factory.connect(bashDeployment.address, signer);
-    console.log(`Deployer BASH balance: ${await bash.balanceOf(deployer)}`);
+    console.log(`Deployer BASH balance (should be zero): ${(await bash.balanceOf(deployer)).toGweiComma()}`);
     return true;
 };
 

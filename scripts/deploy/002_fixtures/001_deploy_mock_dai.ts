@@ -1,8 +1,9 @@
-import {HardhatRuntimeEnvironment} from 'hardhat/types';
-import {DeployFunction} from 'hardhat-deploy/types';
+import { HardhatRuntimeEnvironment } from 'hardhat/types';
+import { DeployFunction } from 'hardhat-deploy/types';
 import { CONTRACTS } from '../../constants';
 
 import { DAI__factory } from '../../../types'
+import { isLiveMainnet } from '../../network';
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const { deployments, getNamedAccounts, network, ethers } = hre;
@@ -28,14 +29,9 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     await mockDai.approve(deployer, daiAmount);
 };
 
-func.skip = async (hre: HardhatRuntimeEnvironment) => {
-    // todo: this doesn't work
-    // only deploy for local and rinkeby
-    const skipping = hre.network.name.toLowerCase() == "mainnet";   // todo: convert this to hardhat config
-    if (skipping) 
-        console.warn("Skipping DAI deployment for mainnet");
-    return skipping;
-};
+// only deploy to testnets and hardhat
+func.skip = async (hre: HardhatRuntimeEnvironment) => isLiveMainnet(hre.network);
 
 func.tags = [CONTRACTS.DAI, "Token"];
 export default func;
+

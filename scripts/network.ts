@@ -1,4 +1,5 @@
 import 'dotenv/config';
+import { Network } from 'hardhat/types';
 export function node_url(networkName: string): string {
   if (networkName) {
     const uri = process.env['ETH_NODE_URI_' + networkName.toUpperCase()];
@@ -60,4 +61,25 @@ export function privateKey(networkName?: string): string[] {
     return ['0xdead'];
   }
   return [key];
+}
+
+// Mainnet but not a fork
+export function isLiveMainnet(network: Network): boolean {
+  return network.live && network.name.toLowerCase() == "mainnet";
+}
+
+export function isNotLocalTestingNetwork(network: Network): boolean {
+  return network.live;
+}
+
+export function isLocalTestingNetwork(network: Network): boolean {
+  return !network.live;
+}
+
+export function isLocalHardhatFork(network: Network): boolean {
+  return network.name.toLowerCase() == "hardhat" && network.live; 
+}
+
+export function isNotLocalHardhatFork(network: Network): boolean {
+  return !isLocalHardhatFork(network);
 }

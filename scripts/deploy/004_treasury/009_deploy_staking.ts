@@ -20,6 +20,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
     const config = getConfig(hre.network.name);
     
+    console.log('Deploying staking...');
     // Staking
     const staking = await deploy(CONTRACTS.staking, {
         from: deployer,

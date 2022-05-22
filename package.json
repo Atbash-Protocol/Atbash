@@ -46,7 +46,7 @@
     "gas": "cross-env REPORT_GAS=true hardhat test",
     "typechain": "cross-env TS_NODE_TRANSPILE_ONLY=true hardhat typechain",
     "deploy:rinkeby": "hardhat --network rinkeby deploy --tags fix-rinkeby-bashdai-treasury-setup",
-    "deploy:hardhat": "hardhat --network hardhat deploy --tags Launch",
+    "deploy:hardhat": "hardhat --network hardhat deploy",
     "sourcify:rinkeby": "hardhat --network rinkeby sourcify",
     "etherscan:rinkeby": "hardhat --network rinkeby etherscan-verify --tags testrinkeby",
     "prestart": "yarn run typechain",
@@ -58,9 +58,8 @@
     "fork:dev": "node ./_scripts.js fork:dev",
     "fork:node": "node ./_scripts.js fork:node",
     "fork:test": "node ./_scripts.js fork:test",
-    "test:debug": "hardhat --network localhost run ./scripts/sandbox.ts",
-
-    "fork:nodetest": "node ./_scripts.js fork:node mainnet --tags Token"
-
+    "test:debug": "yarn fork:node mainnet",
+    "fork:nodetest": "node ./_scripts.js fork:run localhost ./scripts/sandbox.ts",
+    "fork:execute2": "echo 1337 > ./deployments/localhost/.chainId && node ./_scripts.js run"
   }
 }

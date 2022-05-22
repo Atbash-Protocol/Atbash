@@ -7,6 +7,7 @@ import { BigNumber, providers } from 'ethers';
 
 import { waitFor } from '../../txHelper';
 import { getAddress, getContractAddress, isAddress, parseEther, parseUnits } from 'ethers/lib/utils';
+import "../../extensions";
 
 // This fixture can't run until BASH has been minted, that's why it's this late in post deploy
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
@@ -16,8 +17,9 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const { deployer } = await getNamedAccounts();
     const signer = ethers.provider.getSigner(deployer);
 
-    console.warn("!!! Assert BASH-DAI LP Pair setup in Fork");
     console.log("Contributing liquidity to mock BASH-DAI LP");
+
+    console.warn("!!! Assert BASH-DAI LP Pair setup in Fork");
 
     const uniswapV2FactoryDeployment = await deployments.get(CONTRACTS.UniswapV2Factory);
 
@@ -35,35 +37,35 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     }
 
     const bashDai = UniswapV2Pair__factory.connect(bashDaiAddress, signer);
-    console.log(`BASH-DAI LP (Token 0: ${await bashDai.token0()}, Token 1: ${await bashDai.token1()}`);
+    console.log(`BASH-DAI LP Pair (Token 0: ${await bashDai.token0()}, Token 1: ${await bashDai.token1()}`);
 
-    console.log(`Current bash amount: ${await bash.balanceOf(deployer)}`);
+    console.log(`Current bash amount: ${(await bash.balanceOf(deployer)).toGweiComma()}`);
     const bashLiquidityNeededAtMarketLaunchPricing = INITIAL_BASH_LIQUIDITY_IN_DAI / BASH_STARTING_MARKET_VALUE_IN_DAI;
     const bashAmountInGwei = parseUnits(bashLiquidityNeededAtMarketLaunchPricing.toString(), "gwei"); // bash decimals
     
     await bash.approve(deployer, bashAmountInGwei);
     await bash.transferFrom(deployer, bashDai.address, bashAmountInGwei);  
     
-    console.log(`Current deployer DAI amount: ${await dai.balanceOf(deployer)}`);
+    console.log(`Current deployer DAI amount: ${(await dai.balanceOf(deployer)).toEtherComma()}`);
     const bashAmountInWei = parseEther(bashLiquidityNeededAtMarketLaunchPricing.toString());
     const daiAmount = bashAmountInWei.mul(BASH_STARTING_MARKET_VALUE_IN_DAI);
     await dai.approve(deployer, daiAmount);
     await dai.transferFrom(deployer, bashDai.address, daiAmount); 
-    console.log(`Check deposit bashdai liquidity: Bash Amount ${bashAmountInGwei}, Dai Amount: ${daiAmount}`);
+    console.log(`Check deposit bashdai liquidity: Bash Amount ${bashAmountInGwei.toGweiComma()}, Dai Amount: ${daiAmount.toEtherComma()}`);
 
     await bashDai.mint(deployer);
     const balance = await bashDai.balanceOf(deployer);
-    console.log(`BASH-DAI balanceOf: ${balance}`);
-    console.log("BASH-DAI Pair setup");
+    console.log(`BASH-DAI balanceOf: ${balance.toEtherComma()}`);
+    console.log("BASH-DAI Pair setup complete");
     return true;
 };
 
-func.skip = async (hre: HardhatRuntimeEnvironment) => {
-    const skipping = hre.network.name.toLowerCase() != "hardhat";
-    if (skipping)
-        console.warn("Skipping mock BASH-DAI LP deployment for non-hardhat network");
-    return skipping;
-};
+// func.skip = async (hre: HardhatRuntimeEnvironment) => {
+//     const skipping = hre.network.name.toLowerCase() != "hardhat";
+//     if (skipping)
+//         console.warn("Skipping mock BASH-DAI LP deployment for non-hardhat network");
+//     return skipping;
+// };
 
 func.id = "2022-launch-bashdai-liquidity";
 func.tags = ["Launch"];
