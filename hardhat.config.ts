@@ -9,7 +9,7 @@ import "@nomiclabs/hardhat-etherscan";
 import "solidity-coverage";
 import "hardhat-deploy";
 
-import {node_url, accounts, privateKey} from './scripts/network';
+import {node_url, accounts, privateKey, accountsForHardhat} from './scripts/network';
 
 dotenv.config();
 
@@ -64,10 +64,12 @@ const config: HardhatUserConfig = {
   namedAccounts: {
     deployer: {
         default: 0,
+        1: "0xd738E31Ed20F2701Db1a68841C6a7cAA8F6A6B43",
+        4: ""
     },
     testWallet: {
         default: 1,
-        4: "0xd738E31Ed20F2701Db1a68841C6a7cAA8F6A6B43", 
+        4: "0xd738E31Ed20F2701Db1a68841C6a7cAA8F6A6B43",  // rdr Main Wallet, used on Rinkeby for fixes
     }
     // daoMultisig: {
     //     // mainnet
@@ -91,6 +93,8 @@ const config: HardhatUserConfig = {
       chainId: 1337,
       live: false,
       allowUnlimitedContractSize: true,
+      // accounts: {},//privateKey(process.env.HARDHAT_FORK),
+      accounts: accountsForHardhat(process.env.HARDHAT_FORK),  
       // process.env.HARDHAT_FORK will specify the network that the fork is made from.
       // this line ensure the use of the corresponding accounts (set by _script.js)
       forking: process.env.HARDHAT_FORK

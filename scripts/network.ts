@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { Network } from 'hardhat/types';
+import { HardhatNetworkAccountsUserConfig, Network } from 'hardhat/types';
 export function node_url(networkName: string): string {
   if (networkName) {
     const uri = process.env['ETH_NODE_URI_' + networkName.toUpperCase()];
@@ -48,7 +48,7 @@ export function accounts(networkName?: string): {mnemonic: string} {
   return {mnemonic: getMnemonic(networkName)};
 }
 
-export function privateKey(networkName?: string): string[] {
+export function privateKey(networkName?: string): string[] | undefined {
   if (networkName) {
     const key = process.env['PRIVATEKEY_' + networkName.toUpperCase()];
     if (key && key !== '') {
@@ -58,9 +58,22 @@ export function privateKey(networkName?: string): string[] {
 
   const key = process.env.PRIVATEKEY;
   if (!key || key === '') {
-    return ['0xdead'];
+    return undefined;
   }
   return [key];
+}
+
+export function accountsForHardhat(networkName?: string): HardhatNetworkAccountsUserConfig | undefined {
+  // for hardhat network, use default accounts
+  if (networkName == undefined || networkName == "hardhat")
+    return undefined;
+
+  // otherwise get private key for the forked network
+  const pks = privateKey(process.env.HARDHAT_FORK);
+  if (pks != undefined) {
+    return [{privateKey: pks[0], balance: "1000" + "000000000000000000"}] 
+  }
+  return undefined;
 }
 
 // Mainnet but not a fork
