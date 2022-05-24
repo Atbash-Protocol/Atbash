@@ -48,6 +48,9 @@ const config: HardhatUserConfig = {
         version: "0.5.16"
       },
       {
+        version: "0.7.6",
+      },
+      {
         version: "0.7.5",
         settings: {
           optimizer: {
@@ -65,7 +68,7 @@ const config: HardhatUserConfig = {
     deployer: {
         default: 0,
         1: "0xd738E31Ed20F2701Db1a68841C6a7cAA8F6A6B43",
-        4: ""
+        4: "0x02c368c0787BB33ACAc698049CcA2454B5cC96c5"
     },
     testWallet: {
         default: 1,
@@ -135,7 +138,13 @@ const config: HardhatUserConfig = {
     deployments: {
       // hardhat: ["deployments/mainnet"],
       rinkeby: [],
-    }
+    },
+    contracts: [
+      {
+        artifacts: "node_modules/@uniswap/artifacts",
+        deploy: "node_modules/@uniswap/contracts"
+      },
+    ],
   }
 };
 

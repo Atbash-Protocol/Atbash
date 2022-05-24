@@ -1,7 +1,7 @@
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
 import { DeployFunction } from 'hardhat-deploy/types';
 import { CONTRACTS } from '../../constants';
-import { isNotLocalTestingNetwork } from '../../network';
+import { isLocalTestingNetwork, isNotLocalTestingNetwork } from '../../network';
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const { deployments, getNamedAccounts, network, ethers } = hre;
@@ -13,6 +13,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const wethDeployment = await deployments.get(CONTRACTS.WETH);
 
     console.log("Setting up mock UniswapV2Router used for BASH DAI swaps");
+    // guard
     if (isNotLocalTestingNetwork(hre.network)) {
         console.error("The UniswapV2Router deployment is only used for local hardhat network testing.");
         throw "ERROR: Network configuration error";
@@ -26,7 +27,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 };
 
 // only deploy to hardhat local
-func.skip = async (hre: HardhatRuntimeEnvironment) => isNotLocalTestingNetwork(hre.network);
+func.skip = async (hre: HardhatRuntimeEnvironment) => !isLocalTestingNetwork(hre.network);
 
 func.tags = [CONTRACTS.UniswapV2Router];
 func.dependencies = [CONTRACTS.bash, CONTRACTS.DAI, CONTRACTS.WETH, CONTRACTS.UniswapV2Factory];

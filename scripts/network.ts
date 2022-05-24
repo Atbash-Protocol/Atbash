@@ -76,23 +76,32 @@ export function accountsForHardhat(networkName?: string): HardhatNetworkAccounts
   return undefined;
 }
 
-// Mainnet but not a fork
+// live mainnet (not forked)
 export function isLiveMainnet(network: Network): boolean {
-  return network.live && network.name.toLowerCase() == "mainnet";
+  return network.live && network.name.toLowerCase() == "mainnet"; // note: redundant check - if it was a fork, network name wouldn't be mainnet
 }
 
-export function isNotLocalTestingNetwork(network: Network): boolean {
-  return network.live;
+// a truly live network
+export function isLiveNetworkButNotFork(network: Network): boolean {
+  return network.live && network.name.toLowerCase() != "hardhat";
 }
 
-export function isLocalTestingNetwork(network: Network): boolean {
-  return !network.live;
-}
-
+// is a local hardhat, but forked network
 export function isLocalHardhatFork(network: Network): boolean {
   return network.name.toLowerCase() == "hardhat" && network.live; 
 }
 
+// is not a forked local hardhat network
 export function isNotLocalHardhatFork(network: Network): boolean {
   return !isLocalHardhatFork(network);
+}
+
+// live network or forked network
+export function isNotLocalTestingNetwork(network: Network): boolean {
+  return network.name.toLowerCase() != "hardhat";  // would this ever be !live even if in a test network?
+}
+
+// local hardhat, not a fork, not live
+export function isLocalTestingNetwork(network: Network): boolean {
+  return network.name.toLowerCase() == "hardhat" && !network.live;
 }

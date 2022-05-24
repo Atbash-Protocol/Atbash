@@ -3,7 +3,7 @@ import {DeployFunction} from 'hardhat-deploy/types';
 import { CONTRACTS } from '../../constants';
 
 import { MockERC20__factory } from '../../../types'
-import { isNotLocalTestingNetwork } from '../../network';
+import { isLocalTestingNetwork, isNotLocalTestingNetwork } from '../../network';
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const { deployments, getNamedAccounts, network, ethers } = hre;
@@ -12,7 +12,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const { deployer } = await getNamedAccounts();
     const signer = await ethers.provider.getSigner(deployer);
 
-    if (isNotLocalTestingNetwork(hre.network)) {
+    if (isLocalTestingNetwork(hre.network)) {
         console.error("Mock WETH is only for local hardhat network testing.");
         throw "ERROR: Network configuration";
     }
@@ -36,7 +36,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 };
 
 // only deploy to hardhat local
-func.skip = async (hre: HardhatRuntimeEnvironment) => isNotLocalTestingNetwork(hre.network);
+func.skip = async (hre: HardhatRuntimeEnvironment) => !isLocalTestingNetwork(hre.network);
 
 func.tags = [CONTRACTS.WETH, "Token"];
 export default func;

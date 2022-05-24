@@ -1,6 +1,6 @@
 import { Network } from "hardhat/types";
 import * as readline from "readline";
-import { isLiveMainnet } from "./network";
+import { isLiveMainnet, isLiveNetworkButNotFork } from "./network";
 
 const rl = readline.createInterface({
     input: process.stdin,
@@ -9,15 +9,15 @@ const rl = readline.createInterface({
 
 const prompt = (query: string) => new Promise((resolve) => rl.question(query, resolve));
 
-export async function mainNetConfirm(network: Network, question: string) {
-    if (!isLiveMainnet(network)) {
+export async function liveNetworkConfirm(network: Network, question: string) {
+    if (!isLiveNetworkButNotFork(network)) {
         console.log(`Skipping prompt: ${question} [y/N]`);
         return;
     }
 
     const ans = await prompt(`${question} [y/N]: `) as string;
     if (ans.toLowerCase() == 'y') {
-        // rl.close();
+        // rl.close();  // causes issues for next question (probably because rl is global)
         return;
     }
 
