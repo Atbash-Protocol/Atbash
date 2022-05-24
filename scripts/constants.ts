@@ -3,9 +3,6 @@ import { BigNumber } from "ethers";
 dotenv.config();
 
 export const CONTRACTS: Record<string, string> = {
-    // Common
-    DAI: "DAI",
-
     // Atbash
     aBash: "aBASHERC20",
     atbashPresale: "Presale",
@@ -24,11 +21,13 @@ export const CONTRACTS: Record<string, string> = {
     bashDaiLpPair: "BashDaiUniswapPairV2", // uniswap pair
     
     // Supportive & Fixtures
+    DAI: "DAI",
     MockERC20: "MockERC20",
     WETH: "WETH",
     UniswapV2Factory: "UniswapV2Factory",
     UniswapV2Pair: "UniswapV2Pair",
-    UniswapV2Router: "UniswapV2Router02"
+    UniswapV2Router: "UniswapV2Router02",
+    SwapRouter02: "SwapRouter02"
 };
 
 // Constructor Arguments

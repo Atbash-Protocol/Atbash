@@ -68,12 +68,12 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const deadline = await getCurrentBlockTime() + (2 * 60);
     // v2: await uniswapRouter.swapETHForExactTokens(daiWanted, path, deployer, deadline, { value: ethNeeded });
     // v3 using swap router
-    const swapRouter02Deployment = await deployments.get("SwapRouter02");
+    const swapRouter02Deployment = await deployments.get(CONTRACTS.SwapRouter02);
     const swapRouter02 = await ISwapRouter02__factory.connect(
         swapRouter02Deployment.address,
         signer
     );
-    const wethDeployment = await deployments.get("WETH");
+    const wethDeployment = await deployments.get(CONTRACTS.WETH);
 
     await waitFor(
         swapRouter02.exactOutputSingle(
@@ -91,7 +91,6 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
           }
         )
       );
-    
 
     // show balances
     var daiBalance = await dai.balanceOf(deployer);
@@ -103,7 +102,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 func.skip = async (env: HardhatRuntimeEnvironment) => isLocalTestingNetwork(env.network);
 
 func.id = "2022-launch-swap-eth-for-dai"
-func.dependencies = [CONTRACTS.DAI, 
+func.dependencies = [CONTRACTS.DAI, CONTRACTS.WETH, CONTRACTS.SwapRouter02,
                     CONTRACTS.UniswapV2Factory, CONTRACTS.UniswapV2Router];
 func.tags = ["Launch"];
 export default func;
