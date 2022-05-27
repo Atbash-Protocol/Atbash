@@ -1,13 +1,10 @@
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
 import { DeployFunction } from 'hardhat-deploy/types';
 import { BASH_STARTING_MARKET_VALUE_IN_DAI, CONTRACTS, INITIAL_BASH_LIQUIDITY_IN_DAI } from '../../constants';
-
 import { BASHERC20Token__factory, DAI__factory, UniswapV2Factory__factory, UniswapV2Pair__factory } from '../../../types'
-import { BigNumber, providers } from 'ethers';
-
-import { waitFor } from '../../txHelper';
-import { getAddress, getContractAddress, isAddress, parseEther, parseUnits } from 'ethers/lib/utils';
+import { parseEther, parseUnits } from 'ethers/lib/utils';
 import "../../extensions";
+import { liveNetworkConfirm } from '../../confirm';
 
 // This fixture can't run until BASH has been minted, that's why it's this late in post deploy
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
@@ -49,9 +46,12 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     console.log(`Current deployer DAI amount: ${(await dai.balanceOf(deployer)).toEtherComma()}`);
     const bashAmountInWei = parseEther(bashLiquidityNeededAtMarketLaunchPricing.toString());
     const daiAmount = bashAmountInWei.mul(BASH_STARTING_MARKET_VALUE_IN_DAI);
+
+    console.log(`Check deposit bashdai liquidity: Bash Amount ${bashAmountInGwei.toGweiComma()}, Dai Amount: ${daiAmount.toEtherComma()}`);
+    await liveNetworkConfirm(hre.network, `Are you sure you want to spend ${bashAmountInGwei.toGweiComma()} BASH and ${daiAmount.toEtherComma()} DAI for BASH-DAI LP? `);
+
     await dai.approve(deployer, daiAmount);
     await dai.transferFrom(deployer, bashDai.address, daiAmount); 
-    console.log(`Check deposit bashdai liquidity: Bash Amount ${bashAmountInGwei.toGweiComma()}, Dai Amount: ${daiAmount.toEtherComma()}`);
 
     await bashDai.mint(deployer);
     const balance = await bashDai.balanceOf(deployer);

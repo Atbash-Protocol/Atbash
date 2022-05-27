@@ -7,6 +7,7 @@ import { waitFor } from '../../txHelper';
 import { BigNumber } from 'ethers';
 import { parseEther, parseUnits } from 'ethers/lib/utils';
 import '../../extensions';
+import { liveNetworkConfirm } from '../../confirm';
 
 
 const func: DeployFunction = async function(hre: HardhatRuntimeEnvironment) {
@@ -30,6 +31,7 @@ const func: DeployFunction = async function(hre: HardhatRuntimeEnvironment) {
 
     const bashProfitInGwei = parseUnits(INITIAL_DAI_RESERVES_AMOUNT.toString(), "gwei"); // bash decimals
     console.log(`Check: treasury deposit:  DAI: ${daiAmount.toEtherComma()}, bashProfit: ${bashProfitInGwei.toGweiComma()}`);
+    await liveNetworkConfirm(hre.network, `Are you sure you want to deposit ${daiAmount.toEtherComma()} DAI to treasury? `);
 
     await waitFor(dai.approve(treasury.address, "1000000000000000000000000000000000000000")); // Approve treasury to use the dai
     console.log("DAI Approved to treasury :", daiAmount.toEtherComma());

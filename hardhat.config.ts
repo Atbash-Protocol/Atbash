@@ -67,12 +67,13 @@ const config: HardhatUserConfig = {
   namedAccounts: {
     deployer: {
         default: 0,
-        1: "0xd738E31Ed20F2701Db1a68841C6a7cAA8F6A6B43",
+        // 1: "0xd738E31Ed20F2701Db1a68841C6a7cAA8F6A6B43",
         4: "0x02c368c0787BB33ACAc698049CcA2454B5cC96c5"
     },
     testWallet: {
         default: 1,
-        4: "0xd738E31Ed20F2701Db1a68841C6a7cAA8F6A6B43",  // rdr Main Wallet, used on Rinkeby for fixes
+        // 4: "0xd738E31Ed20F2701Db1a68841C6a7cAA8F6A6B43",  // rdr Main Wallet, used on Rinkeby for fixes
+        4: "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",  // hh-1
     }
     // daoMultisig: {
     //     // mainnet

@@ -32,6 +32,7 @@ import {
 } from "@uniswap/smart-order-router";
 import JSBI from "jsbi";
 import { assert } from "chai";
+import { isLocalTestingNetwork } from "../network";
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const { deployments, getNamedAccounts, network, ethers } = hre;
@@ -40,6 +41,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const signer = ethers.provider.getSigner(deployer);
 
     console.log(`live: ${hre.network.live}, network: ${hre.network.name}`);
+    return;
     const daiDeployment = await deployments.get(CONTRACTS.DAI);
 
     const dai = await DAI__factory.connect(daiDeployment.address, signer);
@@ -183,4 +185,5 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 };
 
 func.tags = ["test-math"];
+func.skip = async (hre: HardhatRuntimeEnvironment) => isLocalTestingNetwork(hre.network);
 export default func;

@@ -71,7 +71,10 @@ export function accountsForHardhat(networkName?: string): HardhatNetworkAccounts
   // otherwise get private key for the forked network
   const pks = privateKey(process.env.HARDHAT_FORK);
   if (pks != undefined) {
-    return [{privateKey: pks[0], balance: "1000" + "000000000000000000"}] 
+    return [
+      { privateKey: pks[0], balance: "1000" + "000000000000000000" },
+      { privateKey: "0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d", balance: "1000" + "000000000000000000" }, // HH #1 - 0x70997970c51812dc3a010c7d01b50e0d17dc79c8
+    ]; 
   }
   return undefined;
 }
