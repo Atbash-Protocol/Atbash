@@ -18,12 +18,12 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     
     const bash = await BASHERC20Token__factory.connect(bashDeployment.address, signer);
 
-    ////////////// 
+    // Set vault for bash
     
     console.log("Setting BASH vault to treasury");
     await waitFor(bash.setVault(treasuryDeployment.address));
 
-    /////////////////
+    // Initialize sbash
 
     const stakingDeployment = await deployments.get(CONTRACTS.staking);
     const staking = await ATBASHStaking__factory.connect(stakingDeployment.address, signer);
@@ -34,22 +34,12 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     await waitFor(sBash.initialize(staking.address));
     await waitFor(sBash.setIndex(INITIAL_INDEX));
 
-    ///////////
-
-    // Distributor staking reward rate
-    // const stakingDeployment = await deployments.get(CONTRACTS.staking);
-    const distributorDeployment = await deployments.get(CONTRACTS.stakingDistributor);
-    const distributor = await Distributor__factory.connect(distributorDeployment.address, signer);
-    await waitFor(distributor.addRecipient(stakingDeployment.address, STAKING_REWARD_RATE));
-    console.log(`Distributor added staking contract as recipient with reward rate: ${STAKING_REWARD_RATE}`);
-    ///////////
     return true;    // don't run again
 };
 
-func.id = "2022-launch-init"
+func.id = "2022-launch-set-vault-and-init-sbash"
 func.dependencies = [CONTRACTS.bash, CONTRACTS.DAI, 
-                    CONTRACTS.sBash, CONTRACTS.staking,
-                    CONTRACTS.stakingDistributor,
+                    CONTRACTS.sBash, CONTRACTS.staking
                     ];
 func.tags = ["Launch"];
 export default func;

@@ -1,13 +1,12 @@
-import {HardhatRuntimeEnvironment} from 'hardhat/types';
-import {DeployFunction} from 'hardhat-deploy/types';
-import { BASH_STARTING_MARKET_VALUE_IN_DAI, CONTRACTS } from '../../constants';
+import { HardhatRuntimeEnvironment } from 'hardhat/types';
+import { DeployFunction } from 'hardhat-deploy/types';
+import { CONTRACTS } from '../../constants';
 
 import { DAI__factory, ISwapRouter02__factory, UniswapV2Factory__factory, UniswapV2Pair__factory, UniswapV2Router02__factory } from '../../../types'
 import { getCurrentBlockTime } from '../../../test/utils/blocktime';
 import { BigNumber, providers } from 'ethers';
 import { isLocalHardhatFork, isLocalTestingNetwork, isNotLocalTestingNetwork } from '../../network';
 import { BASHERC20Token__factory } from '../../../types/factories/contracts/bashERC20.sol';
-import { AbiCoder, defaultAbiCoder } from 'ethers/lib/utils';
 import { waitFor } from '../../txHelper';
 import { deployments } from 'hardhat';
 
@@ -42,7 +41,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
         // get quotes
         const ethDaiBashAmounts = await uniswapRouter.getAmountsIn(bashWanted, ethDaiBashPath);
         var ethNeeded = ethDaiBashAmounts[0].add("0.05".parseUnits(18)); // .25 ETH // todo: fix
-        daiNeeded = ethDaiBashAmounts[1]; //.add("1000".parseUnits(18)); // add some test spending DAI
+        daiNeeded = ethDaiBashAmounts[1].add("1000".parseUnits(18)); // add some test spending DAI
         var daiBalance = await dai.balanceOf(deployer);
         console.log(`Deployer current ETH balance: ${(await ethers.provider.getBalance(deployer)).toEtherComma()}, DAI: ${daiBalance.toEtherComma()}`);
         
@@ -94,19 +93,26 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     await dai.approve(uniswapRouterDeployment.address, daiNeeded);
     await uniswapRouter.swapTokensForExactTokens(bashWanted, daiNeeded, pathDaiBash, deployer, deadline);
 
+
+    // Get LP
+    
+
+
     // Divide up for local
     const bash = await BASHERC20Token__factory.connect(bashDeployment.address, signer);
     if (isLocalTestingNetwork(hre.network) || isLocalHardhatFork(hre.network)) {
         const bashBalance = await bash.balanceOf(deployer);
-        const transferAmount = bashBalance.div(2);
+        var transferAmount = bashBalance.div(2);
         await bash.approve(deployer, transferAmount);
         await bash.transferFrom(deployer, testWallet, transferAmount);
-        console.log(`Test wallet (${testWallet}) BASH: ${(await bash.balanceOf(testWallet)).toGweiComma()}`);
+
+        var transferAmount = (await dai.balanceOf(deployer)).div(2);
+        await dai.approve(deployer, transferAmount);
+        await dai.transferFrom(deployer, testWallet, transferAmount);
     }
     console.log(`Added BASH for deployer ${deployer} and testWallet ${testWallet}`);
     // console.log(`Deployer BASH: ${(await bash.balanceOf(deployer)).toGweiComma()}`);
     await displayAllBalances(ethers.provider, [deployer, testWallet]);
-    
 };
 
 // only deploy to hardhat local

@@ -12,6 +12,7 @@ import { assert } from 'chai';
 import '../../extensions';
 import { liveNetworkConfirm } from '../../confirm';
 
+// acquire enough dai to setup reserves and LP
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const { deployments, getNamedAccounts, network, ethers } = hre;
     const { deploy } = deployments;

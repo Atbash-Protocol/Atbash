@@ -16,8 +16,6 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
     console.log("Contributing liquidity to mock BASH-DAI LP");
 
-    console.warn("!!! Assert BASH-DAI LP Pair setup in Fork");
-
     const uniswapV2FactoryDeployment = await deployments.get(CONTRACTS.UniswapV2Factory);
 
     const bashDeployment = await deployments.get(CONTRACTS.bash);
