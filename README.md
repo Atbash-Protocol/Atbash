@@ -23,21 +23,29 @@ Recommended you run live deployments with ` | tee deployment-output.txt` to save
 ### Local Hardhat
 Local hardhat deployments will use mock DAI and WETH
 Local deployment using hardhat network, deploy and start a local network node
+
 `yarn start`
 
 Testing specific deployments for local hardhat
+
 `yarn deploy:hardhat`
 
 ### Network Forks
 Testing against a fork
+
 `yarn fork:node <network>`
+
 Forks are as close as possible to live networks
 Forks will use real DAI
 Swapping is completed through the forked Uniswap contracts
 
+
 Testing a local fork, but with specific deployments
+
 `yarn fork:node <network> --tags none`
+
 `yarn fork:deploylocal --tags <tags>`
+
 
 `fork:deploylocal` is a work around that overwrites the chainID with local network ID (due to a possible bug with hardhat-deploy which persists the ID of the forked network) 
 
@@ -49,33 +57,50 @@ Deployments/fixes specific to Rinkeby are in contracts/rinkeby
 Hardhat deploy has been configured to deploy to network in stages, if so desired.  This helps complex deployments to be completed in stages at the discretion of the deployer.  
 
 The following tags are the major steps:
-**Token**: Deploy all tokens Atbash related tokens, if not already deployed
+
+1. **Token**: Deploy all tokens Atbash related tokens, if not already deployed
+
 `yarn deploy --network rinkeby --tags Token` 
-**Treasury**: Deploy the Atbash treasury contracts
+
+2. **Treasury**: Deploy the Atbash treasury contracts
+
 `yarn deploy --network rinkeby --tags Treasury` 
-**Staking**: Deploy all staking related contracts (helper, warmup, staking)
+
+3. **Staking**: Deploy all staking related contracts (helper, warmup, staking)
+
 `yarn deploy --network rinkeby --tags Staking` 
-**StableBond**: Deploy all contracts used for DAI stable bonds
+
+4. **StableBond**: Deploy all contracts used for DAI stable bonds
+
 `yarn deploy --network rinkeby --tags StableBond` 
-**BashDaiBond**: Deploy all contracts used for the BASH-DAI liquidity pool bond
+
+5. **BashDaiBond**: Deploy all contracts used for the BASH-DAI liquidity pool bond
+
 `yarn deploy --network rinkeby --tags BashDaiBond`
-**Launch**: Initializes all deployed contracts, deposits initial reserves, create necessary liquidity, for a fully working Atbash launch with the previously successfully deployed contracts.  This step forces idempotency.  Every substep in this stage has a unique ID so that it cannot be rerun accidentally.  This will give the deployer an opportunity to deal with issues that might arise in the middle of this stage, without having to worry about previously executed steps being executed erroneously again on retry.  If you need to force a step to run despite it already having been executed for the current chain, edit `.migrations` of the network's deployment.
+
+6.  **Launch**: Initializes all deployed contracts, deposits initial reserves, create necessary liquidity, for a fully working Atbash launch with the previously successfully deployed contracts.  This step forces idempotency.  Every substep in this stage has a unique ID so that it cannot be rerun accidentally.  This will give the deployer an opportunity to deal with issues that might arise in the middle of this stage, without having to worry about previously executed steps being executed erroneously again on retry.  If you need to force a step to run despite it already having been executed for the current chain, edit `.migrations` of the network's deployment.
+
 `yarn deploy --network rinkeby --tags Launch`
 
 NOTE: If you run any of these out of sequence, hardhat-deploy will execute the previous tags because they're dependencies.
 
 You can also run the above staged scenario using a fork:
 Start the local fork
+
 `yarn fork:node <network> --tags none`
+
 Use deploylocal to deploy against localhost, and specify a specific stage using the tag
+
 `yarn fork:deploylocal --tags <tags>`
 
 ### Extra
 Setup test wallets with BASH, DAI, and BASH-DAI LP
 NOT recommended for live networks
+
 `yarn fork:deploylocal --tags PostLaunchTesting`
 
 ## Testing
+
 `yarn test`
 
 VS Code?  Use the [Mocha Test Explorer](https://marketplace.visualstudio.com/items?itemName=hbenl.vscode-mocha-test-adapter) extension.
