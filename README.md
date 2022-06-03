@@ -49,17 +49,17 @@ Deployments/fixes specific to Rinkeby are in contracts/rinkeby
 Hardhat deploy has been configured to deploy to network in stages, if so desired.  This helps complex deployments to be completed in stages at the discretion of the deployer.  
 
 The following tags are the major steps:
-1. **Token**: Deploy all tokens Atbash related tokens, if not already deployed
+**Token**: Deploy all tokens Atbash related tokens, if not already deployed
 `yarn deploy --network rinkeby --tags Token` 
-2. **Treasury**: Deploy the Atbash treasury contracts
+**Treasury**: Deploy the Atbash treasury contracts
 `yarn deploy --network rinkeby --tags Treasury` 
-3. **Staking**: Deploy all staking related contracts (helper, warmup, staking)
+**Staking**: Deploy all staking related contracts (helper, warmup, staking)
 `yarn deploy --network rinkeby --tags Staking` 
-4. **StableBond**: Deploy all contracts used for DAI stable bonds
+**StableBond**: Deploy all contracts used for DAI stable bonds
 `yarn deploy --network rinkeby --tags StableBond` 
-5. **BashDaiBond**: Deploy all contracts used for the BASH-DAI liquidity pool bond
+**BashDaiBond**: Deploy all contracts used for the BASH-DAI liquidity pool bond
 `yarn deploy --network rinkeby --tags BashDaiBond`
-6. **Launch**: Initializes all deployed contracts, deposits initial reserves, create necessary liquidity, for a fully working Atbash launch with the previously successfully deployed contracts.  This step forces idempotency.  Every substep in this stage has a unique ID so that it cannot be rerun accidentally.  This will give the deployer an opportunity to deal with issues that might arise in the middle of this stage, without having to worry about previously executed steps being executed erroneously again on retry.  If you need to force a step to run despite it already having been executed for the current chain, edit `.migrations` of the network's deployment.
+**Launch**: Initializes all deployed contracts, deposits initial reserves, create necessary liquidity, for a fully working Atbash launch with the previously successfully deployed contracts.  This step forces idempotency.  Every substep in this stage has a unique ID so that it cannot be rerun accidentally.  This will give the deployer an opportunity to deal with issues that might arise in the middle of this stage, without having to worry about previously executed steps being executed erroneously again on retry.  If you need to force a step to run despite it already having been executed for the current chain, edit `.migrations` of the network's deployment.
 `yarn deploy --network rinkeby --tags Launch`
 
 NOTE: If you run any of these out of sequence, hardhat-deploy will execute the previous tags because they're dependencies.
