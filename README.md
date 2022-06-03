@@ -20,7 +20,7 @@ Recommended you run live deployments with ` | tee deployment-output.txt` to save
 
 **NOTE**: DO NOT CHANGE OR DELETE deployments folder for live networks unless you're absolutely sure you know what you're doing.
 
-**Local Hardhat**
+###Local Hardhat
 Local hardhat deployments will use mock DAI and WETH
 Local deployment using hardhat network, deploy and start a local network node
 `yarn start`
@@ -28,7 +28,7 @@ Local deployment using hardhat network, deploy and start a local network node
 Testing specific deployments for local hardhat
 `yarn deploy:hardhat`
 
-**Network Forks**
+###Network Forks
 Testing against a fork
 `yarn fork:node <network>`
 Forks are as close as possible to live networks
@@ -41,11 +41,11 @@ Testing a local fork, but with specific deployments
 
 `fork:deploylocal` is a work around that overwrites the chainID with local network ID (due to a possible bug with hardhat-deploy which persists the ID of the forked network) 
 
-**Live Networks**
+###Live Networks
 Requires `.env` see `example.env` 
 Deployments/fixes specific to Rinkeby are in contracts/rinkeby
 
-**Staged Deployment**
+###Staged Deployments
 Hardhat deploy has been configured to deploy to network in stages, if so desired.  This helps complex deployments to be completed in stages at the discretion of the deployer.  
 
 The following tags are the major steps:
@@ -70,7 +70,7 @@ Start the local fork
 Use deploylocal to deploy against localhost, and specify a specific stage using the tag
 `yarn fork:deploylocal --tags <tags>`
 
-**Extra**
+###Extra
 Setup test wallets with BASH, DAI, and BASH-DAI LP
 NOT recommended for live networks
 `yarn fork:deploylocal --tags PostLaunchTesting`
