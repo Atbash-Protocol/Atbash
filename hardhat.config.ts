@@ -113,7 +113,8 @@ const config: HardhatUserConfig = {
     },
     localhost: {
       url: node_url('localhost'),
-      accounts: privateKey(),  
+      // accounts: privateKey(),  
+      accounts: accountsForHardhat(),
     },
     ropsten: {
       url: node_url('ropsten'),

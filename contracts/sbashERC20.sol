@@ -5,7 +5,6 @@ import {IOwnable} from "./interfaces/IOwnable.sol";
 import {SafeMath} from "./libraries/SafeMath.sol";
 import {Address} from "./libraries/Address.sol";
 import {Counters} from "./libraries/Counters.sol";
-import "hardhat/console.sol";
 
 interface IERC20 {
   /**
@@ -675,7 +674,6 @@ contract sBASH is ERC20Permit, Ownable {
 
     function transfer( address to, uint256 value ) public override returns (bool) {
         uint256 gonValue = value.mul( _gonsPerFragment );
-        // console.log("sBASH transfer-value: %s , gons: %s, _gonsPerFragment: %s", value, gonValue, _gonsPerFragment);
         _gonBalances[ msg.sender ] = _gonBalances[ msg.sender ].sub( gonValue );
         _gonBalances[ to ] = _gonBalances[ to ].add( gonValue );
         emit Transfer( msg.sender, to, value );

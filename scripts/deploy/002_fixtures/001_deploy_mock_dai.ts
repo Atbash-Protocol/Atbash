@@ -26,7 +26,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     
     // const daiWanted = "150000000000000000000000000000000000000000000".parseUnits();
     var daiWanted = BigNumber.from("30312" + "500000000000000000"); // todo use calculation
-    daiWanted = daiWanted.add("10000" + "000000000000000000"); // spending money for test wallets
+    daiWanted = daiWanted.add("300000" + "000000000000000000"); // spending money for test wallets
 
     await mockDai.mint(daiWanted);
     console.log(`Minted DAI Amount: ${daiWanted.toEtherComma()}`);

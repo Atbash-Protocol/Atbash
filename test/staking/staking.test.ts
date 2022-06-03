@@ -8,13 +8,17 @@ import {
     IsBash, 
     IWarmup,
     // IsOHM,
-    IERC20,
+    // IERC20,
     ATBASHStaking,
     ATBASHStaking__factory,
     // OlympusAuthority,
     // OlympusAuthority__factory,
 } from "../../types";
 import { getCurrentBlockTime, advanceBlockTime } from "../utils/blocktime";
+
+import {
+    IERC20
+} from "../../types/contracts/mockerc20.sol"
 
 chai.should();
 chai.use(smock.matchers);

@@ -46,5 +46,15 @@ describe("utils/network", () => {
         isLocalTestingNetwork(network).should.be.false;
         isLocalHardhatFork(network).should.be.true;
         isNotLocalHardhatFork(network).should.be.false;
+
+        // localhost
+        n.live = false;
+        n.name = "localhost";
+        isLiveMainnet(network).should.be.false;
+        isLiveNetworkButNotFork(network).should.be.false;
+        isNotLocalTestingNetwork(network).should.be.false;
+        isLocalTestingNetwork(network).should.be.true;
+        isLocalHardhatFork(network).should.be.false;
+        isNotLocalHardhatFork(network).should.be.true;
     });
 });

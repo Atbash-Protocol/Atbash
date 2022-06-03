@@ -86,7 +86,8 @@ export function isLiveMainnet(network: Network): boolean {
 
 // a truly live network
 export function isLiveNetworkButNotFork(network: Network): boolean {
-  return network.live && network.name.toLowerCase() != "hardhat";
+  const name = network.name.toLowerCase();
+  return network.live && (name != "hardhat" && name != "localhost");
 }
 
 // is a local hardhat, but forked network
@@ -101,10 +102,12 @@ export function isNotLocalHardhatFork(network: Network): boolean {
 
 // live network or forked network
 export function isNotLocalTestingNetwork(network: Network): boolean {
-  return network.name.toLowerCase() != "hardhat";  // would this ever be !live even if in a test network?
+  var name = network.name.toLowerCase();
+  return name != "hardhat" && name != "localhost";  // would this ever be !live even if in a test network?
 }
 
 // local hardhat, not a fork, not live
 export function isLocalTestingNetwork(network: Network): boolean {
-  return network.name.toLowerCase() == "hardhat" && !network.live;
+  const name = network.name.toLowerCase();
+  return (name == "hardhat" || name == "localhost") && !network.live;
 }

@@ -1,6 +1,6 @@
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
-import { DeployFunction } from 'hardhat-deploy/types';
-import { CONTRACTS } from '../../constants';
+import { DeployFunction, Deployment } from 'hardhat-deploy/types';
+import { BASH_STARTING_MARKET_VALUE_IN_DAI, CONTRACTS, INITIAL_BASH_LIQUIDITY_IN_DAI } from '../../constants';
 
 import { DAI__factory, ISwapRouter02__factory, UniswapV2Factory__factory, UniswapV2Pair__factory, UniswapV2Router02__factory } from '../../../types'
 import { getCurrentBlockTime } from '../../../test/utils/blocktime';
@@ -9,6 +9,8 @@ import { isLocalHardhatFork, isLocalTestingNetwork, isNotLocalTestingNetwork } f
 import { BASHERC20Token__factory } from '../../../types/factories/contracts/bashERC20.sol';
 import { waitFor } from '../../txHelper';
 import { deployments } from 'hardhat';
+import { BashTreasury__factory } from '../../../types/factories/contracts/Treasury.sol';
+import { parseEther, parseUnits } from 'ethers/lib/utils';
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const { deployments, getNamedAccounts, network, ethers } = hre;
@@ -34,17 +36,37 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const pathDaiBash = [daiDeployment.address, bashDeployment.address];   // dai->bash
     const deadline = await getCurrentBlockTime() + 1000;
 
-    if (isLocalHardhatFork(hre.network)) {
-        // multi route swap eth->bash first
-        const ethDaiBashPath = [await uniswapRouter.WETH(), daiDeployment.address, bashDeployment.address];   // eth->dai->bash
+    // straight DAI->BASH quote for localhost hardhat with mock DAI
+    const amountsIn = await uniswapRouter.getAmountsIn(bashWanted, pathDaiBash);
+    daiNeeded = amountsIn[0];
+
+    // swaps
+    // 1. dai->bash
+    // 2. eth->dai
+    // 3. bash, dai -> bash-dai lp
+
+    const uniswapV2FactoryDeployment = await deployments.get(CONTRACTS.UniswapV2Factory);
+    const uniswapV2Factory = await UniswapV2Factory__factory.connect(uniswapV2FactoryDeployment.address, signer);
+    const bash = await BASHERC20Token__factory.connect(bashDeployment.address, signer);
+    const bashDaiAddress = await uniswapV2Factory.getPair(bash.address, dai.address);
+    const bashDai = await UniswapV2Pair__factory.connect(bashDaiAddress, signer);    
+
+    const ethDaiAddress = await uniswapV2Factory.getPair(await uniswapRouter.WETH(), dai.address);
+    const ethDai = await UniswapV2Pair__factory.connect(ethDaiAddress, signer);
+    if (isLocalHardhatFork(hre.network) || hre.network.name.toLowerCase() == "localhost") {
+        // swap eth->dai on networks that need to use eth-dai swapping (instead of DAI minting)
+        // const ethDaiBashPath = [await uniswapRouter.WETH(), daiDeployment.address, bashDeployment.address];   // eth->dai->bash
+        const ethDaiPath = [await uniswapRouter.WETH(), daiDeployment.address]; //, bashDeployment.address];   // eth->dai->bash
 
         // get quotes
-        const ethDaiBashAmounts = await uniswapRouter.getAmountsIn(bashWanted, ethDaiBashPath);
-        var ethNeeded = ethDaiBashAmounts[0].add("0.05".parseUnits(18)); // .25 ETH // todo: fix
-        daiNeeded = ethDaiBashAmounts[1].add("1000".parseUnits(18)); // add some test spending DAI
+        daiNeeded = daiNeeded.add("250".parseUnits(18)); // .add("1000".parseUnits(18)); // add some test spending DAI
+        const reserves = await ethDai.getReserves();
+        // const ethNeeded = await uniswapRouter.getAmountIn(daiNeeded, reserves[1], reserves[0]);
+        const ethDaiAmounts = await uniswapRouter.getAmountsIn(daiNeeded, ethDaiPath);
+        var ethNeeded = ethDaiAmounts[0].add(".25".parseUnits(18)); // .25 ETH // todo: fix
         var daiBalance = await dai.balanceOf(deployer);
         console.log(`Deployer current ETH balance: ${(await ethers.provider.getBalance(deployer)).toEtherComma()}, DAI: ${daiBalance.toEtherComma()}`);
-        
+        console.log(`ETH required ${ethNeeded.toEtherComma()} for DAI wanted ${daiNeeded.toEtherComma()}`)
         // v2 multiswap doesn't work because of rinkeby
         // await uniswapRouter.swapETHForExactTokens(bashWanted, path, deployer, deadline, {value: ethNeeded});
         
@@ -56,7 +78,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
         );
         const wethDeployment = await deployments.get(CONTRACTS.WETH);
         const poolFee = 3000;
-        dai.approve(uniswapRouter.address, ethDaiBashAmounts[1]);   // dai needed
+
 
         // v3 swap
         // for exactOutput - but this doesn't work probably b/c bash-dai is in v2 pool
@@ -65,8 +87,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
         //     // [wethDeployment.address, poolFee, daiDeployment.address, poolFee, bashDeployment.address],
         //     [bashDeployment.address, poolFee, daiDeployment.address, poolFee, wethDeployment.address]
         // );
-        await waitFor(swapRouter02.exactOutputSingle(
-            {
+        await waitFor(swapRouter02.exactOutputSingle({
                 amountOut: daiNeeded,
                 recipient: deployer,
                 amountInMaximum: ethNeeded,
@@ -82,8 +103,8 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     }
     else {
         // straight DAI->BASH quote for localhost hardhat with mock DAI
-        const amountsIn = await uniswapRouter.getAmountsIn(bashWanted, pathDaiBash);
-        daiNeeded = amountsIn[0];
+        // const amountsIn = await uniswapRouter.getAmountsIn(bashWanted, pathDaiBash);
+        // daiNeeded = amountsIn[0];
     }
 
     // v2 DAI->BASH
@@ -94,12 +115,40 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     await uniswapRouter.swapTokensForExactTokens(bashWanted, daiNeeded, pathDaiBash, deployer, deadline);
 
 
-    // Get LP
-    
+    // BASH-DAI LP
+    /////////////////////////
 
+    if (true) {
+        
 
-    // Divide up for local
-    const bash = await BASHERC20Token__factory.connect(bashDeployment.address, signer);
+        console.log(`Creating liquidity for BASH-DAI`);
+        console.log(`BASH-DAI LP Pair (Token 0: ${await bashDai.token0()}, Token 1: ${await bashDai.token1()}`);
+
+        console.log(`Current deployer bash amount: ${(await bash.balanceOf(deployer)).toGweiComma()}`);
+        const bashLiquidityInDai = 250;
+        const bashLiquidityNeededAtMarketLaunchPricing = bashLiquidityInDai / BASH_STARTING_MARKET_VALUE_IN_DAI;
+        const bashAmountInGwei = parseUnits(bashLiquidityNeededAtMarketLaunchPricing.toString(), "gwei"); // bash decimals
+        
+        await bash.approve(deployer, bashAmountInGwei);
+        await bash.transferFrom(deployer, bashDai.address, bashAmountInGwei);  
+        
+        console.log(`Current deployer DAI amount: ${(await dai.balanceOf(deployer)).toEtherComma()}`);
+        const bashAmountInWei = parseEther(bashLiquidityNeededAtMarketLaunchPricing.toString());
+        const daiAmount = bashAmountInWei.mul(BASH_STARTING_MARKET_VALUE_IN_DAI);
+
+        console.log(`Check deposit bashdai liquidity: Bash Amount ${bashAmountInGwei.toGweiComma()}, Dai Amount: ${daiAmount.toEtherComma()}`);
+
+        await dai.approve(deployer, daiAmount);
+        await dai.transferFrom(deployer, bashDai.address, daiAmount); 
+
+        await bashDai.mint(deployer);
+        const balance = await bashDai.balanceOf(deployer);
+        console.log(`BASH-DAI balanceOf: ${balance.toEtherComma()}`);
+    }
+
+    ///////////////////////
+
+    // Divide up for local testing
     if (isLocalTestingNetwork(hre.network) || isLocalHardhatFork(hre.network)) {
         const bashBalance = await bash.balanceOf(deployer);
         var transferAmount = bashBalance.div(2);
@@ -109,7 +158,12 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
         var transferAmount = (await dai.balanceOf(deployer)).div(2);
         await dai.approve(deployer, transferAmount);
         await dai.transferFrom(deployer, testWallet, transferAmount);
+
+        // var transferAmount = (await bashDai.balanceOf(deployer));
+        // await bashDai.approve(deployer, transferAmount);
+        // await bashDai.transferFrom(deployer, testWallet, transferAmount);
     }
+
     console.log(`Added BASH for deployer ${deployer} and testWallet ${testWallet}`);
     // console.log(`Deployer BASH: ${(await bash.balanceOf(deployer)).toGweiComma()}`);
     await displayAllBalances(ethers.provider, [deployer, testWallet]);
@@ -117,8 +171,8 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
 // only deploy to hardhat local
 func.skip = async (hre: HardhatRuntimeEnvironment) => isNotLocalTestingNetwork(hre.network);
-
-func.tags = ["Fixture"];
+// func.skip = async (hre: HardhatRuntimeEnvironment) => true;
+func.tags = ["PostLaunchTesting"];
 func.dependencies = [CONTRACTS.DAI, CONTRACTS.bash, CONTRACTS.UniswapV2Router]
 export default func;
 
