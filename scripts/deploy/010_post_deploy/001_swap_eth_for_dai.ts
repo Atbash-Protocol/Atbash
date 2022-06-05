@@ -2,12 +2,12 @@ import { HardhatRuntimeEnvironment } from 'hardhat/types';
 import { DeployFunction } from 'hardhat-deploy/types';
 import { BASH_STARTING_MARKET_VALUE_IN_DAI, CONTRACTS, INITIAL_BASH_LIQUIDITY_IN_DAI, INITIAL_DAI_RESERVES_AMOUNT, INITIAL_INDEX, STAKING_REWARD_RATE, TREASURY_TIMELOCK } from '../../constants';
 
-import { DAI__factory, ISwapRouter02__factory, UniswapV2Router02__factory } from '../../../types'
+import { DAI__factory, ISwapRouter02__factory, UniswapV2Router02__factory, UniswapV2Factory__factory } from '../../../types'
 import { waitFor } from '../../txHelper'
 import { isLocalTestingNetwork } from '../../network';
 import { BigNumber } from 'ethers';
 import { getCurrentBlockTime } from '../../../test/utils/blocktime';
-import { UniswapV2Factory__factory } from '../../../types/factories/contracts/uniswap';
+// import { UniswapV2Factory__factory } from '../../../types/factories/contracts/uniswap';
 import { assert } from 'chai';
 import '../../extensions';
 import { liveNetworkConfirm } from '../../confirm';

@@ -48,7 +48,6 @@ func.tags = ["Launch"];
 // func.tags = ["BashDaiBondDeposit"];
 
 func.dependencies = [CONTRACTS.treasury, 
-                        CONTRACTS.bashDaiBondingCalculator, 
                         CONTRACTS.bashDaiBondDepository, 
                         CONTRACTS.bashDaiLpPair];
 export default func;

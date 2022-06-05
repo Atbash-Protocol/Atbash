@@ -12,7 +12,7 @@ const func: DeployFunction = async function(hre: HardhatRuntimeEnvironment) {
 
     const treasuryDeployment = await deployments.get(CONTRACTS.treasury);
     const treasury = BashTreasury__factory.connect(treasuryDeployment.address, signer);
-    const bashDaiBondingCalculatorDeployment = await deployments.get(CONTRACTS.bashDaiBondingCalculator);
+    const bondingCalculatorDeployment = await deployments.get(CONTRACTS.bondingCalculator);
 
     // Liquidity Manager is deployer
     if (!await treasury.isLiquidityManager(deployer)) {
@@ -32,8 +32,8 @@ const func: DeployFunction = async function(hre: HardhatRuntimeEnvironment) {
 
     if (!await treasury.isLiquidityToken(bashDaiLpPairDeployment.address)) {
         await waitFor(treasury.queue(MANAGING.LIQUIDITYTOKEN, bashDaiLpPairDeployment.address));
-        await waitFor(treasury.toggle(MANAGING.LIQUIDITYTOKEN, bashDaiLpPairDeployment.address, bashDaiBondingCalculatorDeployment.address));
-        console.log(`bashDai enabled as liquidity token with bashDaiBondingCalculator ${bashDaiBondingCalculatorDeployment.address}`);
+        await waitFor(treasury.toggle(MANAGING.LIQUIDITYTOKEN, bashDaiLpPairDeployment.address, bondingCalculatorDeployment.address));
+        console.log(`bashDai enabled as liquidity token with bondingCalculator ${bondingCalculatorDeployment.address}`);
     }
     
     // BashDaiBond is a depositor
@@ -70,7 +70,7 @@ const func: DeployFunction = async function(hre: HardhatRuntimeEnvironment) {
 func.id = "2022-launch-treasury-for-bashdai";
 func.tags = ["Launch"];
 func.dependencies = [CONTRACTS.treasury, 
-                        CONTRACTS.bashDaiBondingCalculator, 
+                        CONTRACTS.bondingCalculator, 
                         CONTRACTS.bashDaiBondDepository, 
                         CONTRACTS.bashDaiLpPair];
 export default func;

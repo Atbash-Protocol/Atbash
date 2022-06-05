@@ -2,14 +2,14 @@ import { HardhatRuntimeEnvironment } from 'hardhat/types';
 import { DeployFunction, Deployment } from 'hardhat-deploy/types';
 import { BASH_STARTING_MARKET_VALUE_IN_DAI, CONTRACTS, INITIAL_BASH_LIQUIDITY_IN_DAI } from '../../constants';
 
-import { DAI__factory, ISwapRouter02__factory, UniswapV2Factory__factory, UniswapV2Pair__factory, UniswapV2Router02__factory } from '../../../types'
+import { BashTreasury__factory, BASHERC20Token__factory, DAI__factory, ISwapRouter02__factory, UniswapV2Factory__factory, UniswapV2Pair__factory, UniswapV2Router02__factory } from '../../../types'
 import { getCurrentBlockTime } from '../../../test/utils/blocktime';
 import { BigNumber, providers } from 'ethers';
 import { isLocalHardhatFork, isLocalTestingNetwork, isNotLocalTestingNetwork } from '../../network';
-import { BASHERC20Token__factory } from '../../../types/factories/contracts/bashERC20.sol';
+// import { BASHERC20Token__factory } from '../../../types/factories/contracts/bashERC20.sol';
 import { waitFor } from '../../txHelper';
 import { deployments } from 'hardhat';
-import { BashTreasury__factory } from '../../../types/factories/contracts/Treasury.sol';
+// import { BashTreasury__factory } from '../../../types/factories/contracts/Treasury.sol';
 import { parseEther, parseUnits } from 'ethers/lib/utils';
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {

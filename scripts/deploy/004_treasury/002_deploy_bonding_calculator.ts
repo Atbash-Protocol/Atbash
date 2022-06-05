@@ -9,8 +9,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
     const bash = await deployments.get(CONTRACTS.bash);
     
-    await deploy(CONTRACTS.bashDaiBondingCalculator, {
-        contract: CONTRACTS.bondingCalculator, // reuse existing contract but instantiate with new name
+    await deploy(CONTRACTS.bondingCalculator, {
         from: deployer,
         args: [bash.address],
         log: true,
@@ -19,5 +18,5 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 };
 
 func.dependencies = [CONTRACTS.bash];
-func.tags = [CONTRACTS.bashDaiBondingCalculator, "BashDaiBond"];
+func.tags = [CONTRACTS.bondingCalculator, "Treasury"];
 export default func;

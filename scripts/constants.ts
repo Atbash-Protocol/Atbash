@@ -9,7 +9,6 @@ export const CONTRACTS: Record<string, string> = {
     bash: "BASHERC20Token",
     sBash: "sBASH",
     bondingCalculator: "ATBASHBondingCalculator",
-    bashDaiBondingCalculator: "bashDaiBondingCalculator",
     treasury: "BashTreasury",
     stakingDistributor: "Distributor",
     staking: "ATBASHStaking", 

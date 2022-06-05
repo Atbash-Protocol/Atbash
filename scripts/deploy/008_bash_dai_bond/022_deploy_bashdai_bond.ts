@@ -11,7 +11,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
     const bashDeployment = await deployments.get(CONTRACTS.bash);
     const treasuryDeployment = await deployments.get(CONTRACTS.treasury);
-    const bashDaiBondingCalculatorDeployment = await deployments.get(CONTRACTS.bashDaiBondingCalculator);
+    const bondingCalculatorDeployment = await deployments.get(CONTRACTS.bondingCalculator);
 
     let bashDaiLpPairDeployment: Deployment;
     try {
@@ -31,7 +31,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
                 bashDaiLpPairDeployment.address, 
                 treasuryDeployment.address,
                 daoAddress, 
-                bashDaiBondingCalculatorDeployment.address // used for LP Bonds
+                bondingCalculatorDeployment.address // used for LP Bonds
             ],
         log: true,
         skipIfAlreadyDeployed: true,
@@ -41,7 +41,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 func.dependencies = [CONTRACTS.bash, 
                     CONTRACTS.treasury, 
                     CONTRACTS.stakingHelper, 
-                    CONTRACTS.bashDaiBondingCalculator, 
+                    CONTRACTS.bondingCalculator, 
                     CONTRACTS.bashDaiLpPair];
 func.tags = [CONTRACTS.bashDaiBondDepository, "BashDaiBond"];
 export default func;
