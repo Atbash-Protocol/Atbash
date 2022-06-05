@@ -41,6 +41,8 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const signer = ethers.provider.getSigner(deployer);
 
     console.log(`live: ${hre.network.live}, network: ${hre.network.name}`);
+    // await liveNetworkConfirm(hre.network, "test? ");
+
     return;
     const daiDeployment = await deployments.get(CONTRACTS.DAI);
 
@@ -185,5 +187,5 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 };
 
 func.tags = ["test-math"];
-func.skip = async (hre: HardhatRuntimeEnvironment) => isLocalTestingNetwork(hre.network);
+// func.skip = async (hre: HardhatRuntimeEnvironment) => isLocalTestingNetwork(hre.network);
 export default func;

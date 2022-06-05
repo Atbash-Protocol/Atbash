@@ -79,9 +79,9 @@ export function accountsForHardhat(networkName?: string): HardhatNetworkAccounts
   return undefined;
 }
 
-// live mainnet (not forked)
-export function isLiveMainnet(network: Network): boolean {
-  return network.live && network.name.toLowerCase() == "mainnet"; // note: redundant check - if it was a fork, network name wouldn't be mainnet
+// live networked, could be forked
+export function isLiveNetwork(network: Network): boolean {
+  return network.live;
 }
 
 // a truly live network

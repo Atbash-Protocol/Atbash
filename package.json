@@ -36,6 +36,7 @@
     "hardhat-deploy": "^0.11.2",
     "hardhat-gas-reporter": "^1.0.7",
     "mocha": "^10.0.0",
+    "ntee": "^2.0.0",
     "prettier": "^2.5.1",
     "prettier-plugin-solidity": "^1.0.0-beta.19",
     "solhint": "^3.3.7",
@@ -50,7 +51,8 @@
     "test": "hardhat test",
     "gas": "cross-env REPORT_GAS=true hardhat test",
     "typechain": "cross-env TS_NODE_TRANSPILE_ONLY=true hardhat typechain",
-    "deploy:rinkeby": "hardhat --network rinkeby deploy --tags fix-rinkeby-bashdai-treasury-setup",
+    "delete:deploy:rinkeby": "hardhat --network rinkeby deploy | ntee deployments/rinkeby-deploy-log.txt -a",
+    "deploy:rinkeby": "node ./_scripts.js deploy rinkeby",
     "deploy:hardhat": "hardhat --network hardhat deploy",
     "deploy:localhost": "hardhat --network localhost deploy",
     "sourcify:rinkeby": "hardhat --network rinkeby sourcify",
@@ -67,6 +69,8 @@
     "test:debug": "yarn fork:node rinkeby --tags test-math",
     "fork:nodetest": "node ./_scripts.js fork:run localhost ./scripts/sandbox.ts",
     "fork:execute2": "echo 1337 > ./deployments/localhost/.chainId && node ./_scripts.js run",
-    "fork:deploylocal": "echo 1337 > ./deployments/localhost/.chainId && hardhat deploy --network localhost"
+    "fork:deploylocal": "echo 1337 > ./deployments/localhost/.chainId && hardhat deploy --network localhost",
+    "testx2": "node ./_scripts.js fork:deploy rinkeby ntee",
+    "testx": "node ./_scripts.js fork:node"
   }
 }

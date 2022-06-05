@@ -13,3 +13,6 @@ typechain-types
 #VS
 workspace.code-workspace
 yarn-error.log
+
+# temporary?
+/deployments/*log.txt

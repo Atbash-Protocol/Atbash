@@ -20,7 +20,6 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
     const config = getConfig(hre.network.name);
     
-    console.log('Deploying staking...');
     // Staking
     const staking = await deploy(CONTRACTS.staking, {
         from: deployer,
@@ -29,12 +28,14 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
         skipIfAlreadyDeployed: true,
     });
 
-    console.log(`
-        Staking Initialization:
-        epochLength      ${config.EPOCH_LENGTH_IN_SECONDS} seconds
-        firstEpochNumber ${config.FIRST_EPOCH_NUMBER}
-        firstEpochTime   ${config.FIRST_EPOCH_TIME}
-    `);
+    if (staking.newlyDeployed) {
+        console.log(`
+            Staking Initialization:
+            epochLength      ${config.EPOCH_LENGTH_IN_SECONDS} seconds
+            firstEpochNumber ${config.FIRST_EPOCH_NUMBER}
+            firstEpochTime   ${config.FIRST_EPOCH_TIME}
+        `);
+    }
 
     // Staking Helper
     const stakingHelper = await deploy(CONTRACTS.stakingHelper, {

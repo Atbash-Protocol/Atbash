@@ -3,7 +3,7 @@ import { DeployFunction } from 'hardhat-deploy/types';
 import { CONTRACTS } from '../../constants';
 
 import { DAI__factory } from '../../../types'
-import { isLiveMainnet, isNotLocalTestingNetwork } from '../../network';
+import { isNotLocalTestingNetwork } from '../../network';
 import { BigNumber } from 'ethers';
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {

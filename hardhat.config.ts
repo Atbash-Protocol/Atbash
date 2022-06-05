@@ -18,13 +18,19 @@ if (process.env.HARDHAT_FORK) {
   process.env['HARDHAT_DEPLOY_FORK'] = process.env.HARDHAT_FORK;
 }
 
+console.log(`${(new Date()).toUTCString()}: args: ${process.argv.slice(2).join(' ')}, HARDHAT_FORK=${process.env.HARDHAT_FORK}`);
+
 // This is a sample Hardhat task. To learn how to create your own go to
 // https://hardhat.org/guides/create-task.html
 task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
   const accounts = await hre.ethers.getSigners();
-
   for (const account of accounts) {
     console.log(account.address);
+  }
+
+  const namedAccounts = await hre.getNamedAccounts();
+  for (const account of Object.entries(namedAccounts)) {
+    console.log(`${account[0]} : ${account[1]}`);
   }
 });
 
