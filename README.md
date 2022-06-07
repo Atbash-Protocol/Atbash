@@ -75,7 +75,7 @@ The following tags are the major steps:
 
 4. **StableBond**: Deploy all contracts used for DAI stable bonds
 
-`yarn deploy:rinkeby --tags StableBond` 
+`yarn deploy:rinkeby --tags StableBond --tee` 
 
 5. **BashDaiBond**: Deploy all contracts used for the BASH-DAI liquidity pool bond
 
