@@ -5,13 +5,10 @@ import { ethers } from "hardhat";
 import { FakeContract, smock } from "@defi-wonderland/smock";
 
 import {
+    IERC20,
     StakingRewards,
     StakingRewards__factory,
 } from "../../types";
-
-import {
-    IERC20
-} from "../../types/contracts/mockerc20.sol"
 
 chai.use(smock.matchers);
 // chai.use(chaiAsPromised.default);
