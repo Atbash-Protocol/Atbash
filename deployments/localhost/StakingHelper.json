@@ -1,0 +1,104 @@
+{
+  "address": "0x7Dd384C4EEBf3bea3AD796AFbf6971ee8217f568",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_staking",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_Time",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "inputs": [],
+      "name": "Time",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_amount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "recipient",
+          "type": "address"
+        }
+      ],
+      "name": "stake",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "staking",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "transactionHash": "0xb54cc918eb09158577f4de98b9e0762cd51402cb17dafbd9bd9bc8347d642dce",
+  "receipt": {
+    "to": null,
+    "from": "0x02c368c0787BB33ACAc698049CcA2454B5cC96c5",
+    "contractAddress": "0x7Dd384C4EEBf3bea3AD796AFbf6971ee8217f568",
+    "transactionIndex": 46,
+    "gasUsed": "256218",
+    "logsBloom": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+    "blockHash": "0x0b438e4671d1f040a6f8f8976b76a68fa69b5f1e6acd055c5b7229a85942718b",
+    "transactionHash": "0xb54cc918eb09158577f4de98b9e0762cd51402cb17dafbd9bd9bc8347d642dce",
+    "logs": [],
+    "blockNumber": 10794011,
+    "cumulativeGasUsed": "13721083",
+    "status": 1,
+    "byzantium": true
+  },
+  "args": [
+    "0xd57740693a36c14900dcaeF26d8f97035E9D8e61",
+    "0xb9c20Db8649D5d9D0649031a52C39fa2bD6c4e97"
+  ],
+  "numDeployments": 1,
+  "solcInputHash": "f89d767a93b2f7abef88bb4eb9a141cb",
+  "metadata": "{\"compiler\":{\"version\":\"0.7.5+commit.eb77ed08\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_staking\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_Time\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[],\"name\":\"Time\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_amount\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"}],\"name\":\"stake\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"staking\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/StakingHelper.sol\":\"StakingHelper\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\",\"useLiteralContent\":true},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"contracts/StakingHelper.sol\":{\"content\":\"// SPDX-License-Identifier: AGPL-3.0-or-later\\r\\npragma solidity 0.7.5;\\r\\n\\r\\n\\r\\ninterface IERC20 {\\r\\n    function decimals() external view returns (uint8);\\r\\n  /**\\r\\n   * @dev Returns the amount of tokens in existence.\\r\\n   */\\r\\n  function totalSupply() external view returns (uint256);\\r\\n\\r\\n  /**\\r\\n   * @dev Returns the amount of tokens owned by `account`.\\r\\n   */\\r\\n  function balanceOf(address account) external view returns (uint256);\\r\\n\\r\\n  /**\\r\\n   * @dev Moves `amount` tokens from the caller's account to `recipient`.\\r\\n   *\\r\\n   * Returns a boolean value indicating whether the operation succeeded.\\r\\n   *\\r\\n   * Emits a {Transfer} event.\\r\\n   */\\r\\n  function transfer(address recipient, uint256 amount) external returns (bool);\\r\\n\\r\\n  /**\\r\\n   * @dev Returns the remaining number of tokens that `spender` will be\\r\\n   * allowed to spend on behalf of `owner` through {transferFrom}. This is\\r\\n   * zero by default.\\r\\n   *\\r\\n   * This value changes when {approve} or {transferFrom} are called.\\r\\n   */\\r\\n  function allowance(address owner, address spender) external view returns (uint256);\\r\\n\\r\\n  /**\\r\\n   * @dev Sets `amount` as the allowance of `spender` over the caller's tokens.\\r\\n   *\\r\\n   * Returns a boolean value indicating whether the operation succeeded.\\r\\n   *\\r\\n   * IMPORTANT: Beware that changing an allowance with this method brings the risk\\r\\n   * that someone may use both the old and the new allowance by unfortunate\\r\\n   * transaction ordering. One possible solution to mitigate this race\\r\\n   * condition is to first reduce the spender's allowance to 0 and set the\\r\\n   * desired value afterwards:\\r\\n   * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729\\r\\n   *\\r\\n   * Emits an {Approval} event.\\r\\n   */\\r\\n  function approve(address spender, uint256 amount) external returns (bool);\\r\\n\\r\\n  /**\\r\\n   * @dev Moves `amount` tokens from `sender` to `recipient` using the\\r\\n   * allowance mechanism. `amount` is then deducted from the caller's\\r\\n   * allowance.\\r\\n   *\\r\\n   * Returns a boolean value indicating whether the operation succeeded.\\r\\n   *\\r\\n   * Emits a {Transfer} event.\\r\\n   */\\r\\n  function transferFrom(address sender, address recipient, uint256 amount) external returns (bool);\\r\\n\\r\\n  /**\\r\\n   * @dev Emitted when `value` tokens are moved from one account (`from`) to\\r\\n   * another (`to`).\\r\\n   *\\r\\n   * Note that `value` may be zero.\\r\\n   */\\r\\n  event Transfer(address indexed from, address indexed to, uint256 value);\\r\\n\\r\\n  /**\\r\\n   * @dev Emitted when the allowance of a `spender` for an `owner` is set by\\r\\n   * a call to {approve}. `value` is the new allowance.\\r\\n   */\\r\\n  event Approval(address indexed owner, address indexed spender, uint256 value);\\r\\n}\\r\\n\\r\\ninterface IStaking {\\r\\n    function stake( uint _amount, address _recipient ) external returns ( bool );\\r\\n    function claim( address _recipient ) external;\\r\\n}\\r\\n\\r\\ncontract StakingHelper {\\r\\n\\r\\n    address public immutable staking;\\r\\n    address public immutable Time;\\r\\n\\r\\n    constructor ( address _staking, address _Time ) {\\r\\n        require( _staking != address(0) );\\r\\n        staking = _staking;\\r\\n        require( _Time != address(0) );\\r\\n        Time = _Time;\\r\\n    }\\r\\n\\r\\n    function stake( uint _amount, address recipient ) external {\\r\\n        IERC20( Time ).transferFrom( msg.sender, address(this), _amount ); // BASH\\r\\n        IERC20( Time ).approve( staking, _amount );\\r\\n        IStaking( staking ).stake( _amount, recipient );\\r\\n        IStaking( staking ).claim( recipient );\\r\\n    }\\r\\n}\",\"keccak256\":\"0x04e1457cb1030eeb2de7573518372759fee6ef4f9394626d257d0cd429089496\",\"license\":\"AGPL-3.0-or-later\"}},\"version\":1}",
+  "bytecode": "0x60c060405234801561001057600080fd5b506040516104713803806104718339818101604052604081101561003357600080fd5b5080516020909101516001600160a01b03821661004f57600080fd5b6001600160601b0319606083901b166080526001600160a01b03811661007457600080fd5b606081811b6001600160601b03191660a052608051901c91506001600160a01b03166103a76100ca6000398060f152806101ae528061034f52508060a2528061017d528061024e52806102e752506103a76000f3fe608060405234801561001057600080fd5b50600436106100415760003560e01c80634cf088d9146100465780637acb77571461006a578063f8e157ea14610098575b600080fd5b61004e6100a0565b604080516001600160a01b039092168252519081900360200190f35b6100966004803603604081101561008057600080fd5b50803590602001356001600160a01b03166100c4565b005b61004e61034d565b7f000000000000000000000000000000000000000000000000000000000000000081565b604080516323b872dd60e01b81523360048201523060248201526044810184905290516001600160a01b037f000000000000000000000000000000000000000000000000000000000000000016916323b872dd9160648083019260209291908290030181600087803b15801561013957600080fd5b505af115801561014d573d6000803e3d6000fd5b505050506040513d602081101561016357600080fd5b50506040805163095ea7b360e01b81526001600160a01b037f0000000000000000000000000000000000000000000000000000000000000000811660048301526024820185905291517f00000000000000000000000000000000000000000000000000000000000000009092169163095ea7b3916044808201926020929091908290030181600087803b1580156101f957600080fd5b505af115801561020d573d6000803e3d6000fd5b505050506040513d602081101561022357600080fd5b505060408051637acb775760e01b8152600481018490526001600160a01b03838116602483015291517f000000000000000000000000000000000000000000000000000000000000000090921691637acb7757916044808201926020929091908290030181600087803b15801561029957600080fd5b505af11580156102ad573d6000803e3d6000fd5b505050506040513d60208110156102c357600080fd5b505060408051630f41a04d60e11b81526001600160a01b03838116600483015291517f000000000000000000000000000000000000000000000000000000000000000090921691631e83409a9160248082019260009290919082900301818387803b15801561033157600080fd5b505af1158015610345573d6000803e3d6000fd5b505050505050565b7f00000000000000000000000000000000000000000000000000000000000000008156fea26469706673582212201fb1e458461a627531dc8b5fbad690dfb9e86d38004969d1f8e429e154ff8a1964736f6c63430007050033",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b50600436106100415760003560e01c80634cf088d9146100465780637acb77571461006a578063f8e157ea14610098575b600080fd5b61004e6100a0565b604080516001600160a01b039092168252519081900360200190f35b6100966004803603604081101561008057600080fd5b50803590602001356001600160a01b03166100c4565b005b61004e61034d565b7f000000000000000000000000000000000000000000000000000000000000000081565b604080516323b872dd60e01b81523360048201523060248201526044810184905290516001600160a01b037f000000000000000000000000000000000000000000000000000000000000000016916323b872dd9160648083019260209291908290030181600087803b15801561013957600080fd5b505af115801561014d573d6000803e3d6000fd5b505050506040513d602081101561016357600080fd5b50506040805163095ea7b360e01b81526001600160a01b037f0000000000000000000000000000000000000000000000000000000000000000811660048301526024820185905291517f00000000000000000000000000000000000000000000000000000000000000009092169163095ea7b3916044808201926020929091908290030181600087803b1580156101f957600080fd5b505af115801561020d573d6000803e3d6000fd5b505050506040513d602081101561022357600080fd5b505060408051637acb775760e01b8152600481018490526001600160a01b03838116602483015291517f000000000000000000000000000000000000000000000000000000000000000090921691637acb7757916044808201926020929091908290030181600087803b15801561029957600080fd5b505af11580156102ad573d6000803e3d6000fd5b505050506040513d60208110156102c357600080fd5b505060408051630f41a04d60e11b81526001600160a01b03838116600483015291517f000000000000000000000000000000000000000000000000000000000000000090921691631e83409a9160248082019260009290919082900301818387803b15801561033157600080fd5b505af1158015610345573d6000803e3d6000fd5b505050505050565b7f00000000000000000000000000000000000000000000000000000000000000008156fea26469706673582212201fb1e458461a627531dc8b5fbad690dfb9e86d38004969d1f8e429e154ff8a1964736f6c63430007050033",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {},
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "version": 1
+  },
+  "storageLayout": {
+    "storage": [],
+    "types": null
+  }
+}
