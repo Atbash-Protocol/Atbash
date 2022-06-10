@@ -1,90 +1,57 @@
 //SPDX-License-Identifier: Unlicense
 pragma solidity ^0.8.0;
 
-import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
-import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import {SafeMath} from "@openzeppelin/contracts/utils/math/SafeMath.sol";
+import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import { IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 
-contract PresaleRedemption is Ownable {
+import { SafeMath } from "@openzeppelin/contracts/utils/math/SafeMath.sol";
+
+import { console } from "hardhat/console.sol";
+
+interface IERC20WithMetadata is IERC20, IERC20Metadata {}
+
+contract PresaleRedemption {
     using SafeMath for uint256;
 
-    address private bash = address(0);
+    IERC20WithMetadata public bash;
+    IERC20WithMetadata public abash;
+    address public presale;
 
-    // bool private active = false;
+    // todo: bool private active = false;
 
-    constructor(address bashTokenAddress) {
-        require(bashTokenAddress != address(0), "Specify BASH address");
-        bash = bashTokenAddress;
+    // todo: event Redeemed(address ???, uint256 bashAmount);
+
+    constructor(address abashAddress, address bashAddress, address presaleContractAddress) {
+        require(abashAddress != address(0), "ABASH address");
+        require(bashAddress != address(0), "BASH address");
+        require(presaleContractAddress != address(0), "Atbash Presale address");
+
+        abash = IERC20WithMetadata(abashAddress);
+        bash = IERC20WithMetadata(bashAddress);
+        presale = presaleContractAddress;
     }
 
-    // function setPresaleActive() public onlyOwner {
-    //     active = !active;
-    // }
+    function redeem(uint256 amount) public {    // todo: 
+        require(amount > 0, "Invalid amount");
 
-    // function getPresaleStatus() public view returns (bool) {
-    //     return active;
-    // }
+        // convert into bash decimals
+        uint256 bashAmount = amount.mul(10 ** bash.decimals())
+                                    .div(10 ** abash.decimals());
 
-    // function setPresaleToken(address token_) public onlyOwner {
-    //     _token = token_;
-    // }
+        require(bashAmount <= bash.balanceOf(address(this)), "Not enough funds to cover redemption");
 
-    // function presaleToken() public view returns (address) {
-    //     return _token;
-    // }
+        // todo: safe transfer?
+        abash.transfer(address(this), amount); 
 
-    // function setRate(uint256 rate_) public onlyOwner {
-    //     _rate = rate_;
-    // }
+        bash.transferFrom(address(this), msg.sender, bashAmount);
 
-    // function removeERC20(address tokenAddress) public onlyOwner {
-    //     require(
-    //         IERC20(tokenAddress).transfer(
-    //             msg.sender,
-    //             IERC20(tokenAddress).balanceOf(address(this))
-    //         ),
-    //         "FAIL"
-    //     );
-    // }
+        // todo: emit event?
+    }
 
-    // function removeETH() public payable onlyOwner {
-    //     require(payable(msg.sender).send(address(this).balance), "FAIL");
-    // }
-
-    // function rate() public view returns (uint256) {
-    //     return _rate;
-    // }
-
-    // function tokensLeft() public view returns (uint256) {
-    //     return IERC20(_token).balanceOf(address(this));
-    // }
-
-    // function buyTokens(uint256 payableAmount, address buyer) public {
-    //     IERC20 tokenToSale = IERC20(_token);
-
-    //     uint256 tokensToReceive = payableAmount.mul(_rate);
-    //     // uint256 tokensToReceive = ((payableAmount / 10 ** 18) * _rate) * 10 ** _tokenDecimals;
-
-
-    //     require(
-    //         tokenToSale.balanceOf(address(this)) >= tokensToReceive,
-    //         "Not enough tokens to sale"
-    //     );
-
-    //     require(
-    //         tokenToSale.transfer(buyer, tokensToReceive),
-    //         "Failed to transfer tokens"
-    //     );
-
-    //     (bool success,) = payable(beneficiary).call{value: payableAmount}(""); 
-    //     require(success);
-    // }
-
-    // receive() external payable {
-    //     require(msg.value > 0, "You sent 0 ETH");
-    //     require(active, "Presale is stopped");
-    //     require(address(0) != _token, "Token not set");
-    //     require(_rate > 0, "Rate could not be 0");
-    //     buyTokens(msg.value, msg.sender);
-    // }
+    function remaining() public view returns (uint256 amount) {
+        // todo: abash total supply - abash.balanceOf(this.address)
+        amount = abash.totalSupply()
+                    .sub(abash.balanceOf(presale))
+                    .sub(abash.balanceOf(address(this)));
+    }
 }
