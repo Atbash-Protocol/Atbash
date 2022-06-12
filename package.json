@@ -69,8 +69,6 @@
     "test:debug": "yarn fork:node rinkeby --tags test-math",
     "fork:nodetest": "node ./_scripts.js fork:run localhost ./scripts/sandbox.ts",
     "fork:execute2": "echo 1337 > ./deployments/localhost/.chainId && node ./_scripts.js run",
-    "fork:deploylocal": "echo 1337 > ./deployments/localhost/.chainId && hardhat deploy --network localhost",
-    "testx2": "node ./_scripts.js fork:deploy rinkeby ntee",
-    "testx": "node ./_scripts.js fork:node"
+    "fork:deploylocal": "echo 1337 > ./deployments/localhost/.chainId && hardhat deploy --network localhost"
   }
 }

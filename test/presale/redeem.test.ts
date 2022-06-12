@@ -111,9 +111,9 @@ describe('Abash Presale Redeem', () => {
 
             await presaleRedemption.connect(alice).redeem(amount);
             
-            expect(abashFake.transfer)
+            expect(abashFake.transferFrom)
                 .to.have.been
-                .calledWith(presaleRedemption.address, amount);
+                .calledWith(alice.address, presaleRedemption.address, amount);
         });
 
         it('sends equivalent bash to sender matching abash', async () => {
@@ -127,9 +127,9 @@ describe('Abash Presale Redeem', () => {
 
             await presaleRedemption.connect(alice).redeem(amount);
             
-            expect(bashFake.transferFrom.atCall(0))
+            expect(bashFake.transfer.atCall(0))
                 .to.have.been
-                .calledWith(presaleRedemption.address, alice.address, amountInBash);
+                .calledWith(alice.address, amountInBash);
         });
 
         it('reverts if redemption funds dont cover amount requested', async () => {

@@ -102,6 +102,10 @@ NOT recommended for live networks
 
 `yarn fork:deploylocal --tags PostLaunchTesting`
 
+After you have a node running locally, check balances of wallets configured for hardhat:
+
+`yarn hardhat run --network localhost ./scripts/show-balances.ts`
+
 ## Testing
 
 `yarn test`

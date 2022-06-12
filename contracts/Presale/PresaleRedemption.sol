@@ -31,6 +31,7 @@ contract PresaleRedemption {
         presale = presaleContractAddress;
     }
 
+    // amount in abash decimals
     function redeem(uint256 amount) public {    // todo: 
         require(amount > 0, "Invalid amount");
 
@@ -41,9 +42,9 @@ contract PresaleRedemption {
         require(bashAmount <= bash.balanceOf(address(this)), "Not enough funds to cover redemption");
 
         // todo: safe transfer?
-        abash.transfer(address(this), amount); 
-
-        bash.transferFrom(address(this), msg.sender, bashAmount);
+        // abash.transfer(address(this), amount); 
+        abash.transferFrom(msg.sender, address(this), amount);
+        bash.transfer(msg.sender, bashAmount);
 
         // todo: emit event?
     }

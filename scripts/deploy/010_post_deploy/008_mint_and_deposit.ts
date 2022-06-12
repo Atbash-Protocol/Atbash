@@ -2,7 +2,7 @@ import {HardhatRuntimeEnvironment} from 'hardhat/types';
 import {DeployFunction} from 'hardhat-deploy/types';
 import { BASH_STARTING_MARKET_VALUE_IN_DAI, CONTRACTS, INITIAL_BASH_LIQUIDITY_IN_DAI, INITIAL_DAI_RESERVES_AMOUNT } from '../../constants';
 
-import { BashTreasury__factory, DAI__factory, BASHERC20Token__factory } from '../../../types';
+import { BashTreasury__factory, DAI__factory, BASHERC20Token__factory, ABASHERC20__factory } from '../../../types';
 import { waitFor } from '../../txHelper';
 import { BigNumber } from 'ethers';
 import { parseEther, parseUnits } from 'ethers/lib/utils';
@@ -26,11 +26,20 @@ const func: DeployFunction = async function(hre: HardhatRuntimeEnvironment) {
     const bashLiquidityNeededAtMarketLaunchPricingInWei = parseEther(bashLiquidityNeededAtMarketLaunchPricing.toString());
     const initialDaiReserveAmountInWei = parseEther(INITIAL_DAI_RESERVES_AMOUNT.toString());
 
+    // DAI needed for redemption (that get's minted and sent to redemption contract)
+    var presaleDeployment = await deployments.get(CONTRACTS.atbashPresale);
+    var abashDeployment = await deployments.get(CONTRACTS.aBash);
+    var abash = await ABASHERC20__factory.connect(abashDeployment.address, signer);
+    // totalSupply - presale
+    var amountForRedeemInWei = (await abash.totalSupply()).sub(await abash.balanceOf(presaleDeployment.address));
+    console.log(`Bash redemption amount needed: ${amountForRedeemInWei.toEtherComma()}`);
+    
     const daiAmount = initialDaiReserveAmountInWei
-                        .add(bashLiquidityNeededAtMarketLaunchPricingInWei); // in DAI decimals
+                        .add(bashLiquidityNeededAtMarketLaunchPricingInWei) // in DAI decimals
+                        .add(amountForRedeemInWei); // ading redemption
 
     const bashProfitInGwei = parseUnits(INITIAL_DAI_RESERVES_AMOUNT.toString(), "gwei"); // bash decimals
-    console.log(`Check: treasury deposit:  DAI: ${daiAmount.toEtherComma()}, bashProfit: ${bashProfitInGwei.toGweiComma()}`);
+    console.log(`Check: treasury deposit:  DAI: ${daiAmount.toEtherComma()}, bashProfit (to treasury): ${bashProfitInGwei.toGweiComma()}`);
     await liveNetworkConfirm(hre.network, `Are you sure you want to deposit ${daiAmount.toEtherComma()} DAI to treasury? `);
 
     await waitFor(dai.approve(treasury.address, "1000000000000000000000000000000000000000")); // Approve treasury to use the dai
@@ -47,7 +56,7 @@ const func: DeployFunction = async function(hre: HardhatRuntimeEnvironment) {
 };
 
 func.id = "2022-launch-mint-bash";
-func.dependencies = [CONTRACTS.treasury, CONTRACTS.DAI, CONTRACTS.BASH];
+func.dependencies = [CONTRACTS.treasury, CONTRACTS.DAI, CONTRACTS.bash, CONTRACTS.aBash, CONTRACTS.atbashPresale];
 // func.tags = ["TreasuryDaiDeposit"];
 func.tags = ["Launch"];
 

@@ -6,6 +6,7 @@ export const CONTRACTS: Record<string, string> = {
     // Atbash
     aBash: "aBASHERC20",
     atbashPresale: "Presale",
+    presaleRedemption: "PresaleRedemption",
     bash: "BASHERC20Token",
     sBash: "sBASH",
     bondingCalculator: "ATBASHBondingCalculator",
@@ -49,9 +50,9 @@ export const STAKING_REWARD_RATE = "5000";
 
 // 25k worth of liquidity (25k DAI)
 // 5k of bash (5k DAI) in reserve
-export const INITIAL_DAI_RESERVES_AMOUNT = 5000;        // 5k DAI, not including the DAI needed for BASH mint
-export const INITIAL_BASH_LIQUIDITY_IN_DAI = 25000;     // bash needed at deposit not including what's needed for LP
-export const BASH_STARTING_MARKET_VALUE_IN_DAI = 80;    // 1 BASH:80 DAI
+export const INITIAL_DAI_RESERVES_AMOUNT = 5000;       // 5k DAI, not including the DAI needed for BASH mint
+export const INITIAL_BASH_LIQUIDITY_IN_DAI = 8000;     // bash needed at deposit not including what's needed for LP
+export const BASH_STARTING_MARKET_VALUE_IN_DAI = 80;   // 1 BASH:80 DAI
 
 export const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 

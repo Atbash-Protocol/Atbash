@@ -39,7 +39,7 @@ const func: DeployFunction = async function(hre: HardhatRuntimeEnvironment) {
 
     const bashDeployment = await deployments.get(CONTRACTS.bash);
     const bash = await BASHERC20Token__factory.connect(bashDeployment.address, signer);
-    console.log(`Deployer BASH balance (should be zero): ${(await bash.balanceOf(deployer)).toGweiComma()}`);
+    console.log(`Deployer BASH balance: ${(await bash.balanceOf(deployer)).toGweiComma()}`);
     return true;
 };
 
