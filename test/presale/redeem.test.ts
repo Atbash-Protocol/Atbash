@@ -90,6 +90,34 @@ describe('Abash Presale Redeem', () => {
         });
     });
 
+    describe('removeERC20', () => {
+        let presaleRedemption: PresaleRedemption;
+
+        beforeEach(async function() {
+            presaleRedemption = await new PresaleRedemption__factory(owner).deploy(
+                abashFake.address,
+                bashFake.address,
+                presaleFake.address
+            );
+        });
+
+        it('should transfer balance of specified token to owner', async () => {
+            const amount = 100;
+            bashFake.balanceOf.whenCalledWith(presaleRedemption.address).returns(amount);
+            bashFake.transfer.whenCalledWith(owner.address, amount).returns(amount);
+
+            await presaleRedemption.connect(owner).removeERC20(bashFake.address);
+
+            bashFake.balanceOf.should.be.called;
+            bashFake.transfer.should.be.calledWith(owner.address, amount);
+        });
+
+        it('only called by owner', async () => {
+            await (presaleRedemption.connect(alice).removeERC20(bashFake.address))
+                    .should.be.reverted;
+        });
+    });
+
     describe('redeem', () => {
         let presaleRedemption: PresaleRedemption;
 
@@ -101,14 +129,13 @@ describe('Abash Presale Redeem', () => {
             );
         });
 
-        it('transfers sender abash to redemption contract owner', async () => {
+        it('transfers sender abash to redemption contract', async () => {
             const amount = parseUnits("5", 18);
             const bashTotalAmount = parseUnits("10", 9);
 
             bashFake.balanceOf.whenCalledWith(presaleRedemption.address).returns(bashTotalAmount);
             bashFake.decimals.returns(9);
             abashFake.decimals.returns(18);
-
             await presaleRedemption.connect(alice).redeem(amount);
             
             expect(abashFake.transferFrom)
@@ -132,16 +159,62 @@ describe('Abash Presale Redeem', () => {
                 .calledWith(alice.address, amountInBash);
         });
 
+        it('should emit RedeemedEvent', async () => {
+            const amount = parseUnits("5", 18);
+            const amountInBash = amount.div(parseUnits("1", 9));    // in bash decimals
+            const bashTotalAmount = parseUnits("10", 9);
+
+            bashFake.balanceOf.whenCalledWith(presaleRedemption.address).returns(bashTotalAmount);
+            bashFake.decimals.returns(9);
+            abashFake.decimals.returns(18);
+            
+            expect(await presaleRedemption.connect(alice).redeem(amount))
+                .to.emit(presaleRedemption, "Redeemed")
+                .withArgs(alice.address, amountInBash, bashTotalAmount.sub(amountInBash));
+        });
+
         it('reverts if redemption funds dont cover amount requested', async () => {
             bashFake.balanceOf.whenCalledWith(presaleRedemption.address).returns(1);
             const amountRequested = parseUnits("1", 18);
-            presaleRedemption.connect(alice)
-                .redeem(amountRequested)
+            
+            await (presaleRedemption.connect(alice)
+                .redeem(amountRequested))
                 .should.be.revertedWith("Not enough funds to cover redemption");
         });
 
         it('reverts if amount requested is zero', async () => {
-            presaleRedemption.connect(alice).redeem(0).should.be.revertedWith("Invalid amount");
+            await (presaleRedemption.connect(alice).redeem(0)).should.be.revertedWith("Invalid amount");
+        });
+
+        it('reverts if sender requests too much and fails transferFrom', async () => {
+            const amount = parseUnits("5", 18);
+            const bashTotalAmount = parseUnits("10", 9);
+
+            bashFake.balanceOf.whenCalledWith(presaleRedemption.address).returns(bashTotalAmount);
+            bashFake.decimals.returns(9);
+            abashFake.decimals.returns(18);
+            abashFake.transferFrom.whenCalledWith(alice.address, presaleRedemption.address, amount).reverts();
+
+            await (presaleRedemption.connect(alice).redeem(amount))
+                    .should.be.reverted;
+
+            bashFake.transfer.should.not.be.called;
+        });
+
+        it('reverts if redemption bash transfer fails', async () => {
+            const amount = parseUnits("5", 18);
+            const amountInBash = amount.div(parseUnits("1", 9));    // in bash decimals
+            const bashTotalAmount = parseUnits("10", 9);
+
+            bashFake.balanceOf.whenCalledWith(presaleRedemption.address).returns(bashTotalAmount);
+            bashFake.decimals.returns(9);
+            abashFake.decimals.returns(18);
+            abashFake.transferFrom.whenCalledWith(alice.address, presaleRedemption.address, amount).reverts;
+            bashFake.transfer.whenCalledWith(alice.address, amountInBash).reverts();
+
+            await (presaleRedemption.connect(alice).redeem(amount))
+                    .should.be.reverted;
+            abashFake.transferFrom.should.be.called;
         });
     });
 });
