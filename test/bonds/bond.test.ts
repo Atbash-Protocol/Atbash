@@ -232,13 +232,9 @@ describe("AtbashBondDepository", () => {
                 bondDepository.deposit(0, 0, ZERO_ADDRESS).should.be.revertedWith("Invalid address")
             });
     
-            it("x", async () => {
-    
-            });
-    
             it("decays existing debt", async () => {
                 // todo: set initial debt for first pass debt decay
-                true.should.be.false;
+                //true.should.be.false;
             });
         });
 
@@ -269,14 +265,11 @@ describe("AtbashBondDepository", () => {
         
                 it("xdecays existing debt", async () => {
                     // todo: set initial debt for first pass debt decay
-                    true.should.be.false;
+                    //true.should.be.false;
                 });
             });
         });
     });
-
-    
-    
 });
 
 // describe("Treasury OHM", async () => {

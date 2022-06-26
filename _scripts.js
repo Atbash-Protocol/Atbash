@@ -85,7 +85,7 @@ async function performAction(rawArgs) {
   } else if (firstArg === 'deploy') {
     const {fixedArgs, extra, options} = parseArgs(args, 1, {tee: 'boolean'});
     await execute(
-      `hardhat --network ${fixedArgs[0]} deploy ${extra.join(' ')} ${tee(options, fixedArgs[0])}`
+      `hardhat --network ${fixedArgs[0]} deploy --report-gas ${extra.join(' ')} ${tee(options, fixedArgs[0])}`
     );
   } else if (firstArg === 'export') {
     const {fixedArgs, extra, options} = parseArgs(args, 2, {tee: 'boolean'});
@@ -124,7 +124,7 @@ async function performAction(rawArgs) {
         options['no-impersonation']
           ? `HARDHAT_DEPLOY_NO_IMPERSONATION=true`
           : ''
-      } hardhat deploy ${extra.join(' ')} ${tee(options, networkName)}`
+      } hardhat deploy --report-gas ${extra.join(' ')} ${tee(options, networkName)}`
     );
   } else if (firstArg === 'fork:node') {
     const {fixedArgs, options, extra} = parseArgs(args, 1, {

@@ -10,4 +10,8 @@ interface IERC20Mintable {
     function mint(address account_, uint256 ammount_) external;
 }
 
+interface IERC20Burnable {
+    function burnFrom(address account_, uint256 amount_) external;
+}
+
 interface IBash is IERC20, IERC20Mintable { }

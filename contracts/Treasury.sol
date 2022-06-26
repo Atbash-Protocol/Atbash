@@ -7,6 +7,7 @@ pragma solidity 0.7.5;
 
 import {IERC20} from "./interfaces/IERC20.sol";
 import {ITreasury} from "./interfaces/ITreasury.sol";
+import {IERC20Burnable, IERC20Mintable} from "./interfaces/IBash.sol";
 
 library SafeMath {
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
@@ -279,16 +280,6 @@ library SafeERC20 {
     }
 }
 
-interface IERC20Mintable {
-    function mint(uint256 amount_) external;
-
-    function mint(address account_, uint256 ammount_) external;
-}
-
-interface IOHMERC20 {
-    function burnFrom(address account_, uint256 amount_) external;
-}
-
 interface IBondCalculator {
     function valuation(address pair_, uint256 amount_)
         external
@@ -385,8 +376,8 @@ contract BashTreasury is Ownable, ITreasury {
     mapping(address => bool) public isRewardManager;
     mapping(address => uint32) public rewardManagerQueue; // Delays changes to mapping.
 
-    address public MEMOries;
-    uint256 public sOHMQueue; // Delays change to sOHM address
+    address public sBash;
+    uint256 public sBashQueue; // Delays change to sbash address
 
     uint256 public totalReserves; // Risk-free value of all assets
     uint256 public totalDebt;
@@ -402,14 +393,11 @@ contract BashTreasury is Ownable, ITreasury {
         isReserveToken[_DAI] = true;
         reserveTokens.push(_DAI);
 
-        //    isLiquidityToken[ _OHMDAI ] = true; // disabled, but you can still add using queue/lock
-        //    liquidityTokens.push( _OHMDAI );
-
         secondsNeededForQueue = _secondsNeededForQueue;
     }
 
     /**
-        @notice allow approved address to deposit an asset for OHM
+        @notice allow approved address to deposit an asset for bash
         @param _amount uint
         @param _token address
         @param _profit uint
@@ -444,7 +432,7 @@ contract BashTreasury is Ownable, ITreasury {
     }
 
     /**
-        @notice allow approved address to burn OHM for reserves
+        @notice allow approved address to burn bash for reserves
         @param _amount uint
         @param _token address
      */
@@ -453,7 +441,7 @@ contract BashTreasury is Ownable, ITreasury {
         require(isReserveSpender[msg.sender] == true, "Not approved");
 
         uint256 value = tokenValue(_token, _amount);
-        IOHMERC20(Bash).burnFrom(msg.sender, value);
+        IERC20Burnable(Bash).burnFrom(msg.sender, value);
 
         totalReserves = totalReserves.sub(value);
         emit ReservesUpdated(totalReserves);
@@ -474,7 +462,7 @@ contract BashTreasury is Ownable, ITreasury {
 
         uint256 value = tokenValue(_token, _amount);
 
-        uint256 maximumDebt = IERC20(MEMOries).balanceOf(msg.sender); // Can only borrow against sOHM held
+        uint256 maximumDebt = IERC20(sBash).balanceOf(msg.sender); // Can only borrow against sbash held
         uint256 availableDebt = maximumDebt.sub(debtorBalance[msg.sender]);
         require(value <= availableDebt, "Exceeds debt limit");
 
@@ -511,13 +499,13 @@ contract BashTreasury is Ownable, ITreasury {
     }
 
     /**
-        @notice allow approved address to repay borrowed reserves with OHM
+        @notice allow approved address to repay borrowed reserves with bash
         @param _amount uint
      */
-    function repayDebtWithOHM(uint256 _amount) external {
+    function repayDebtWithBash(uint256 _amount) external {
         require(isDebtor[msg.sender], "Not approved");
 
-        IOHMERC20(Bash).burnFrom(msg.sender, _amount);
+        IERC20Burnable(Bash).burnFrom(msg.sender, _amount);
 
         debtorBalance[msg.sender] = debtorBalance[msg.sender].sub(_amount);
         totalDebt = totalDebt.sub(_amount);
@@ -695,7 +683,7 @@ contract BashTreasury is Ownable, ITreasury {
             );
         } else if (_managing == MANAGING.SBASH) {
             // 9
-            sOHMQueue = uint32(block.timestamp).add32(secondsNeededForQueue);
+            sBashQueue = uint32(block.timestamp).add32(secondsNeededForQueue);
         } else return false;
 
         emit ChangeQueued(_managing, _address);
@@ -829,8 +817,8 @@ contract BashTreasury is Ownable, ITreasury {
             isRewardManager[_address] = result;
         } else if (_managing == MANAGING.SBASH) {
             // 9
-            sOHMQueue = 0;
-            MEMOries = _address;
+            sBashQueue = 0;
+            sBash = _address;
             result = true;
         } else return false;
 

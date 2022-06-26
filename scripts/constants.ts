@@ -80,8 +80,8 @@ interface INetworkOptions {
 // network specific options
 export function getConfig(network: string) : INetworkOptions {
     switch (network) {
-        case "hardhat":
-            const epochLength = 60 * 10;    // 10 minutes
+        case "hardhat": // hardhat testing configs
+            const epochLength = 60 * 15;    // 15 minutes
             return {
                 EPOCH_LENGTH_IN_SECONDS: epochLength,
                 FIRST_EPOCH_NUMBER,
@@ -89,7 +89,7 @@ export function getConfig(network: string) : INetworkOptions {
                 NEXT_EPOCH_TIME: parseInt(JSON.stringify((date / 1000) + epochLength)),
                 bondVestingLength: "600",   // 10 minutes
             };
-        default:
+        default: // default production level configs
             return {
                 EPOCH_LENGTH_IN_SECONDS,
                 FIRST_EPOCH_NUMBER,

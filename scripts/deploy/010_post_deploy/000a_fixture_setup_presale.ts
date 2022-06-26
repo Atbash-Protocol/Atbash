@@ -20,20 +20,23 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     
     await deployerSigner.sendTransaction({ 
         to: presaleDeployment.address,
-        value: ethers.utils.parseEther("20.0")
+        value: ethers.utils.parseEther("5.0")
     });
     await testWalletSigner.sendTransaction({
         to: presaleDeployment.address,
-        value: ethers.utils.parseEther("5.0")
+        value: ethers.utils.parseEther("1.0")
     });
 
     console.log(`Transfered ${(await abash.balanceOf(deployer)).toEtherComma()} aBash to deployer`);
     console.log(`Transfered ${(await abash.balanceOf(testWallet)).toEtherComma()} aBash to testWallet`);
+
+    return true;
 };
 
 // only deploy to hardhat local
 func.skip = async (hre: HardhatRuntimeEnvironment) => isNotLocalTestingNetwork(hre.network);
 // func.skip = async (hre: HardhatRuntimeEnvironment) => true;
+func.id = "2022-fixture-setup-presale";
 func.tags = ["PostLaunchTesting"];
 func.dependencies = [CONTRACTS.Presale, CONTRACTS.aBash]
 export default func;

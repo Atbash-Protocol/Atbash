@@ -119,8 +119,6 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     /////////////////////////
 
     if (true) {
-        
-
         console.log(`Creating liquidity for BASH-DAI`);
         console.log(`BASH-DAI LP Pair (Token 0: ${await bashDai.token0()}, Token 1: ${await bashDai.token1()}`);
 
@@ -167,10 +165,12 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     console.log(`Added BASH for deployer ${deployer} and testWallet ${testWallet}`);
     // console.log(`Deployer BASH: ${(await bash.balanceOf(deployer)).toGweiComma()}`);
     await displayAllBalances(ethers.provider, [deployer, testWallet]);
+    return true;
 };
 
 // only deploy to hardhat local
 func.skip = async (hre: HardhatRuntimeEnvironment) => isNotLocalTestingNetwork(hre.network);
+func.id = "2022-fixture-swaps-for-test";
 // func.skip = async (hre: HardhatRuntimeEnvironment) => true;
 func.tags = ["PostLaunchTesting"];
 func.dependencies = [CONTRACTS.DAI, CONTRACTS.bash, CONTRACTS.UniswapV2Router]

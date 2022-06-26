@@ -1,6 +1,6 @@
 import { Network } from "hardhat/types";
 import * as readline from "readline";
-import { isLiveNetwork, isLiveNetworkButNotFork } from "./network";
+import { isLiveNetwork, isLiveNetworkButNotFork, isLocalHardhatFork } from "./network";
 
 const rl = readline.createInterface({
     input: process.stdin,
@@ -9,9 +9,13 @@ const rl = readline.createInterface({
 
 const prompt = (query: string) => new Promise((resolve) => rl.question(query, resolve));
 
+function noPromptOption(): boolean {
+    return process.env.NO_CONFIRM == "true";
+}
+
 export async function liveNetworkConfirm(network: Network, question: string) {
     // treat forks like actual networks so there is behavior parity
-    if (!isLiveNetwork(network)) {
+    if (!isLiveNetwork(network) || (isLocalHardhatFork(network) && noPromptOption())) {
         console.log(`Skipping prompt: ${question} [y/N]`);
         return;
     }

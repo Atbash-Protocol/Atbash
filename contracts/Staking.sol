@@ -63,7 +63,7 @@ contract ATBASHStaking is Ownable {
     mapping(address => Claim) public warmupInfo;
 
     /**
-        @notice stake OHM to enter warmup
+        @notice stake bash to enter warmup
         @param _amount uint
         @return bool
      */
@@ -89,7 +89,7 @@ contract ATBASHStaking is Ownable {
     }
 
     /**
-        @notice retrieve sOHM from warmup
+        @notice retrieve sbash from warmup
         @param _recipient address
      */
     function claim(address _recipient) public {
@@ -104,7 +104,7 @@ contract ATBASHStaking is Ownable {
     }
 
     /**
-        @notice forfeit sOHM in warmup and retrieve OHM
+        @notice forfeit sbash in warmup and retrieve bash
      */
     function forfeit() external {
         Claim memory info = warmupInfo[msg.sender];
@@ -125,7 +125,7 @@ contract ATBASHStaking is Ownable {
     }
 
     /**
-        @notice redeem sOHM for OHM
+        @notice redeem sbash for bash
         @param _amount uint
         @param _trigger bool
      */
@@ -138,7 +138,7 @@ contract ATBASHStaking is Ownable {
     }
 
     /**
-        @notice returns the sOHM index, which tracks rebase growth
+        @notice returns the sbash index, which tracks rebase growth
         @return uint
      */
     function index() public view returns (uint256) {
@@ -169,7 +169,7 @@ contract ATBASHStaking is Ownable {
     }
 
     /**
-        @notice returns contract OHM holdings, including bonuses provided
+        @notice returns contract bash holdings, including bonuses provided
         @return uint
      */
     function contractBalance() public view returns (uint256) {
