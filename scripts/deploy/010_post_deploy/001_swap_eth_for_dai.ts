@@ -37,7 +37,8 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const uniswapRouter = await UniswapV2Router02__factory.connect(uniswapRouterDeployment.address, signer);
     const dai = await DAI__factory.connect(daiDeployment.address, signer);
     
-    console.log(`Deployer DAI balance: ${(await dai.balanceOf(deployer)).toEtherComma()}, ETH: ${(await ethers.provider.getBalance(deployer)).toEtherComma()}`);
+    var deployerDaiAmount = await dai.balanceOf(deployer);
+    console.log(`Deployer current DAI balance: ${deployerDaiAmount.toEtherComma()}, ETH: ${(await ethers.provider.getBalance(deployer)).toEtherComma()}`);
     
     const initialBashLiquidityInDai = INITIAL_BASH_LIQUIDITY_IN_DAI.toString().parseUnits(18);
     var bashStartingMarketValueInDai = BASH_STARTING_MARKET_VALUE_IN_DAI.toString().toBigNumber();
@@ -54,6 +55,9 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     var amountForRedeem = (await abash.totalSupply()).sub(await abash.balanceOf(presaleDeployment.address));
     console.log(`Amount DAI needed to cover for Presale redemption: ${amountForRedeem.toEtherComma()}`);
     daiWanted = daiWanted.add(amountForRedeem);
+
+    console.log(`Using the existing deployer DAI funds available: ${deployerDaiAmount.toEtherComma()}`);
+    daiWanted = daiWanted.sub(deployerDaiAmount);
 
     console.log(`Uniswap WETH address: ${await uniswapRouter.WETH()}, DAI address: ${dai.address}`);
     const path = [await uniswapRouter.WETH(), daiDeployment.address];   // eth->dai
