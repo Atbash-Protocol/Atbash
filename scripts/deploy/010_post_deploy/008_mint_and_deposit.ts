@@ -57,7 +57,6 @@ const func: DeployFunction = async function(hre: HardhatRuntimeEnvironment) {
 
 func.id = "2022-launch-mint-bash";
 func.dependencies = [CONTRACTS.treasury, CONTRACTS.DAI, CONTRACTS.bash, CONTRACTS.aBash, CONTRACTS.atbashPresale];
-// func.tags = ["TreasuryDaiDeposit"];
 func.tags = ["Launch"];
 
 export default func;

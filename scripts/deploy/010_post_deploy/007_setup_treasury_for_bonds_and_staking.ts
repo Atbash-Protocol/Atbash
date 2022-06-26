@@ -15,8 +15,6 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
     const treasuryDeployment = await deployments.get(CONTRACTS.treasury);
     const treasury = BashTreasury__factory.connect(treasuryDeployment.address, signer);
 
-    // todo: how to make idempotent
-
     // Queues
     // Deployer
     await waitFor(treasury.queue(MANAGING.RESERVEDEPOSITOR, deployer)); 
@@ -92,7 +90,6 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
 };
 
 func.id = "2022-launch-treasury-bonds-and-staking";
-//func.tags = ["TreasurySetupForBondsAndStaking"]
 func.tags = ["Launch"];
 
 func.dependencies = [CONTRACTS.treasury, 

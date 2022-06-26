@@ -52,16 +52,6 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
         log: true,
         skipIfAlreadyDeployed: true,
     });
-
-    // if (!staking.newlyDeployed || !stakingHelper.newlyDeployed || !stakingWarmup.newlyDeployed) 
-    // {
-    //     console.warn("Some or all of the staking contracts were already deployed for this network, skipping setup");
-    //     return;
-    // }
-
-    // console.log("Initialize sBASH with staking contract & set initial index");
-    // await waitFor(sbash.initialize(staking.address));
-    // await waitFor(sbash.setIndex(INITIAL_INDEX));
 };
 
 func.dependencies = [CONTRACTS.bash, CONTRACTS.sBash];

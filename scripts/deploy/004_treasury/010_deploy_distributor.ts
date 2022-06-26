@@ -24,21 +24,8 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
         log: true,
         skipIfAlreadyDeployed: true,
     });
-
-    // if (!distributorDeployment.newlyDeployed) 
-    // {
-    //     console.warn("The distributor was already deployed for this network, skipping setup");
-    //     return;
-    // }
-
-    // // Distributor staking reward rate
-    // const stakingDeployment = await deployments.get(CONTRACTS.staking);
-    // const distributor = Distributor__factory.connect(distributorDeployment.address, signer);
-
-    //  await waitFor(distributor.addRecipient(stakingDeployment.address, STAKING_REWARD_RATE));
-    //  console.log(`Distributor added staking contract as recipient with reward rate: ${STAKING_REWARD_RATE}`);
 };
 
-func.dependencies = [CONTRACTS.treasury, CONTRACTS.bash]; // , CONTRACTS.staking];
+func.dependencies = [CONTRACTS.treasury, CONTRACTS.bash];
 func.tags = [CONTRACTS.stakingDistributor, "Staking"];
 export default func;

@@ -53,6 +53,7 @@ const func: DeployFunction = async function(hre: HardhatRuntimeEnvironment) {
 
     console.log("Treasury setup completed for BASH-DAI");
     return true;
+    
     // reward minting is only needed for BASH
     // const distributorDeployment = await deployments.get(CONTRACTS.stakingDistributor);
     // await waitFor(treasury.queue(MANAGING.REWARDMANAGER, distributorDeployment.address));
