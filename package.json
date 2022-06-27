@@ -54,6 +54,7 @@
     "typechain": "cross-env TS_NODE_TRANSPILE_ONLY=true hardhat typechain",
     "delete:deploy:rinkeby": "hardhat --network rinkeby deploy | ntee deployments/rinkeby-deploy-log.txt -a",
     "deploy:rinkeby": "node ./_scripts.js deploy rinkeby",
+    "deploy:mainnet": "node ./_scripts.js deploy mainnet",
     "deploy:hardhat": "hardhat --network hardhat deploy --report-gas",
     "deploy:localhost": "hardhat --network localhost deploy",
     "sourcify:rinkeby": "hardhat --network rinkeby sourcify",
@@ -71,6 +72,7 @@
     "fork:nodetest": "node ./_scripts.js fork:run localhost ./scripts/sandbox.ts",
     "fork:execute2": "echo 1337 > ./deployments/localhost/.chainId && node ./_scripts.js run",
     "fork:deploylocal": "echo 1337 > ./deployments/localhost/.chainId && hardhat deploy --network localhost",
-    "fork:rinkeby:deployonly": "./_scrips.js fork:deploy rinkeby --tags Token,Treasury,PresaleRedemption,Staking,StableBond,BashDaiBond"
+    "fork:rinkeby:deployonly": "./_scrips.js fork:deploy rinkeby --tags Token,Treasury,PresaleRedemption,Staking,StableBond,BashDaiBond",
+    "hardhat:task": "node ./_scripts.js task"
   }
 }

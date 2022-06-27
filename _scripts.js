@@ -80,7 +80,14 @@ async function performAction(rawArgs) {
     await execute(
       `cross-env HARDHAT_DEPLOY_LOG=true HARDHAT_NETWORK=${
         fixedArgs[0]
-      } ts-node --files ${fixedArgs[1]} ${extra.join(' ')} ${tee(options, fixedArgs[1])}}`
+      } ts-node --files ${fixedArgs[1]} ${extra.join(' ')} ${tee(options, fixedArgs[0])}`
+    );
+  } else if (firstArg == 'task') {
+    const {fixedArgs, extra, options} = parseArgs(args, 2, {tee: 'boolean'});
+    await execute(
+      `cross-env HARDHAT_DEPLOY_LOG=true HARDHAT_NETWORK=${
+        fixedArgs[0]
+      } hardhat --network ${fixedArgs[0]} ${fixedArgs[1]} ${extra.join(' ')} ${tee(options, fixedArgs[0])}`
     );
   } else if (firstArg === 'deploy') {
     const {fixedArgs, extra, options} = parseArgs(args, 1, {tee: 'boolean'});

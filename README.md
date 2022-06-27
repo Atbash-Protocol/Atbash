@@ -57,7 +57,7 @@ Deployments/fixes specific to Rinkeby are in contracts/rinkeby
 Hardhat deploy has been configured to deploy to network in stages, if so desired.  This helps complex deployments to be completed in stages at the discretion of the deployer.  
 
 First, before any major deployment, best to see if the accounts configured for your network (and log for later reference).
-`yarn hardhat accounts --network rinkeby --tee`
+`yarn hardhat:task rinkeby accounts --tee`
 
 The following tags are the major steps:
 
