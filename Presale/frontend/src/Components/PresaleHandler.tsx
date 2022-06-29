@@ -100,13 +100,13 @@ export const PresaleHandler: FC<{}> = () => {
                                     <Row className='mt-3'>
                                         <Col md={12} sm={12}>
                                             <div className='d-grid gap-2'>
-                                                <Button
+                                                /*<Button
                                                     className='btn-block'
                                                     onClick={() => processBuyTheBestTokenInTheWorld()}
                                                     variant='warning'
                                                     disabled={buyButtonDisabled}
                                                 >Buy {bashToReceive} <Logo styleOverload={{ width: '25px' }} /> $aBASH
-                                                </Button>
+                                                </Button>*/
                                             </div>
                                         </Col>
                                     </Row>
