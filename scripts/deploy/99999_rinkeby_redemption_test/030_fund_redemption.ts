@@ -8,6 +8,7 @@ import { BigNumber } from 'ethers';
 import { parseEther, parseUnits } from 'ethers/lib/utils';
 import '../../extensions';
 import { liveNetworkConfirm } from '../../confirm';
+import { isNotLocalTestingNetwork } from '../../network';
 
 
 const func: DeployFunction = async function(hre: HardhatRuntimeEnvironment) {
@@ -44,8 +45,10 @@ const func: DeployFunction = async function(hre: HardhatRuntimeEnvironment) {
     return true;
 };
 
-func.id = "2022-fund-redemption";
+func.skip = async (hre: HardhatRuntimeEnvironment) => isNotLocalTestingNetwork(hre.network);
+
+func.id = "2022-rinkeby-redemption-test-fund-redemption";
 func.dependencies = [CONTRACTS.bash, CONTRACTS.aBash, CONTRACTS.atbashPresale, CONTRACTS.presaleRedemption];
-func.tags = ["Launch", func.id];
+func.tags = ["RedemptionTesting", func.id];
 
 export default func;

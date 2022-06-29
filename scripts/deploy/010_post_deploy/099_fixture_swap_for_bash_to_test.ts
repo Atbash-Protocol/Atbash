@@ -31,7 +31,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const uniswapRouter = await UniswapV2Router02__factory.connect(uniswapRouterDeployment.address, signer);
     const dai = await DAI__factory.connect(daiDeployment.address, signer);
 
-    const bashWanted = "10".parseUnits(9);
+    const bashWanted = "2".parseUnits(9);
     let daiNeeded: BigNumber;
     const pathDaiBash = [daiDeployment.address, bashDeployment.address];   // dai->bash
     const deadline = await getCurrentBlockTime() + 1000;

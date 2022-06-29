@@ -28,7 +28,7 @@ const func: DeployFunction = async function(hre: HardhatRuntimeEnvironment) {
     console.log(`bashDaiLp Address: ${bashDaiLpPairDeployment.address}, num deployments: ${bashDaiLpPairDeployment.numDeployments}`);
     const bashDai = await UniswapV2Pair__factory.connect(bashDaiLpPairDeployment.address, signer);
     const balance = await bashDai.balanceOf(deployer);
-    await bashDai.approve(treasury.address, balance);
+    await waitFor(bashDai.approve(treasury.address, balance));
     console.log(`BASH-DAI LP: Token 0: ${await bashDai.token0()}, Token 1: ${await bashDai.token1()}`);
     console.log(`Current deployer BASH-DAI balance: ${balance.toEtherComma()}, address: ${bashDaiLpPairDeployment.address}`);
 
