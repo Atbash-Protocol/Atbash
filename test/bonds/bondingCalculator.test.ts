@@ -68,7 +68,9 @@ describe("AtbashBondingCalculator", () => {
                 bashFake.address
             );
 
-            bashDaiFake.getReserves.returns([100, 100, 1234]);
+            const reserve0 = 100;
+            const reserve1 = 8000;
+            bashDaiFake.getReserves.returns([reserve0, reserve1, 1234]);
             bashDaiFake.totalSupply.returns(100);
             daiFake.decimals.returns(DAI_DECIMALS);
             bashFake.decimals.returns(BASH_DECIMALS);
@@ -77,15 +79,22 @@ describe("AtbashBondingCalculator", () => {
             bashDaiFake.token1.returns(daiFake.address);
 
             const k  = await bondingCalculator.getKValue(bashDaiFake.address);
-            k.should.be.equal(1000);
+            const bashDecimals = Number(BASH_DECIMALS);
+            const daiDecimals = Number(DAI_DECIMALS);
+            const bashDaiDecimals = Number(BASHDAI_DECIMALS);
+            const decimals = bashDecimals + daiDecimals - bashDaiDecimals;
+            const expectedK = (reserve0 * reserve1) / (10 ** decimals);
+            k.should.be.equal(expectedK);
 
             const totalValue = await bondingCalculator.getTotalValue(bashDaiFake.address);
-            totalValue.should.satisfy((num: BigNumber) => { const number = num.toNumber(); return number >= 62.5 && number <= 64.5; });
-
+            //totalValue.should.satisfy((num: BigNumber) => { const number = num.toNumber(); return number >= 62.5 && number <= 64.5; });
+            totalValue.should.equal(Math.trunc(Math.sqrt(k.toNumber())) * 2); 
             const markdown = await bondingCalculator.markdown(bashDaiFake.address);
 
             // todo: markdown equals
-            markdown.should.satisfies((num : BigNumber) => { const number = num.toNumber(); return number >= 31.5 && number <= 31.7 });
+            const expectedMarkdown = BigNumber.from(reserve1).mul(BigNumber.from(10).pow(BASH_DECIMALS).mul(2)).div(totalValue);
+            markdown.should.equal(expectedMarkdown);
+            // markdown.should.satisfies((num : BigNumber) => { const number = num.toNumber(); return number >= 31.5 && number <= 31.7 });
         });
     });
 });

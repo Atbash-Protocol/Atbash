@@ -371,7 +371,7 @@ contract Distributor is Policy {
     
     /* ====== VARIABLES ====== */
 
-    address public immutable OHM;
+    address public immutable Bash;
     address public immutable treasury;
     
     uint32 public immutable epochLength;
@@ -398,11 +398,11 @@ contract Distributor is Policy {
     
     /* ====== CONSTRUCTOR ====== */
 
-    constructor( address _treasury, address _ohm, uint32 _epochLength, uint32 _nextEpochTime ) {        
+    constructor( address _treasury, address _Bash, uint32 _epochLength, uint32 _nextEpochTime ) {        
         require( _treasury != address(0) );
         treasury = _treasury;
-        require( _ohm != address(0) );
-        OHM = _ohm;
+        require( _Bash != address(0) );
+        Bash = _Bash;
         epochLength = _epochLength;
         nextEpochTime = _nextEpochTime;
     }
@@ -468,7 +468,7 @@ contract Distributor is Policy {
         @return uint
      */
     function nextRewardAt( uint _rate ) public view returns ( uint ) {
-        return IERC20( OHM ).totalSupply().mul( _rate ).div( 1000000 );
+        return IERC20( Bash ).totalSupply().mul( _rate ).div( 1000000 );
     }
 
     /**

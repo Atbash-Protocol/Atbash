@@ -2,7 +2,7 @@ import { HardhatRuntimeEnvironment } from 'hardhat/types';
 import { DeployFunction, Deployment } from 'hardhat-deploy/types';
 import { BASH_STARTING_MARKET_VALUE_IN_DAI, CONTRACTS, INITIAL_BASH_LIQUIDITY_IN_DAI } from '../../constants';
 
-import { BashTreasury__factory, BASHERC20Token__factory, DAI__factory, ISwapRouter02__factory, UniswapV2Factory__factory, UniswapV2Pair__factory, UniswapV2Router02__factory } from '../../../types'
+import { BashTreasury__factory, BASHERC20Token__factory, DAI__factory, ISwapRouter02__factory, UniswapV2Factory__factory, UniswapV2Pair__factory, UniswapV2Router02__factory, ABASHERC20__factory } from '../../../types'
 import { getCurrentBlockTime } from '../../../test/utils/blocktime';
 import { BigNumber, providers } from 'ethers';
 import { isLocalHardhatFork, isLocalTestingNetwork, isNotLocalTestingNetwork } from '../../network';
@@ -31,7 +31,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const uniswapRouter = await UniswapV2Router02__factory.connect(uniswapRouterDeployment.address, signer);
     const dai = await DAI__factory.connect(daiDeployment.address, signer);
 
-    const bashWanted = "10".parseUnits(9);
+    const bashWanted = "2".parseUnits(9);
     let daiNeeded: BigNumber;
     const pathDaiBash = [daiDeployment.address, bashDeployment.address];   // dai->bash
     const deadline = await getCurrentBlockTime() + 1000;
@@ -119,8 +119,6 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     /////////////////////////
 
     if (true) {
-        
-
         console.log(`Creating liquidity for BASH-DAI`);
         console.log(`BASH-DAI LP Pair (Token 0: ${await bashDai.token0()}, Token 1: ${await bashDai.token1()}`);
 
@@ -167,10 +165,12 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     console.log(`Added BASH for deployer ${deployer} and testWallet ${testWallet}`);
     // console.log(`Deployer BASH: ${(await bash.balanceOf(deployer)).toGweiComma()}`);
     await displayAllBalances(ethers.provider, [deployer, testWallet]);
+    return true;
 };
 
 // only deploy to hardhat local
 func.skip = async (hre: HardhatRuntimeEnvironment) => isNotLocalTestingNetwork(hre.network);
+func.id = "2022-fixture-swaps-for-test";
 // func.skip = async (hre: HardhatRuntimeEnvironment) => true;
 func.tags = ["PostLaunchTesting"];
 func.dependencies = [CONTRACTS.DAI, CONTRACTS.bash, CONTRACTS.UniswapV2Router]
@@ -184,23 +184,28 @@ async function displayAllBalances(provider: providers.JsonRpcProvider, addresses
     const dai = await DAI__factory.connect(daiDeployment.address, signer);
     const bashDaiDeployment = await deployments.get(CONTRACTS.bashDaiLpPair);
     const bashDai = await UniswapV2Pair__factory.connect(bashDaiDeployment.address, signer);
+    const abashDeployments = await deployments.get(CONTRACTS.aBash);
+    const abash = await ABASHERC20__factory.connect(abashDeployments.address, signer);
+
     for(var index = 0; index < addresses.length; index++) {
         const address = addresses[index];
-        const bashBalance = (await bash.balanceOf(address)).toGweiComma();
+        const bashBalance = (await bash.balanceOf(address)).toGweiComma(); // 9 decimals
         const daiBalance = (await dai.balanceOf(address)).toEtherComma();
         const bashDaiBalance = (await bashDai.balanceOf(address)).toEtherComma();
+        const abashBalance = (await abash.balanceOf(address)).toEtherComma();
         if (index == 0) 
             console.log(`Deployer Balances:`);
         else
             console.log(`Account ${index} ${address} Balances: `);
 
-        displayBalances(bashBalance, daiBalance, bashDaiBalance);
+        displayBalances(bashBalance, daiBalance, bashDaiBalance, abashBalance);
     };
 }
 
-function displayBalances(bashBalance: string, daiBalance: string, bashDaiBalance: string) {
+function displayBalances(bashBalance: string, daiBalance: string, bashDaiBalance: string, abashBalance: string) {
     console.log(`\tBASH: ${bashBalance}`);
     console.log(`\tDAI: ${daiBalance}`);
     console.log(`\tBASH-DAI: ${bashDaiBalance}`);
+    console.log(`\tABASH: ${abashBalance}`);
 }
 

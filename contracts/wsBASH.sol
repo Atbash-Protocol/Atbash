@@ -5,6 +5,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.7.5;
 
+import {IsBash} from "./interfaces/IsBash.sol";
+
 /**
  * @dev Interface of the ERC20 standard as defined in the EIP.
  */
@@ -421,9 +423,9 @@ contract ERC20 is IERC20 {
      * All three of these values are immutable: they can only be set once during
      * construction.
      */
-    constructor (string memory name, string memory symbol) {
-        _name = name;
-        _symbol = symbol;
+    constructor (string memory name_, string memory symbol_) {
+        _name = name_;
+        _symbol = symbol_;
         _decimals = 18;
     }
 
@@ -741,64 +743,59 @@ library SafeERC20 {
     }
 }
 
-interface IsSB {
-    function index() external view returns ( uint );
-}
-
 contract wsBASH is ERC20 {
     using SafeERC20 for ERC20;
     using Address for address;
     using SafeMath for uint;
 
-    address public immutable sSB;
+    address public immutable sBash;
 
-    constructor( address _sSB ) ERC20( 'Wrapped sBASH', 'wsBASH' ) {
-        require( _sSB != address(0) );
-        sSB = _sSB;
+    constructor( address _sBash ) ERC20( 'Wrapped sBASH', 'wsBASH' ) {
+        require( _sBash != address(0) );
+        sBash = _sBash;
     }
 
     /**
-        @notice wrap sSB
+        @notice wrap sBash
         @param _amount uint
         @return uint
      */
     function wrap( uint _amount ) external returns ( uint ) {
-        IERC20( sSB ).transferFrom( msg.sender, address(this), _amount );
+        IERC20( sBash ).transferFrom( msg.sender, address(this), _amount );
         
-        uint value = sSBTowsSB( _amount );
+        uint value = sBashTowsBash( _amount );
         _mint( msg.sender, value );
         return value;
     }
 
     /**
-        @notice unwrap sSB
+        @notice unwrap sBash
         @param _amount uint
         @return uint
      */
     function unwrap( uint _amount ) external returns ( uint ) {
         _burn( msg.sender, _amount );
 
-        uint value = wsSBTosSB( _amount );
-        IERC20( sSB ).transfer( msg.sender, value );
+        uint value = wsBashTosBash( _amount );
+        IERC20( sBash ).transfer( msg.sender, value );
         return value;
     }
 
     /**
-        @notice converts wsSB amount to sSB
+        @notice converts wsBash amount to sBash
         @param _amount uint
         @return uint
      */
-    function wsSBTosSB( uint _amount ) public view returns ( uint ) {
-        return _amount.mul( IsSB( sSB ).index() ).div( 10 ** decimals() );
+    function wsBashTosBash( uint _amount ) public view returns ( uint ) {
+        return _amount.mul( IsBash( sBash ).index() ).div( 10 ** decimals() );
     }
 
     /**
-        @notice converts sSB amount to wsSB
+        @notice converts sBash amount to wsBash
         @param _amount uint
         @return uint
      */
-    function sSBTowsSB( uint _amount ) public view returns ( uint ) {
-        return _amount.mul( 10 ** decimals() ).div( IsSB( sSB ).index() );
+    function sBashTowsBash( uint _amount ) public view returns ( uint ) {
+        return _amount.mul( 10 ** decimals() ).div( IsBash( sBash ).index() );
     }
-
 }

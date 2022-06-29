@@ -2,7 +2,7 @@ import { HardhatRuntimeEnvironment } from 'hardhat/types';
 import { DeployFunction } from 'hardhat-deploy/types';
 import { BASH_STARTING_MARKET_VALUE_IN_DAI, CONTRACTS, INITIAL_BASH_LIQUIDITY_IN_DAI, INITIAL_DAI_RESERVES_AMOUNT, INITIAL_INDEX, STAKING_REWARD_RATE, TREASURY_TIMELOCK } from '../../constants';
 
-import { DAI__factory, ISwapRouter02__factory, UniswapV2Router02__factory, UniswapV2Factory__factory } from '../../../types'
+import { DAI__factory, ISwapRouter02__factory, UniswapV2Router02__factory, UniswapV2Factory__factory, ABASHERC20__factory } from '../../../types'
 import { waitFor } from '../../txHelper'
 import { isLocalTestingNetwork } from '../../network';
 import { BigNumber } from 'ethers';
@@ -37,31 +37,34 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const uniswapRouter = await UniswapV2Router02__factory.connect(uniswapRouterDeployment.address, signer);
     const dai = await DAI__factory.connect(daiDeployment.address, signer);
     
-    console.log(`Deployer DAI balance: ${(await dai.balanceOf(deployer)).toEtherComma()}, ETH: ${(await ethers.provider.getBalance(deployer)).toEtherComma()}`);
-    
-    // const uniswapFactoryDeployment = await deployments.get(CONTRACTS.UniswapV2Factory);
-    // const uniswapFactory = await UniswapV2Factory__factory.connect(uniswapFactoryDeployment.address, signer);
-    // const ethDaiAddress = await uniswapFactory.getPair(await uniswapRouter.WETH(), daiDeployment.address);
-    // const ethDai = await UniswapV2Pair__factory.connect(ethDaiAddress, signer);
-    // const reserves = await ethDai.getReserves();
+    var deployerDaiAmount = await dai.balanceOf(deployer);
+    console.log(`Deployer current DAI balance: ${deployerDaiAmount.toEtherComma()}, ETH: ${(await ethers.provider.getBalance(deployer)).toEtherComma()}`);
     
     const initialBashLiquidityInDai = INITIAL_BASH_LIQUIDITY_IN_DAI.toString().parseUnits(18);
     var bashStartingMarketValueInDai = BASH_STARTING_MARKET_VALUE_IN_DAI.toString().toBigNumber();
     var initialDaiReservesAmount = INITIAL_DAI_RESERVES_AMOUNT.toString().parseUnits(18);
 
-    var daiNeededForMint = initialBashLiquidityInDai.div(bashStartingMarketValueInDai);
-    var daiWanted = daiNeededForMint.add(initialBashLiquidityInDai).add(initialDaiReservesAmount); 
+    var daiNeededForTreasuryMint = initialBashLiquidityInDai.div(bashStartingMarketValueInDai);
+    var daiWanted = daiNeededForTreasuryMint.add(initialBashLiquidityInDai).add(initialDaiReservesAmount); 
 
-    // todo: remove guard
-    var daiWanted2 = BigNumber.from("30312" + "500000000000000000");  
-    assert(daiWanted.eq(daiWanted2), "DAI wanted math check failed");
+    // get presale amount needed to cover redemptions, at 1:1:1 (bash:dai:eth)
+    var presaleDeployment = await deployments.get(CONTRACTS.atbashPresale);
+    var abashDeployment = await deployments.get(CONTRACTS.aBash);
+    var abash = await ABASHERC20__factory.connect(abashDeployment.address, signer);
+    // redeemable = totalSupply - presale
+    var amountForRedeem = (await abash.totalSupply()).sub(await abash.balanceOf(presaleDeployment.address));
+    console.log(`Amount DAI needed to cover for Presale redemption: ${amountForRedeem.toEtherComma()}`);
+    daiWanted = daiWanted.add(amountForRedeem);
+
+    console.log(`Using the existing deployer DAI funds available: ${deployerDaiAmount.toEtherComma()}`);
+    daiWanted = daiWanted.sub(deployerDaiAmount);
 
     console.log(`Uniswap WETH address: ${await uniswapRouter.WETH()}, DAI address: ${dai.address}`);
     const path = [await uniswapRouter.WETH(), daiDeployment.address];   // eth->dai
     const amountsIn = await uniswapRouter.getAmountsIn(daiWanted, path);
     const ethNeeded = amountsIn[0];
     // const ethNeeded = await uniswapRouter.getAmountIn(daiWanted, reserves._reserve1, reserves._reserve0);
-    console.log(`DAI wanted: ${daiWanted.toEtherComma()}, ETH needed for swap: ${ethNeeded.toEtherComma()}`);
+    console.log(`Total DAI wanted: ${daiWanted.toEtherComma()}, ETH needed for swap: ${ethNeeded.toEtherComma()}`);
     
     await liveNetworkConfirm(hre.network, `Are you sure you want to spend ${ethNeeded.toEtherComma()} ETH for swap? `);
 
@@ -83,8 +86,9 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
             tokenIn: wethDeployment.address,
             tokenOut: daiDeployment.address,
             recipient: deployer,
-            amountOut: daiWanted2,
-            fee: 3000, // todo: how to determine this?
+            amountOut: daiWanted,
+            // fee: 3000, // todo: how to determine this?
+            fee: 500,
             amountInMaximum: ethNeeded, 
             sqrtPriceLimitX96: 0, // todo: put in a protection for production?
           },

@@ -43,25 +43,55 @@ const config: HardhatUserConfig = {
     compilers: [
       {
         version: "0.8.10",
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 800,
+          },
+        }
       },
       {
         version: "0.6.12",
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 800,
+          },
+        }
       },
       {
         version: "0.6.6",
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 800,
+          },
+        }
       },
       {
-        version: "0.5.16"
+        version: "0.5.16",
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 800,
+          },
+        }
       },
       {
         version: "0.7.6",
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 800,
+          },
+        }
       },
       {
         version: "0.7.5",
         settings: {
           optimizer: {
             enabled: true,
-            runs: 200,
+            runs: 800,
           },
         }
       },
@@ -138,6 +168,8 @@ const config: HardhatUserConfig = {
   gasReporter: {
     enabled: process.env.REPORT_GAS !== undefined,
     currency: "USD",
+    coinmarketcap: process.env.COINMARKETCAP_API_KEY,
+    maxMethodDiff: 10,
   },
   etherscan: {
     apiKey: process.env.ETHERSCAN_API_KEY,

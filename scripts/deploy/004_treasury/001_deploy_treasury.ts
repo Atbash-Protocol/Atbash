@@ -21,13 +21,6 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
         log: true,
         skipIfAlreadyDeployed: true,
     });
-
-    // if (!treasury.newlyDeployed) return;
-    
-    // const bash = await BASHERC20Token__factory.connect(bashDeployment.address, signer);
-
-    // console.log("Setting BASH vault to treasury");
-    // await waitFor(bash.setVault(treasury.address));
 };
 
 func.dependencies = [CONTRACTS.bash, CONTRACTS.DAI];

@@ -5,6 +5,7 @@ import { BASHERC20Token__factory, DAI__factory, UniswapV2Factory__factory, Unisw
 import { parseEther, parseUnits } from 'ethers/lib/utils';
 import "../../extensions";
 import { liveNetworkConfirm } from '../../confirm';
+import { waitFor } from '../../txHelper';
 
 // This fixture can't run until BASH has been minted, that's why it's this late in post deploy
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
@@ -38,8 +39,8 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const bashLiquidityNeededAtMarketLaunchPricing = INITIAL_BASH_LIQUIDITY_IN_DAI / BASH_STARTING_MARKET_VALUE_IN_DAI;
     const bashAmountInGwei = parseUnits(bashLiquidityNeededAtMarketLaunchPricing.toString(), "gwei"); // bash decimals
     
-    await bash.approve(deployer, bashAmountInGwei);
-    await bash.transferFrom(deployer, bashDai.address, bashAmountInGwei);  
+    await waitFor(bash.approve(deployer, bashAmountInGwei));
+    await waitFor(bash.transferFrom(deployer, bashDai.address, bashAmountInGwei));  
     
     console.log(`Current deployer DAI amount: ${(await dai.balanceOf(deployer)).toEtherComma()}`);
     const bashAmountInWei = parseEther(bashLiquidityNeededAtMarketLaunchPricing.toString());
@@ -48,10 +49,10 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     console.log(`Check deposit bashdai liquidity: Bash Amount ${bashAmountInGwei.toGweiComma()}, Dai Amount: ${daiAmount.toEtherComma()}`);
     await liveNetworkConfirm(hre.network, `Are you sure you want to spend ${bashAmountInGwei.toGweiComma()} BASH and ${daiAmount.toEtherComma()} DAI for BASH-DAI LP? `);
 
-    await dai.approve(deployer, daiAmount);
-    await dai.transferFrom(deployer, bashDai.address, daiAmount); 
+    await waitFor(dai.approve(deployer, daiAmount));
+    await waitFor(dai.transferFrom(deployer, bashDai.address, daiAmount)); 
 
-    await bashDai.mint(deployer);
+    await waitFor(bashDai.mint(deployer));
     const balance = await bashDai.balanceOf(deployer);
     console.log(`BASH-DAI balanceOf: ${balance.toEtherComma()}`);
     console.log("BASH-DAI Pair setup complete");

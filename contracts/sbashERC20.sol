@@ -593,7 +593,7 @@ contract sBASH is ERC20Permit, Ownable {
     }
 
     /**
-        @notice increases MEMOries supply to increase staking balances relative to profit_
+        @notice increases sbash supply to increase staking balances relative to profit_
         @param profit_ uint256
         @return uint256
      */
@@ -662,7 +662,7 @@ contract sBASH is ERC20Permit, Ownable {
         return gons.div( _gonsPerFragment );
     }
 
-    // Staking contract holds excess MEMOries/sBASH
+    // Staking contract holds excess sBASH
     // todo: in ohmv2 adds supply in warmup
     function circulatingSupply() public view returns ( uint ) {
         return _totalSupply.sub( balanceOf( stakingContract ) ); // sBASH - stakingContract sBASH

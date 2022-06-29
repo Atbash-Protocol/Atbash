@@ -2,7 +2,7 @@ import {HardhatRuntimeEnvironment} from 'hardhat/types';
 import {DeployFunction} from 'hardhat-deploy/types';
 import { CONTRACTS } from '../../constants';
 
-import { Presale__factory } from '../../../types'
+import { ABASHERC20__factory, Presale__factory } from '../../../types'
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const { deployments, getNamedAccounts, network, ethers } = hre;
@@ -27,8 +27,15 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const presaleContract = Presale__factory.connect(presaleDeployment.address, signer);
     await presaleContract.setPresaleToken(aBashDeployment.address);
     await presaleContract.setRate(50);  
+
+    // fund the presale contract with abash
+    const abash = await ABASHERC20__factory.connect(aBashDeployment.address, signer);
+    const totalSupply = await abash.totalSupply();
+    await abash.transfer(presaleDeployment.address, totalSupply);
+
+    console.log(`Presale contract setup and funding complete`);
 };
 
-func.tags = ["Presale"];
+func.tags = [CONTRACTS.atbashPresale, "Presale"];
 func.dependencies = [CONTRACTS.aBash];
 export default func;

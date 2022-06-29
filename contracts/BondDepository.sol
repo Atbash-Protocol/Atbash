@@ -915,7 +915,7 @@ contract atbashBondDepository is Ownable {
 
     address public immutable Bash; // token given as payment for bond
     address public immutable principle; // token used to create bond
-    address public immutable treasury; // mints OHM when receives principle
+    address public immutable treasury; // mints bash when receives principle
     address public immutable DAO; // receives profit share from bond
 
     bool public immutable isLiquidityBond; // LP and Reserve bonds are treated slightly different
@@ -947,7 +947,7 @@ contract atbashBondDepository is Ownable {
 
     // Info for bond holder
     struct Bond {
-        uint256 payout; // OHM remaining to be paid
+        uint256 payout; // bash remaining to be paid
         uint256 pricePaid; // In DAI, for front end viewing
         uint32 lastTime; // Last interaction
         uint32 vesting; // Seconds left to vest
@@ -1411,7 +1411,7 @@ contract atbashBondDepository is Ownable {
     }
 
     /**
-     *  @notice calculate amount of OHM available for claim by depositor
+     *  @notice calculate amount of bash available for claim by depositor
      *  @param _depositor address
      *  @return pendingPayout_ uint
      */
@@ -1433,7 +1433,7 @@ contract atbashBondDepository is Ownable {
     /* ======= AUXILLIARY ======= */
 
     /**
-     *  @notice allow anyone to send lost tokens (excluding principle or OHM) to the DAO
+     *  @notice allow anyone to send lost tokens (excluding principle or bash) to the DAO
      *  @return bool
      */
     function recoverLostToken(address _token) external returns (bool) {

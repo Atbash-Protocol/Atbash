@@ -13,7 +13,7 @@ describe("utils/network", () => {
     beforeEach(async () => {
     });
 
-    it("test", async () => {
+    it("network statuses", async () => {
         
         let n: Network = network;
 

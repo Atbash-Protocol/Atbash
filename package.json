@@ -50,13 +50,16 @@
     "clean": "hardhat clean",
     "test": "hardhat test",
     "gas": "cross-env REPORT_GAS=true hardhat test",
+    "gas:mainnet": "cross-env REPORT_GAS=true node ./_scripts.js fork:deploy mainnet --tee",
     "typechain": "cross-env TS_NODE_TRANSPILE_ONLY=true hardhat typechain",
     "delete:deploy:rinkeby": "hardhat --network rinkeby deploy | ntee deployments/rinkeby-deploy-log.txt -a",
     "deploy:rinkeby": "node ./_scripts.js deploy rinkeby",
-    "deploy:hardhat": "hardhat --network hardhat deploy",
+    "deploy:mainnet": "node ./_scripts.js deploy mainnet",
+    "deploy:hardhat": "hardhat --network hardhat deploy --report-gas",
     "deploy:localhost": "hardhat --network localhost deploy",
     "sourcify:rinkeby": "hardhat --network rinkeby sourcify",
-    "etherscan:rinkeby": "hardhat --network rinkeby etherscan-verify --tags testrinkeby",
+    "etherscan:rinkeby": "hardhat --network rinkeby etherscan-verify",
+    "etherscan:mainnet": "hardhat --network mainnet etherscan-verify",
     "prestart": "yarn run typechain",
     "start": "hardhat node --network hardhat",
     "console:hardhat": "hardhat console --network localhost",
@@ -70,7 +73,7 @@
     "fork:nodetest": "node ./_scripts.js fork:run localhost ./scripts/sandbox.ts",
     "fork:execute2": "echo 1337 > ./deployments/localhost/.chainId && node ./_scripts.js run",
     "fork:deploylocal": "echo 1337 > ./deployments/localhost/.chainId && hardhat deploy --network localhost",
-    "testx2": "node ./_scripts.js fork:deploy rinkeby ntee",
-    "testx": "node ./_scripts.js fork:node"
+    "fork:rinkeby:deployonly": "./_scrips.js fork:deploy rinkeby --tags Token,Treasury,PresaleRedemption,Staking,StableBond,BashDaiBond",
+    "hardhat:task": "node ./_scripts.js task"
   }
 }

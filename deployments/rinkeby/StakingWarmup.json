@@ -1,5 +1,5 @@
 {
-  "address": "0x469458f12C50A7159cF3B0e687abE0aDC1677B71",
+  "address": "0x4A9649655a2ffa5B7361a5F2E2C2EEd86908CFFa",
   "abi": [
     {
       "inputs": [
@@ -10,25 +10,12 @@
         },
         {
           "internalType": "address",
-          "name": "_MEMOries",
+          "name": "_sBash",
           "type": "address"
         }
       ],
       "stateMutability": "nonpayable",
       "type": "constructor"
-    },
-    {
-      "inputs": [],
-      "name": "MEMOries",
-      "outputs": [
-        {
-          "internalType": "address",
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
     },
     {
       "inputs": [
@@ -50,6 +37,19 @@
     },
     {
       "inputs": [],
+      "name": "sBash",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
       "name": "staking",
       "outputs": [
         {
@@ -62,31 +62,31 @@
       "type": "function"
     }
   ],
-  "transactionHash": "0x18e5182cf8516b750d078439b380e260cc57730ac62f3e2aafd868a8588578f6",
+  "transactionHash": "0x6b7e0cabae15085aa1fcd526c6ecfc2226b8a9fef141e4f6478c13cc3375881c",
   "receipt": {
     "to": null,
     "from": "0x02c368c0787BB33ACAc698049CcA2454B5cC96c5",
-    "contractAddress": "0x469458f12C50A7159cF3B0e687abE0aDC1677B71",
-    "transactionIndex": 3,
-    "gasUsed": "164482",
+    "contractAddress": "0x4A9649655a2ffa5B7361a5F2E2C2EEd86908CFFa",
+    "transactionIndex": 1,
+    "gasUsed": "164506",
     "logsBloom": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
-    "blockHash": "0xeaeb1b7ededad23c224b64429b07cfcf1d381f01327bcfc671b0074cdb3e0fc6",
-    "transactionHash": "0x18e5182cf8516b750d078439b380e260cc57730ac62f3e2aafd868a8588578f6",
+    "blockHash": "0x3ce31be0c4653e53e27d1379ac0217e4dad5bb247ca7656f8991528af6e7b51e",
+    "transactionHash": "0x6b7e0cabae15085aa1fcd526c6ecfc2226b8a9fef141e4f6478c13cc3375881c",
     "logs": [],
-    "blockNumber": 10794012,
-    "cumulativeGasUsed": "1965564",
+    "blockNumber": 10922210,
+    "cumulativeGasUsed": "185506",
     "status": 1,
     "byzantium": true
   },
   "args": [
-    "0xd57740693a36c14900dcaeF26d8f97035E9D8e61",
-    "0xF0868F5C6F5f506C26f003caA500c080A5A4823C"
+    "0x89f8ef9714437468eAe11c46a030FDd2a24Beeee",
+    "0x94764A2216688CDccea57AF64880df17d33328E1"
   ],
   "numDeployments": 1,
-  "solcInputHash": "8ce1bdf8d876f473f43841e3fddf1617",
-  "metadata": "{\"compiler\":{\"version\":\"0.7.5+commit.eb77ed08\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_staking\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_MEMOries\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[],\"name\":\"MEMOries\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_staker\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_amount\",\"type\":\"uint256\"}],\"name\":\"retrieve\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"staking\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/StakingWarmup.sol\":\"StakingWarmup\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\",\"useLiteralContent\":true},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"contracts/StakingWarmup.sol\":{\"content\":\"// SPDX-License-Identifier: AGPL-3.0-or-later\\r\\npragma solidity 0.7.5;\\r\\n\\r\\n\\r\\ninterface IERC20 {\\r\\n    function decimals() external view returns (uint8);\\r\\n  /**\\r\\n   * @dev Returns the amount of tokens in existence.\\r\\n   */\\r\\n  function totalSupply() external view returns (uint256);\\r\\n\\r\\n  /**\\r\\n   * @dev Returns the amount of tokens owned by `account`.\\r\\n   */\\r\\n  function balanceOf(address account) external view returns (uint256);\\r\\n\\r\\n  /**\\r\\n   * @dev Moves `amount` tokens from the caller's account to `recipient`.\\r\\n   *\\r\\n   * Returns a boolean value indicating whether the operation succeeded.\\r\\n   *\\r\\n   * Emits a {Transfer} event.\\r\\n   */\\r\\n  function transfer(address recipient, uint256 amount) external returns (bool);\\r\\n\\r\\n  /**\\r\\n   * @dev Returns the remaining number of tokens that `spender` will be\\r\\n   * allowed to spend on behalf of `owner` through {transferFrom}. This is\\r\\n   * zero by default.\\r\\n   *\\r\\n   * This value changes when {approve} or {transferFrom} are called.\\r\\n   */\\r\\n  function allowance(address owner, address spender) external view returns (uint256);\\r\\n\\r\\n  /**\\r\\n   * @dev Sets `amount` as the allowance of `spender` over the caller's tokens.\\r\\n   *\\r\\n   * Returns a boolean value indicating whether the operation succeeded.\\r\\n   *\\r\\n   * IMPORTANT: Beware that changing an allowance with this method brings the risk\\r\\n   * that someone may use both the old and the new allowance by unfortunate\\r\\n   * transaction ordering. One possible solution to mitigate this race\\r\\n   * condition is to first reduce the spender's allowance to 0 and set the\\r\\n   * desired value afterwards:\\r\\n   * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729\\r\\n   *\\r\\n   * Emits an {Approval} event.\\r\\n   */\\r\\n  function approve(address spender, uint256 amount) external returns (bool);\\r\\n\\r\\n  /**\\r\\n   * @dev Moves `amount` tokens from `sender` to `recipient` using the\\r\\n   * allowance mechanism. `amount` is then deducted from the caller's\\r\\n   * allowance.\\r\\n   *\\r\\n   * Returns a boolean value indicating whether the operation succeeded.\\r\\n   *\\r\\n   * Emits a {Transfer} event.\\r\\n   */\\r\\n  function transferFrom(address sender, address recipient, uint256 amount) external returns (bool);\\r\\n\\r\\n  /**\\r\\n   * @dev Emitted when `value` tokens are moved from one account (`from`) to\\r\\n   * another (`to`).\\r\\n   *\\r\\n   * Note that `value` may be zero.\\r\\n   */\\r\\n  event Transfer(address indexed from, address indexed to, uint256 value);\\r\\n\\r\\n  /**\\r\\n   * @dev Emitted when the allowance of a `spender` for an `owner` is set by\\r\\n   * a call to {approve}. `value` is the new allowance.\\r\\n   */\\r\\n  event Approval(address indexed owner, address indexed spender, uint256 value);\\r\\n}\\r\\n\\r\\ncontract StakingWarmup {\\r\\n\\r\\n    address public immutable staking;\\r\\n    address public immutable MEMOries;\\r\\n\\r\\n    constructor ( address _staking, address _MEMOries ) {\\r\\n        require( _staking != address(0) );\\r\\n        staking = _staking;\\r\\n        require( _MEMOries != address(0) );\\r\\n        MEMOries = _MEMOries;\\r\\n    }\\r\\n\\r\\n    function retrieve( address _staker, uint _amount ) external {\\r\\n        require( msg.sender == staking );\\r\\n        IERC20( MEMOries ).transfer( _staker, _amount );\\r\\n    }\\r\\n}\",\"keccak256\":\"0x748cbe627f6e6d3aba5836261ff151257dcfb3664ff00e20af75afd4dd58a272\",\"license\":\"AGPL-3.0-or-later\"}},\"version\":1}",
-  "bytecode": "0x60c060405234801561001057600080fd5b506040516102b43803806102b48339818101604052604081101561003357600080fd5b5080516020909101516001600160a01b03821661004f57600080fd5b6001600160601b0319606083901b166080526001600160a01b03811661007457600080fd5b606081811b6001600160601b03191660a052608051901c91506001600160a01b03166101fa6100ba6000398060a2528061011f52508060c6528060f352506101fa6000f3fe608060405234801561001057600080fd5b50600436106100415760003560e01c806349880e52146100465780634cf088d91461006a578063c3a2a66514610072575b600080fd5b61004e6100a0565b604080516001600160a01b039092168252519081900360200190f35b61004e6100c4565b61009e6004803603604081101561008857600080fd5b506001600160a01b0381351690602001356100e8565b005b7f000000000000000000000000000000000000000000000000000000000000000081565b7f000000000000000000000000000000000000000000000000000000000000000081565b336001600160a01b037f0000000000000000000000000000000000000000000000000000000000000000161461011d57600080fd5b7f00000000000000000000000000000000000000000000000000000000000000006001600160a01b031663a9059cbb83836040518363ffffffff1660e01b815260040180836001600160a01b0316815260200182815260200192505050602060405180830381600087803b15801561019457600080fd5b505af11580156101a8573d6000803e3d6000fd5b505050506040513d60208110156101be57600080fd5b5050505056fea2646970667358221220804d098df1de31dc27b1c15a36e176ccae9baf86015d557a032edaa62d4d1ae664736f6c63430007050033",
-  "deployedBytecode": "0x608060405234801561001057600080fd5b50600436106100415760003560e01c806349880e52146100465780634cf088d91461006a578063c3a2a66514610072575b600080fd5b61004e6100a0565b604080516001600160a01b039092168252519081900360200190f35b61004e6100c4565b61009e6004803603604081101561008857600080fd5b506001600160a01b0381351690602001356100e8565b005b7f000000000000000000000000000000000000000000000000000000000000000081565b7f000000000000000000000000000000000000000000000000000000000000000081565b336001600160a01b037f0000000000000000000000000000000000000000000000000000000000000000161461011d57600080fd5b7f00000000000000000000000000000000000000000000000000000000000000006001600160a01b031663a9059cbb83836040518363ffffffff1660e01b815260040180836001600160a01b0316815260200182815260200192505050602060405180830381600087803b15801561019457600080fd5b505af11580156101a8573d6000803e3d6000fd5b505050506040513d60208110156101be57600080fd5b5050505056fea2646970667358221220804d098df1de31dc27b1c15a36e176ccae9baf86015d557a032edaa62d4d1ae664736f6c63430007050033",
+  "solcInputHash": "78a5afa448ac8ea3d413be6578ee5623",
+  "metadata": "{\"compiler\":{\"version\":\"0.7.5+commit.eb77ed08\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_staking\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_sBash\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_staker\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_amount\",\"type\":\"uint256\"}],\"name\":\"retrieve\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"sBash\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"staking\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/StakingWarmup.sol\":\"StakingWarmup\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\",\"useLiteralContent\":true},\"optimizer\":{\"enabled\":true,\"runs\":800},\"remappings\":[]},\"sources\":{\"contracts/StakingWarmup.sol\":{\"content\":\"// SPDX-License-Identifier: AGPL-3.0-or-later\\r\\npragma solidity 0.7.5;\\r\\n\\r\\n\\r\\ninterface IERC20 {\\r\\n    function decimals() external view returns (uint8);\\r\\n  /**\\r\\n   * @dev Returns the amount of tokens in existence.\\r\\n   */\\r\\n  function totalSupply() external view returns (uint256);\\r\\n\\r\\n  /**\\r\\n   * @dev Returns the amount of tokens owned by `account`.\\r\\n   */\\r\\n  function balanceOf(address account) external view returns (uint256);\\r\\n\\r\\n  /**\\r\\n   * @dev Moves `amount` tokens from the caller's account to `recipient`.\\r\\n   *\\r\\n   * Returns a boolean value indicating whether the operation succeeded.\\r\\n   *\\r\\n   * Emits a {Transfer} event.\\r\\n   */\\r\\n  function transfer(address recipient, uint256 amount) external returns (bool);\\r\\n\\r\\n  /**\\r\\n   * @dev Returns the remaining number of tokens that `spender` will be\\r\\n   * allowed to spend on behalf of `owner` through {transferFrom}. This is\\r\\n   * zero by default.\\r\\n   *\\r\\n   * This value changes when {approve} or {transferFrom} are called.\\r\\n   */\\r\\n  function allowance(address owner, address spender) external view returns (uint256);\\r\\n\\r\\n  /**\\r\\n   * @dev Sets `amount` as the allowance of `spender` over the caller's tokens.\\r\\n   *\\r\\n   * Returns a boolean value indicating whether the operation succeeded.\\r\\n   *\\r\\n   * IMPORTANT: Beware that changing an allowance with this method brings the risk\\r\\n   * that someone may use both the old and the new allowance by unfortunate\\r\\n   * transaction ordering. One possible solution to mitigate this race\\r\\n   * condition is to first reduce the spender's allowance to 0 and set the\\r\\n   * desired value afterwards:\\r\\n   * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729\\r\\n   *\\r\\n   * Emits an {Approval} event.\\r\\n   */\\r\\n  function approve(address spender, uint256 amount) external returns (bool);\\r\\n\\r\\n  /**\\r\\n   * @dev Moves `amount` tokens from `sender` to `recipient` using the\\r\\n   * allowance mechanism. `amount` is then deducted from the caller's\\r\\n   * allowance.\\r\\n   *\\r\\n   * Returns a boolean value indicating whether the operation succeeded.\\r\\n   *\\r\\n   * Emits a {Transfer} event.\\r\\n   */\\r\\n  function transferFrom(address sender, address recipient, uint256 amount) external returns (bool);\\r\\n\\r\\n  /**\\r\\n   * @dev Emitted when `value` tokens are moved from one account (`from`) to\\r\\n   * another (`to`).\\r\\n   *\\r\\n   * Note that `value` may be zero.\\r\\n   */\\r\\n  event Transfer(address indexed from, address indexed to, uint256 value);\\r\\n\\r\\n  /**\\r\\n   * @dev Emitted when the allowance of a `spender` for an `owner` is set by\\r\\n   * a call to {approve}. `value` is the new allowance.\\r\\n   */\\r\\n  event Approval(address indexed owner, address indexed spender, uint256 value);\\r\\n}\\r\\n\\r\\ncontract StakingWarmup {\\r\\n\\r\\n    address public immutable staking;\\r\\n    address public immutable sBash;\\r\\n\\r\\n    constructor ( address _staking, address _sBash ) {\\r\\n        require( _staking != address(0) );\\r\\n        staking = _staking;\\r\\n        require( _sBash != address(0) );\\r\\n        sBash = _sBash;\\r\\n    }\\r\\n\\r\\n    function retrieve( address _staker, uint _amount ) external {\\r\\n        require( msg.sender == staking );\\r\\n        IERC20( sBash ).transfer( _staker, _amount );\\r\\n    }\\r\\n}\",\"keccak256\":\"0x6000d309690e9694f8042660af17bfe9322f655ec44e115528056be0e34b9659\",\"license\":\"AGPL-3.0-or-later\"}},\"version\":1}",
+  "bytecode": "0x60c060405234801561001057600080fd5b506040516102b43803806102b48339818101604052604081101561003357600080fd5b5080516020909101516001600160a01b03821661004f57600080fd5b6001600160601b0319606083901b166080526001600160a01b03811661007457600080fd5b606081811b6001600160601b03191660a052608051901c91506001600160a01b03166101fa6100ba6000398060fb52806101a252508060a2528060cf52506101fa6000f3fe608060405234801561001057600080fd5b50600436106100415760003560e01c80634cf088d914610046578063c3a2a6651461006a578063f13e7b0114610098575b600080fd5b61004e6100a0565b604080516001600160a01b039092168252519081900360200190f35b6100966004803603604081101561008057600080fd5b506001600160a01b0381351690602001356100c4565b005b61004e6101a0565b7f000000000000000000000000000000000000000000000000000000000000000081565b336001600160a01b037f000000000000000000000000000000000000000000000000000000000000000016146100f957600080fd5b7f00000000000000000000000000000000000000000000000000000000000000006001600160a01b031663a9059cbb83836040518363ffffffff1660e01b815260040180836001600160a01b0316815260200182815260200192505050602060405180830381600087803b15801561017057600080fd5b505af1158015610184573d6000803e3d6000fd5b505050506040513d602081101561019a57600080fd5b50505050565b7f00000000000000000000000000000000000000000000000000000000000000008156fea2646970667358221220f15ea2045793a52b570d52cd332185f7e2a5d1aa9b34a418325e59db1bedaf6564736f6c63430007050033",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b50600436106100415760003560e01c80634cf088d914610046578063c3a2a6651461006a578063f13e7b0114610098575b600080fd5b61004e6100a0565b604080516001600160a01b039092168252519081900360200190f35b6100966004803603604081101561008057600080fd5b506001600160a01b0381351690602001356100c4565b005b61004e6101a0565b7f000000000000000000000000000000000000000000000000000000000000000081565b336001600160a01b037f000000000000000000000000000000000000000000000000000000000000000016146100f957600080fd5b7f00000000000000000000000000000000000000000000000000000000000000006001600160a01b031663a9059cbb83836040518363ffffffff1660e01b815260040180836001600160a01b0316815260200182815260200192505050602060405180830381600087803b15801561017057600080fd5b505af1158015610184573d6000803e3d6000fd5b505050506040513d602081101561019a57600080fd5b50505050565b7f00000000000000000000000000000000000000000000000000000000000000008156fea2646970667358221220f15ea2045793a52b570d52cd332185f7e2a5d1aa9b34a418325e59db1bedaf6564736f6c63430007050033",
   "devdoc": {
     "kind": "dev",
     "methods": {},

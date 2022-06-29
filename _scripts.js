@@ -80,12 +80,19 @@ async function performAction(rawArgs) {
     await execute(
       `cross-env HARDHAT_DEPLOY_LOG=true HARDHAT_NETWORK=${
         fixedArgs[0]
-      } ts-node --files ${fixedArgs[1]} ${extra.join(' ')} ${tee(options, fixedArgs[1])}}`
+      } ts-node --files ${fixedArgs[1]} ${extra.join(' ')} ${tee(options, fixedArgs[0])}`
+    );
+  } else if (firstArg == 'task') {
+    const {fixedArgs, extra, options} = parseArgs(args, 2, {tee: 'boolean'});
+    await execute(
+      `cross-env HARDHAT_DEPLOY_LOG=true HARDHAT_NETWORK=${
+        fixedArgs[0]
+      } hardhat --network ${fixedArgs[0]} ${fixedArgs[1]} ${extra.join(' ')} ${tee(options, fixedArgs[0])}`
     );
   } else if (firstArg === 'deploy') {
     const {fixedArgs, extra, options} = parseArgs(args, 1, {tee: 'boolean'});
     await execute(
-      `hardhat --network ${fixedArgs[0]} deploy ${extra.join(' ')} ${tee(options, fixedArgs[0])}`
+      `hardhat --network ${fixedArgs[0]} deploy --report-gas ${extra.join(' ')} ${tee(options, fixedArgs[0])}`
     );
   } else if (firstArg === 'export') {
     const {fixedArgs, extra, options} = parseArgs(args, 2, {tee: 'boolean'});
@@ -124,7 +131,7 @@ async function performAction(rawArgs) {
         options['no-impersonation']
           ? `HARDHAT_DEPLOY_NO_IMPERSONATION=true`
           : ''
-      } hardhat deploy ${extra.join(' ')} ${tee(options, networkName)}`
+      } hardhat deploy --report-gas ${extra.join(' ')} ${tee(options, networkName)}`
     );
   } else if (firstArg === 'fork:node') {
     const {fixedArgs, options, extra} = parseArgs(args, 1, {
