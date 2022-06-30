@@ -58,9 +58,15 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     daiWanted = daiWanted.add(amountForRedeem);
 
     console.log(`Using the existing deployer DAI funds available: ${deployerDaiAmount.toEtherComma()}`);
-    daiWanted = daiWanted.sub(deployerDaiAmount);
+    if (daiWanted.lte(deployerDaiAmount)) {
+      console.log("No need to swap ETH for DAI, deployer wallet is sufficient in funding.");
+      return true;
+    }
+    else 
+      daiWanted = daiWanted.sub(deployerDaiAmount);
 
     console.log(`Uniswap WETH address: ${await uniswapRouter.WETH()}, DAI address: ${dai.address}`);
+    console.log(`DAI wanted: ${daiWanted}`);
     const path = [await uniswapRouter.WETH(), daiDeployment.address];   // eth->dai
     const amountsIn = await uniswapRouter.getAmountsIn(daiWanted, path);
     const ethNeeded = amountsIn[0];
