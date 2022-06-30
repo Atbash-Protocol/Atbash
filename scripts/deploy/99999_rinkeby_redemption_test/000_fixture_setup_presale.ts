@@ -41,7 +41,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 };
 
 // only deploy to hardhat local
-func.skip = async (hre: HardhatRuntimeEnvironment) => isNotLocalTestingNetwork(hre.network);
+func.skip = async (hre: HardhatRuntimeEnvironment) => true;
 
 func.id = "2022-rinkeby-redemption-test-fixture-setup-presale";
 func.tags = ["RedemptionTesting"];
