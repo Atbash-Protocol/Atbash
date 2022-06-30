@@ -45,7 +45,7 @@ const func: DeployFunction = async function(hre: HardhatRuntimeEnvironment) {
     return true;
 };
 
-func.skip = async (hre: HardhatRuntimeEnvironment) => isNotLocalTestingNetwork(hre.network);
+func.skip = async (hre: HardhatRuntimeEnvironment) => true;
 
 func.id = "2022-rinkeby-redemption-test-fund-redemption";
 func.dependencies = [CONTRACTS.bash, CONTRACTS.aBash, CONTRACTS.atbashPresale, CONTRACTS.presaleRedemption];
