@@ -2,7 +2,8 @@ import { providers } from "ethers";
 import { deployments } from "hardhat";
 import { BASHERC20Token__factory, DAI__factory, UniswapV2Pair__factory, ABASHERC20__factory } from "../types";
 import { CONTRACTS } from "./constants";
-import "./extensions";
+import "./string-extensions";
+import '../../ethers-extensions';
 import { Address } from "hardhat-deploy/types";
 
 import hre, { ethers, getChainId } from "hardhat";

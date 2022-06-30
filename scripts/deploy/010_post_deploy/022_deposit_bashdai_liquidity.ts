@@ -3,7 +3,8 @@ import { DeployFunction } from 'hardhat-deploy/types';
 import { BASH_STARTING_MARKET_VALUE_IN_DAI, CONTRACTS, INITIAL_BASH_LIQUIDITY_IN_DAI } from '../../constants';
 import { BASHERC20Token__factory, DAI__factory, UniswapV2Factory__factory, UniswapV2Pair__factory } from '../../../types'
 import { parseEther, parseUnits } from 'ethers/lib/utils';
-import "../../extensions";
+import "../../string-extensions";
+import '../../ethers-extensions';
 import { liveNetworkConfirm } from '../../confirm';
 import { waitFor } from '../../txHelper';
 

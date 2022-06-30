@@ -9,7 +9,8 @@ import { BigNumber } from 'ethers';
 import { getCurrentBlockTime } from '../../../test/utils/blocktime';
 // import { UniswapV2Factory__factory } from '../../../types/factories/contracts/uniswap';
 import { assert } from 'chai';
-import '../../extensions';
+import '../../string-extensions';
+import '../../ethers-extensions';
 import { liveNetworkConfirm } from '../../confirm';
 
 // acquire enough dai to setup reserves and LP

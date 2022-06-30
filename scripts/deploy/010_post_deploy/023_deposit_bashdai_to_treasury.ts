@@ -5,7 +5,8 @@ import { CONTRACTS } from '../../constants';
 import { BASHERC20Token__factory, BashTreasury__factory, UniswapV2Pair__factory } from '../../../types';
 import { waitFor } from '../../txHelper';
 import { BigNumber, Contract } from 'ethers';
-import "../../extensions";
+import "../../string-extensions";
+import '../../ethers-extensions';
 
 const func: DeployFunction = async function(hre: HardhatRuntimeEnvironment) {
     const { deployments, getNamedAccounts, network, ethers } = hre;
