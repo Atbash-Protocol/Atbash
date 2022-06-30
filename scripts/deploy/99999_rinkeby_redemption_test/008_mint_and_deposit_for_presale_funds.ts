@@ -6,7 +6,8 @@ import { BashTreasury__factory, DAI__factory, BASHERC20Token__factory, ABASHERC2
 import { waitFor } from '../../txHelper';
 import { BigNumber } from 'ethers';
 import { parseEther, parseUnits } from 'ethers/lib/utils';
-import '../../extensions';
+import '../../string-extensions';
+import '../../ethers-extensions';
 import { liveNetworkConfirm } from '../../confirm';
 import { isNotLocalTestingNetwork } from '../../network';
 

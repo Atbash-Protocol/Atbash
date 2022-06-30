@@ -20,7 +20,8 @@ import { waitFor } from "../txHelper";
 import { BigNumber, ethers, providers } from "ethers";
 import { parseEther, parseUnits } from "ethers/lib/utils";
 
-import "../extensions";
+import "../string-extensions";
+import '../ethers-extensions';
 import { liveNetworkConfirm } from "../confirm";
 import { getCurrentBlockTime } from "../../test/utils/blocktime";
 
