@@ -17,23 +17,23 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
     console.log("Setting up treasury for deployer management and sbash as a reserve token");
     // Queues
     // Deployer
-    // await waitFor(treasury.queue(MANAGING.RESERVEDEPOSITOR, deployer)); 
-    // await waitFor(treasury.queue(MANAGING.RESERVEMANAGER, deployer)); 
-    // await waitFor(treasury.queue(MANAGING.LIQUIDITYDEPOSITOR, deployer)); 
-    // await waitFor(treasury.queue(MANAGING.LIQUIDITYMANAGER, deployer)); 
-    // await waitFor(treasury.queue(MANAGING.DEBTOR, deployer)); 
-    // await waitFor(treasury.queue(MANAGING.REWARDMANAGER, deployer));    // todo: should this be distributor?
+    await waitFor(treasury.queue(MANAGING.RESERVEDEPOSITOR, deployer)); 
+    await waitFor(treasury.queue(MANAGING.RESERVEMANAGER, deployer)); 
+    await waitFor(treasury.queue(MANAGING.LIQUIDITYDEPOSITOR, deployer)); 
+    await waitFor(treasury.queue(MANAGING.LIQUIDITYMANAGER, deployer)); 
+    await waitFor(treasury.queue(MANAGING.DEBTOR, deployer)); 
+    await waitFor(treasury.queue(MANAGING.REWARDMANAGER, deployer));    // todo: should this be distributor?
 
     // sBash
     const sbashDeployment = await deployments.get(CONTRACTS.sBash);
     const sbash = SBASH__factory.connect(sbashDeployment.address, signer);
-    // await waitFor(treasury.queue(MANAGING.SBASH, sbash.address));
+    await waitFor(treasury.queue(MANAGING.SBASH, sbash.address));
 
     // Toggles
     // Deployer
-    // await waitFor(treasury.toggle(MANAGING.RESERVEDEPOSITOR, deployer, ZERO_ADDRESS));
-    // await waitFor(treasury.toggle(MANAGING.RESERVEMANAGER, deployer, ZERO_ADDRESS));
-    // await waitFor(treasury.toggle(MANAGING.LIQUIDITYDEPOSITOR, deployer, ZERO_ADDRESS));
+    await waitFor(treasury.toggle(MANAGING.RESERVEDEPOSITOR, deployer, ZERO_ADDRESS));
+    await waitFor(treasury.toggle(MANAGING.RESERVEMANAGER, deployer, ZERO_ADDRESS));
+    await waitFor(treasury.toggle(MANAGING.LIQUIDITYDEPOSITOR, deployer, ZERO_ADDRESS));
     await waitFor(treasury.toggle(MANAGING.LIQUIDITYMANAGER, deployer, ZERO_ADDRESS));
     await waitFor(treasury.toggle(MANAGING.DEBTOR, deployer, ZERO_ADDRESS));
     await waitFor(treasury.toggle(MANAGING.REWARDMANAGER, deployer, ZERO_ADDRESS));
